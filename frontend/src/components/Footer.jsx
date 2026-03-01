@@ -92,10 +92,7 @@ export default function Footer() {
 
                 <div style={{ borderTop: '1px solid rgba(108,99,255,0.15)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
                     <p style={{ color: '#6b7298', fontSize: 13 }}>
-                        © {year} EstateXAi. Built with ❤️ for MCA Mini Project.
-                    </p>
-                    <p style={{ color: '#6b7298', fontSize: 13 }}>
-                        Powered by <span style={{ color: '#6c63ff' }}>Google Antigravity</span> 🚀
+                        © {year} EstateXAi. All rights reserved Made by Ayush Narkhede
                     </p>
                 </div>
             </div>
