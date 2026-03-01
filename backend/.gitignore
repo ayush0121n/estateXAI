@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Environment variables (NEVER commit this!)
+.env
+.env.local
+.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Uploads folder (user-uploaded files)
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
