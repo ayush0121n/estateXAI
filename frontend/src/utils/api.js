@@ -1,13 +1,19 @@
 import axios from 'axios';
 
-// In production, use the Render backend URL via env variable
-// In development, use Vite proxy (just '/api')
-const BASE_URL = import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : '/api';
+// Priority: VITE_API_URL env var → hardcoded Render URL → dev proxy
+const getBaseURL = () => {
+    // Check if running in development (Vite dev server) 
+    if (import.meta.env.DEV) {
+        return '/api'; // Use Vite proxy in dev
+    }
+    // In production: use env variable or fall back to hardcoded Render URL
+    const envUrl = import.meta.env.VITE_API_URL;
+    const renderUrl = 'https://estatexai.onrender.com';
+    return `${envUrl || renderUrl}/api`;
+};
 
 const api = axios.create({
-    baseURL: BASE_URL,
+    baseURL: getBaseURL(),
     headers: { 'Content-Type': 'application/json' }
 });
 
