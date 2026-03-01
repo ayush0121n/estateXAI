@@ -8,11 +8,29 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// CORS — allow localhost in dev, Vercel domain in production
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL, // Set this on Render to your Vercel URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    // Also allow any vercel.app domain
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -48,8 +66,7 @@ mongoose.connect(process.env.MONGO_URI)
   })
   .catch(err => {
     console.error('❌ MongoDB Connection Error:', err.message);
-    // Start server anyway for development/testing
-    app.listen(PORT, () => console.log(`🚀 Server running (no DB) on http://localhost:${PORT}`));
+    process.exit(1);
   });
 
 module.exports = app;
