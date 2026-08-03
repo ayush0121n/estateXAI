@@ -26,9 +26,9 @@ export default function AIPredictor() {
         setResult(null);
 
         try {
-            const res = await api.post('/predict/price', formData);
-            if (res.data.success) {
-                setResult(res.data.prediction);
+            const res = await api.post('/predict-price', formData);
+            if (res.data.success || res.data.estimatedPrice) {
+                setResult(res.data.prediction || res.data);
             } else {
                 setError(res.data.message || 'Failed to predict price');
             }
