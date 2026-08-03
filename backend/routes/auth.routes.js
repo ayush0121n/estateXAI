@@ -2,9 +2,20 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const { signToken, protect } = require('../middleware/auth');
+const { body, validationResult } = require('express-validator');
 
 // @POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', [
+    body('name').notEmpty().withMessage('Name is required').trim().escape(),
+    body('email').isEmail().withMessage('Please provide a valid email').normalizeEmail(),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    body('phone').optional().isMobilePhone().withMessage('Please provide a valid phone number'),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
     try {
         const { name, email, password, phone, role, institution, workplace } = req.body;
         const existing = await User.findOne({ email });
@@ -24,10 +35,17 @@ router.post('/register', async (req, res) => {
 });
 
 // @POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', [
+    body('email').isEmail().withMessage('Please provide a valid email').normalizeEmail(),
+    body('password').notEmpty().withMessage('Password is required')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
     try {
         const { email, password } = req.body;
-        if (!email || !password) return res.status(400).json({ success: false, message: 'Please provide email and password.' });
 
         const user = await User.findOne({ email }).select('+password');
         if (!user || !(await user.comparePassword(password))) {
