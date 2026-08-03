@@ -50,6 +50,18 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PG'
     }],
+    preferences: {
+        propertyTypes: [{ type: String }],
+        budgetMin: { type: Number, default: 0 },
+        budgetMax: { type: Number, default: 100000000 },
+        preferredCities: [{ type: String }],
+        listingType: { type: String, enum: ['sale', 'rent', 'any'], default: 'any' }
+    },
+    savedSearches: [{
+        name: { type: String },
+        filters: { type: mongoose.Schema.Types.Mixed },
+        createdAt: { type: Date, default: Date.now }
+    }],
     isVerified: {
         type: Boolean,
         default: true

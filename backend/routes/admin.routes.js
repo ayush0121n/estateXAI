@@ -110,4 +110,98 @@ router.post('/seed', async (req, res) => {
     }
 });
 
+// ─── Analytics ────────────────────────────────────────────────────────────────
+// @GET /api/admin/analytics - Advanced analytics for charts
+router.get('/analytics', async (req, res) => {
+    try {
+        // Listings over time (last 6 months)
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+        const listingsOverTime = await Property.aggregate([
+            { $match: { createdAt: { $gte: sixMonthsAgo } } },
+            { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, count: { $sum: 1 } } },
+            { $sort: { '_id.year': 1, '_id.month': 1 } }
+        ]);
+
+        // User growth over time
+        const userGrowth = await User.aggregate([
+            { $match: { createdAt: { $gte: sixMonthsAgo } } },
+            { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, count: { $sum: 1 } } },
+            { $sort: { '_id.year': 1, '_id.month': 1 } }
+        ]);
+
+        // Most viewed properties
+        const mostViewed = await Property.find().sort('-views').limit(5).select('title views price location type');
+
+        // Most favorited properties (by favorites count on users)
+        const mostFavorited = await Property.find().sort('-favoriteCount').limit(5).select('title favoriteCount price location type');
+
+        // Pending approval queue count
+        const pendingCount = await Property.countDocuments({ status: 'pending' });
+
+        // Property type breakdown
+        const typeBreakdown = await Property.aggregate([
+            { $group: { _id: '$type', count: { $sum: 1 } } }
+        ]);
+
+        res.json({
+            success: true,
+            analytics: {
+                listingsOverTime,
+                userGrowth,
+                mostViewed,
+                mostFavorited,
+                pendingCount,
+                typeBreakdown
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ─── Content Moderation Queue ────────────────────────────────────────────────
+// @GET /api/admin/moderation - Get pending/flagged listings
+router.get('/moderation', async (req, res) => {
+    try {
+        const { status = 'pending', page = 1, limit = 20 } = req.query;
+        const skip = (Number(page) - 1) * Number(limit);
+        
+        const properties = await Property.find({ status })
+            .populate('owner', 'name email phone')
+            .sort('-createdAt')
+            .skip(skip)
+            .limit(Number(limit));
+        
+        const total = await Property.countDocuments({ status });
+        
+        res.json({ success: true, properties, total, page: Number(page) });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ─── System Configuration ────────────────────────────────────────────────────
+// Simple in-memory config store (persisted via DB in a real app)
+let systemConfig = {
+    featuredListingLimit: 10,
+    requireVerificationBeforePublish: true,
+    maxImagesPerListing: 10,
+    allowGuestSearch: true,
+    maintenanceMode: false
+};
+
+// @GET /api/admin/config
+router.get('/config', (req, res) => {
+    res.json({ success: true, config: systemConfig });
+});
+
+// @PUT /api/admin/config
+router.put('/config', (req, res) => {
+    const allowed = ['featuredListingLimit', 'requireVerificationBeforePublish', 'maxImagesPerListing', 'allowGuestSearch', 'maintenanceMode'];
+    allowed.forEach(k => { if (req.body[k] !== undefined) systemConfig[k] = req.body[k]; });
+    res.json({ success: true, config: systemConfig });
+});
+
 module.exports = router;

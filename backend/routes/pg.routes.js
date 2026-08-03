@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const PG = require('../models/PG');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, optionalAuth } = require('../middleware/auth');
+const Interaction = require('../models/Interaction');
 
 // @GET /api/pgs - Get all PGs with filters
 router.get('/', async (req, res) => {
@@ -57,14 +58,26 @@ router.get('/featured', async (req, res) => {
 });
 
 // @GET /api/pgs/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
     try {
         const pg = await PG.findByIdAndUpdate(
             req.params.id,
             { $inc: { views: 1 } },
             { new: true }
         ).populate('owner', 'name phone email avatar');
+        
         if (!pg) return res.status(404).json({ success: false, message: 'PG not found.' });
+
+        if (req.user) {
+            await Interaction.create({
+                user: req.user._id,
+                itemId: pg._id,
+                itemType: 'PG',
+                interactionType: 'view',
+                weight: 1
+            });
+        }
+
         res.json({ success: true, pg });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Property = require('../models/Property');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, optionalAuth } = require('../middleware/auth');
+const Interaction = require('../models/Interaction');
+const { upload, getImageUrls } = require('../middleware/upload');
 
 // @GET /api/properties - Get all properties with filters
 router.get('/', async (req, res) => {
@@ -59,29 +61,110 @@ router.get('/featured', async (req, res) => {
 });
 
 // @GET /api/properties/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
     try {
         const property = await Property.findByIdAndUpdate(
             req.params.id,
             { $inc: { views: 1 } },
             { new: true }
         ).populate('owner', 'name phone email avatar');
+        
         if (!property) return res.status(404).json({ success: false, message: 'Property not found.' });
+
+        if (req.user) {
+            await Interaction.create({
+                user: req.user._id,
+                itemId: property._id,
+                itemType: 'Property',
+                interactionType: 'view',
+                weight: 1
+            });
+        }
+
         res.json({ success: true, property });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// @POST /api/properties - Create property
-router.post('/', protect, authorize('owner', 'admin'), async (req, res) => {
+// @POST /api/properties - Create property with image upload
+// Status defaults to 'pending' for new listings requiring admin approval
+router.post('/', protect, authorize('owner', 'admin'), upload.array('images', 10), async (req, res) => {
     try {
-        const property = await Property.create({ ...req.body, owner: req.user._id });
+        const imageUrls = getImageUrls(req);
+        const data = { ...req.body, owner: req.user._id };
+        if (imageUrls.length > 0) data.images = imageUrls;
+        // Admin-created properties are auto-approved; owner listings go to pending
+        if (req.user.role !== 'admin') data.status = 'pending';
+
+        const property = await Property.create(data);
+
+        // Notify admin via socket if new listing pending
+        if (data.status === 'pending') {
+            const app = req.app;
+            if (app.emitNotification) {
+                app.emitNotification('admin', 'new_listing_pending', {
+                    message: 'New property listing awaiting approval',
+                    propertyId: property._id,
+                    title: property.title
+                });
+            }
+        }
+
         res.status(201).json({ success: true, property });
     } catch (err) {
         res.status(400).json({ success: false, message: err.message });
     }
 });
+
+// @POST /api/properties/:id/images - Upload additional images
+router.post('/:id/images', protect, upload.array('images', 10), async (req, res) => {
+    try {
+        const property = await Property.findById(req.params.id);
+        if (!property) return res.status(404).json({ success: false, message: 'Property not found.' });
+        if (property.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Not authorized.' });
+        }
+        const imageUrls = getImageUrls(req);
+        property.images = [...(property.images || []), ...imageUrls];
+        await property.save();
+        res.json({ success: true, images: property.images });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+});
+
+// @PATCH /api/properties/:id/approve - Admin approves/rejects a listing
+router.patch('/:id/approve', protect, authorize('admin'), async (req, res) => {
+    try {
+        const { status, adminNote } = req.body; // status: 'approved' | 'rejected'
+        if (!['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ success: false, message: "Status must be 'approved' or 'rejected'" });
+        }
+        const property = await Property.findByIdAndUpdate(
+            req.params.id,
+            { status, adminNote: adminNote || '' },
+            { new: true }
+        ).populate('owner', 'name email');
+
+        if (!property) return res.status(404).json({ success: false, message: 'Property not found.' });
+
+        // Notify the owner
+        const app = req.app;
+        if (app.emitNotification && property.owner) {
+            app.emitNotification(property.owner._id.toString(), 'listing_status_update', {
+                message: `Your property "${property.title}" has been ${status}.`,
+                propertyId: property._id,
+                status
+            });
+        }
+
+        res.json({ success: true, property });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+});
+
 
 // @PUT /api/properties/:id - Update property
 router.put('/:id', protect, async (req, res) => {

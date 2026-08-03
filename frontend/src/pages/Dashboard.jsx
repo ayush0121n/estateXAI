@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
-import { Building2, Users, MessageSquare, TrendingUp, Plus, Star, Eye, MapPin, Zap } from 'lucide-react';
+import { Building2, Users, MessageSquare, TrendingUp, Plus, Star, Eye, MapPin, Zap, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
+import AdminDashboardTab from '../components/AdminDashboardTab';
 
 export default function Dashboard() {
     const { user } = useAuth();
@@ -312,6 +313,16 @@ export default function Dashboard() {
                                 ))}
                             </div>
                         )}
+                    </div>
+                )}
+                {user.role === 'admin' && (
+                    <div style={{ marginTop: 24 }}>
+                        <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: 24, paddingBottom: 12 }}>
+                            <h3 style={{ color: '#ffd700', fontSize: 18, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <ShieldCheck size={20} /> Admin Control Panel
+                            </h3>
+                        </div>
+                        <AdminDashboardTab />
                     </div>
                 )}
             </div>

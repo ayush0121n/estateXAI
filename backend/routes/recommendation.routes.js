@@ -3,45 +3,25 @@ const router = express.Router();
 const PG = require('../models/PG');
 const Property = require('../models/Property');
 const { protect } = require('../middleware/auth');
+const { getHybridRecommendations } = require('../utils/recommendationEngine');
 
 // Smart Recommendation Engine
-// @GET /api/recommendations/pgs - Recommend PGs based on institution/workplace
+// @GET /api/recommendations/pgs - Recommend PGs using Hybrid Engine
 router.get('/pgs', protect, async (req, res) => {
     try {
         const user = req.user;
-        const keyword = user.institution || user.workplace || 'Pune';
-
-        // Find PGs near the user's institution
-        const pgs = await PG.find({
-            isAvailable: true,
-            $or: [
-                { 'location.nearbyInstitutions': { $regex: keyword, $options: 'i' } },
-                { 'location.address': { $regex: keyword, $options: 'i' } },
-                { 'location.city': { $regex: 'Pune', $options: 'i' } }
-            ]
-        })
-            .populate('owner', 'name phone')
-            .limit(6)
-            .sort('-rating');
-
-        res.json({ success: true, keyword, pgs });
+        const pgs = await getHybridRecommendations(user, 'PG', 6);
+        res.json({ success: true, pgs });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// @GET /api/recommendations/properties - Recommend properties based on user history
+// @GET /api/recommendations/properties - Recommend properties using Hybrid Engine
 router.get('/properties', protect, async (req, res) => {
     try {
-        // Get featured + newly listed properties as recommendations
-        const properties = await Property.find({
-            isAvailable: true,
-            $or: [{ isFeatured: true }, { 'location.city': 'Pune' }]
-        })
-            .populate('owner', 'name phone')
-            .limit(6)
-            .sort('-views -createdAt');
-
+        const user = req.user;
+        const properties = await getHybridRecommendations(user, 'Property', 6);
         res.json({ success: true, properties });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

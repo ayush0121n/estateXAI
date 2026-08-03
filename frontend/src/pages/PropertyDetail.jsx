@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, BedDouble, Bath, Square, Phone, Mail, ArrowLeft, Heart, Share2, Eye, Calendar, Shield, Wifi, Car, Dumbbell, Waves } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Square, Phone, Mail, ArrowLeft, Heart, Share2, Eye, Calendar, Shield, Wifi, Car, Dumbbell, Waves, GitCompare } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { PropertyCard } from '../components/ListingCard';
 import toast from 'react-hot-toast';
+import PricePredictionWidget from '../components/PricePredictionWidget';
+import PropertyMap from '../components/PropertyMap';
 
 const amenityIcons = { parking: <Car size={14} />, gym: <Dumbbell size={14} />, pool: <Waves size={14} />, security: <Shield size={14} />, wifi: <Wifi size={14} /> };
 
@@ -158,17 +160,41 @@ export default function PropertyDetail() {
 
                             {/* Meta */}
                             <div className="divider" />
-                            <div style={{ display: 'flex', gap: 24, color: '#6b7298', fontSize: 13 }}>
+                            <div style={{ display: 'flex', gap: 24, color: '#6b7298', fontSize: 13, alignItems: 'center', flexWrap: 'wrap' }}>
                                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Eye size={13} /> {property.views} views</span>
                                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={13} /> {new Date(property.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                <button
+                                    onClick={() => {
+                                        const current = JSON.parse(sessionStorage.getItem('compareList') || '[]');
+                                        if (!current.includes(property._id)) {
+                                            if (current.length >= 3) {
+                                                toast.error('You can compare maximum 3 properties');
+                                                return;
+                                            }
+                                            current.push(property._id);
+                                            sessionStorage.setItem('compareList', JSON.stringify(current));
+                                            toast.success('Added to comparison!');
+                                        }
+                                        navigate('/compare');
+                                    }}
+                                    style={{ marginLeft: 'auto', background: 'rgba(108,99,255,0.15)', border: '1px solid rgba(108,99,255,0.3)', color: '#6c63ff', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                                >
+                                    <GitCompare size={14} /> Compare Property
+                                </button>
                             </div>
+
+                            {/* Location Intelligence Map */}
+                            <PropertyMap property={property} />
                         </div>
                     </div>
 
                     {/* Right Sidebar */}
                     <div style={{ position: 'sticky', top: 90 }}>
+                        {/* Price Prediction Widget */}
+                        <PricePredictionWidget property={property} />
+
                         {/* Owner Card */}
-                        <div className="glass-card" style={{ padding: 24, marginBottom: 20 }}>
+                        <div className="glass-card" style={{ padding: 24, marginBottom: 20, marginTop: 20 }}>
                             <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 16 }}>Posted By</h3>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
                                 <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: 'white' }}>

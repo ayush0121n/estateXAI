@@ -1,0 +1,33 @@
+{
+  "zones": [
+    "Koregaon Park",
+    "Wakad",
+    "Baner",
+    "Hadapsar",
+    "Kothrud",
+    "Aundh",
+    "Hinjewadi",
+    "Kharadi",
+    "Viman Nagar",
+    "Undri",
+    "Pisoli",
+    "Pimpri"
+  ],
+  "prop_types": [
+    "apartment",
+    "villa",
+    "studio",
+    "house",
+    "plot",
+    "commercial"
+  ],
+  "listing_types": [
+    "sale",
+    "rent"
+  ],
+  "furnishing_types": [
+    "unfurnished",
+    "semi-furnished",
+    "fully-furnished"
+  ]
+}
