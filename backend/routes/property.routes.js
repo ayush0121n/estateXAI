@@ -189,8 +189,22 @@ router.delete('/:id', protect, async (req, res) => {
         if (property.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
             return res.status(403).json({ success: false, message: 'Not authorized.' });
         }
+        
+        // Cascade Delete: Clean up Interactions, Inquiries, and User Saved lists
+        const propId = property._id;
+        await Interaction.deleteMany({ itemId: propId, itemType: 'Property' });
+        
+        const Inquiry = require('../models/Inquiry');
+        await Inquiry.deleteMany({ propertyId: propId, propertyType: 'Property' });
+        
+        const User = require('../models/User');
+        await User.updateMany(
+            { savedProperties: propId },
+            { $pull: { savedProperties: propId } }
+        );
+
         await property.deleteOne();
-        res.json({ success: true, message: 'Property deleted.' });
+        res.json({ success: true, message: 'Property and related records deleted.' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

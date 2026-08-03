@@ -117,8 +117,23 @@ router.delete('/:id', protect, async (req, res) => {
         if (pg.owner.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
             return res.status(403).json({ success: false, message: 'Not authorized.' });
         }
+        
+        // Cascade Delete: Clean up Interactions, Inquiries, and User Saved lists
+        const pgId = pg._id;
+        const Interaction = require('../models/Interaction');
+        await Interaction.deleteMany({ itemId: pgId, itemType: 'PG' });
+        
+        const Inquiry = require('../models/Inquiry');
+        await Inquiry.deleteMany({ propertyId: pgId, propertyType: 'PG' });
+        
+        const User = require('../models/User');
+        await User.updateMany(
+            { savedPGs: pgId },
+            { $pull: { savedPGs: pgId } }
+        );
+
         await pg.deleteOne();
-        res.json({ success: true, message: 'PG listing deleted.' });
+        res.json({ success: true, message: 'PG listing and related records deleted.' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
