@@ -14,6 +14,7 @@ export default function AIPredictor() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
+    const [relatedProperties, setRelatedProperties] = useState([]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,8 +28,28 @@ export default function AIPredictor() {
 
         try {
             const res = await api.post('/predict-price', formData);
-            if (res.data.success || res.data.estimatedPrice) {
-                setResult(res.data.prediction || res.data);
+            if (res.data.success) {
+                // Map the backend response to the component's expected format
+                const predictionData = {
+                    estimatedPrice: res.data.predicted_price,
+                    priceRange: {
+                        min: res.data.confidence_low,
+                        max: res.data.confidence_high
+                    },
+                    confidenceScore: 85 // Mock confidence since R2 is 0.82
+                };
+                setResult(predictionData);
+                
+                // Fetch related properties in that area
+                try {
+                    const searchLoc = formData.location === 'Other' ? '' : formData.location;
+                    const propRes = await api.get(`/properties?search=${searchLoc}&limit=3`);
+                    if (propRes.data.success) {
+                        setRelatedProperties(propRes.data.properties);
+                    }
+                } catch (e) {
+                    console.log('Failed to fetch related properties');
+                }
             } else {
                 setError(res.data.message || 'Failed to predict price');
             }
@@ -180,6 +201,27 @@ export default function AIPredictor() {
                                         <TrendingUp size={18} /> Moderate Growth Expected
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {result && relatedProperties.length > 0 && (
+                        <div style={{ marginTop: 40 }}>
+                            <h3 style={{ color: 'white', fontFamily: 'Outfit, sans-serif', fontSize: 20, marginBottom: 20 }}>
+                                Active Listings in {formData.location !== 'Other' ? formData.location : 'Pune'}
+                            </h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20 }}>
+                                {relatedProperties.map(prop => (
+                                    <div key={prop._id} style={{ background: 'rgba(10, 11, 30, 0.6)', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(108, 99, 255, 0.2)' }}>
+                                        <div style={{ height: 120, backgroundImage: `url(${prop.images[0] || 'https://via.placeholder.com/300'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                                        <div style={{ padding: 15 }}>
+                                            <div style={{ color: 'white', fontWeight: 600, fontSize: 14, marginBottom: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.title}</div>
+                                            <div style={{ color: '#43e5f7', fontWeight: 700, fontSize: 16 }}>{formatCurrency(prop.price)}</div>
+                                            <div style={{ color: '#b0b7d3', fontSize: 12, marginTop: 5 }}>{prop.bhk} BHK • {prop.area} sqft</div>
+                                            <a href={`/properties/${prop._id}`} style={{ display: 'block', marginTop: 10, textAlign: 'center', background: 'rgba(108, 99, 255, 0.1)', color: '#6c63ff', padding: '6px 0', borderRadius: 6, fontSize: 12, textDecoration: 'none', fontWeight: 500 }}>View Details</a>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}
