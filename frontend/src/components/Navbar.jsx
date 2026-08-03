@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles } from 'lucide-react';
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -91,6 +91,9 @@ export default function Navbar() {
                         <Link to="/pgs" style={linkStyle('/pgs')}>
                             <Users size={16} /> PG / Hostel
                         </Link>
+                        <Link to="/ai-prediction" style={{...linkStyle('/ai-prediction'), color: isActive('/ai-prediction') ? '#43e5f7' : '#b0b7d3', background: isActive('/ai-prediction') ? 'rgba(67, 229, 247, 0.1)' : 'transparent'}}>
+                            <Sparkles size={16} color={isActive('/ai-prediction') ? '#43e5f7' : '#b0b7d3'} /> AI Predictor
+                        </Link>
                     </div>
 
                     {/* Desktop Auth */}
@@ -167,6 +170,7 @@ export default function Navbar() {
                         <Link to="/" style={{ ...linkStyle('/'), justifyContent: 'flex-start' }}><Home size={16} /> Home</Link>
                         <Link to="/properties" style={{ ...linkStyle('/properties'), justifyContent: 'flex-start' }}><Building2 size={16} /> Properties</Link>
                         <Link to="/pgs" style={{ ...linkStyle('/pgs'), justifyContent: 'flex-start' }}><Users size={16} /> PG / Hostel</Link>
+                        <Link to="/ai-prediction" style={{ ...linkStyle('/ai-prediction'), justifyContent: 'flex-start' }}><Sparkles size={16} /> AI Predictor</Link>
                         {user ? (
                             <>
                                 <Link to="/dashboard" style={{ ...linkStyle('/dashboard'), justifyContent: 'flex-start' }}><LayoutDashboard size={16} /> Dashboard</Link>

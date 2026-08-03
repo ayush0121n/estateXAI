@@ -17,6 +17,7 @@ import ListProperty from './pages/ListProperty';
 import ListPG from './pages/ListPG';
 import Profile from './pages/Profile';
 import Compare from './pages/Compare';
+import AIPredictor from './pages/AIPredictor';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/compare" element={<Compare />} />
+                <Route path="/ai-prediction" element={<AIPredictor />} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/list-property" element={<ProtectedRoute roles={['owner', 'admin']}><ListProperty /></ProtectedRoute>} />
                 <Route path="/list-pg" element={<ProtectedRoute roles={['owner', 'admin']}><ListPG /></ProtectedRoute>} />
