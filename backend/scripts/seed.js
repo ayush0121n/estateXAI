@@ -1,316 +1,189 @@
 const path = require('path');
 const rootDir = path.join(__dirname, '..');
-
 require('dotenv').config({ path: path.join(rootDir, '.env') });
 const mongoose = require('mongoose');
 
+// Real Pexels/open image URLs (non-AI, realistic property photos)
+const propImages = [
+    'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/280232/pexels-photo-280232.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/439227/pexels-photo-439227.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
+];
+const pgImages = [
+    'https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'https://images.pexels.com/photos/2029731/pexels-photo-2029731.jpeg?auto=compress&cs=tinysrgb&w=800',
+];
+
+const rImg = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
 async function main() {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('Connected to MongoDB Atlas!');
+    console.log('✅ Connected to MongoDB Atlas!');
 
     const User = require(path.join(rootDir, 'models/User'));
     const Property = require(path.join(rootDir, 'models/Property'));
     const PG = require(path.join(rootDir, 'models/PG'));
 
-    // Reset properties & PGs for fresh realistic seed
+    // Wipe existing seed data
     await Property.deleteMany({});
     await PG.deleteMany({});
     await User.deleteOne({ email: 'admin@estatexai.com' });
     await User.deleteOne({ email: 'owner@estatexai.com' });
 
-    const admin = await User.create({
-        name: 'EstateXAi Admin',
-        email: 'admin@estatexai.com',
-        password: 'Admin@123',
-        phone: '9876543210',
-        role: 'admin',
-        institution: 'SBUP Pune',
-        workplace: 'EstateXAi Labs'
-    });
+    const admin = await User.create({ name: 'EstateXAi Admin', email: 'admin@estatexai.com', password: 'Admin@123', phone: '9876543210', role: 'admin' });
+    const owner = await User.create({ name: 'Rajesh Kumar', email: 'owner@estatexai.com', password: 'Owner@123', phone: '9765432109', role: 'owner' });
 
-    const owner = await User.create({
-        name: 'Rajesh Kumar',
-        email: 'owner@estatexai.com',
-        password: 'Owner@123',
-        phone: '9765432109',
-        role: 'owner',
-        workplace: 'Infosys Pune'
-    });
-
+    // ─── 55 PROPERTIES ────────────────────────────────────────────────────────
     const properties = [
-        // Kothrud
-        {
-            title: '3BHK Luxury Apartment in Kothrud',
-            description: 'Spacious 3BHK flat in prime Kothrud locality. Features modular kitchen, wooden flooring in master bedroom, 2 covered parking spots, 24x7 security, and power backup.',
-            type: 'apartment', listingType: 'sale', price: 8500000, area: 1350, bhk: 3, bathrooms: 2, floor: 4, totalFloors: 10, yearBuilt: 2020, furnishing: 'semi-furnished', facing: 'east',
-            location: { address: 'Paud Road, Kothrud, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411038', coordinates: { lat: 18.5074, lng: 73.8077 } },
-            amenities: ['parking', 'gym', 'security', 'elevator', 'power_backup', 'wifi'],
-            owner: admin._id, isFeatured: true, status: 'approved', views: 340,
-            walkabilityScore: 88, connectivityScore: 92,
-            futureDevelopment: 'Upcoming Metro Line extension connecting Paud Road to Swargate expected by Q4 2026.',
-            nearbyPOIs: [
-                { name: 'MIT World Peace University', type: 'school', distanceKm: 0.6, lat: 18.5085, lng: 73.8090 },
-                { name: 'Sahyadri Super Specialty Hospital', type: 'hospital', distanceKm: 1.2, lat: 18.5040, lng: 73.8120 },
-                { name: 'Kothrud Bus Stand', type: 'transport', distanceKm: 0.4, lat: 18.5060, lng: 73.8050 },
-                { name: 'Pavillion Mall', type: 'shopping', distanceKm: 2.5, lat: 18.5200, lng: 73.8200 }
-            ],
-            images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800']
-        },
-        // Hinjewadi
-        {
-            title: '2BHK Modern Flat near Hinjewadi IT Hub',
-            description: 'Fully furnished 2BHK flat located 5 mins from Infosys and Wipro Circle. Includes high-speed WiFi, ACs in both rooms, sofa set, TV, and automatic washing machine.',
-            type: 'apartment', listingType: 'rent', price: 24000, area: 980, bhk: 2, bathrooms: 2, floor: 6, totalFloors: 14, yearBuilt: 2022, furnishing: 'fully-furnished', facing: 'north-east',
-            location: { address: 'Hinjewadi Phase 1, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5912, lng: 73.7389 } },
-            amenities: ['parking', 'gym', 'security', 'elevator', 'wifi', 'ac', 'power_backup'],
-            owner: admin._id, isFeatured: true, status: 'approved', views: 512,
-            walkabilityScore: 78, connectivityScore: 95,
-            futureDevelopment: 'Hinjewadi-Shivajinagar Metro Line 3 station within 300 meters walking distance.',
-            nearbyPOIs: [
-                { name: 'Infosys Phase 1 Campus', type: 'school', distanceKm: 0.5, lat: 18.5920, lng: 73.7370 },
-                { name: 'Ruby Hall Clinic Hinjewadi', type: 'hospital', distanceKm: 1.0, lat: 18.5890, lng: 73.7420 },
-                { name: 'Xion Mall Hinjewadi', type: 'shopping', distanceKm: 1.5, lat: 18.5950, lng: 73.7500 }
-            ],
-            images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800']
-        },
-        // Baner
-        {
-            title: '4BHK Ultra-Luxury Villa in Baner',
-            description: 'Independent gated villa with private swimming pool, landscaped garden, servant room, home automation system, and 3 covered car parking spaces.',
-            type: 'villa', listingType: 'sale', price: 19500000, area: 3200, bhk: 4, bathrooms: 4, floor: 1, totalFloors: 2, yearBuilt: 2023, furnishing: 'fully-furnished', facing: 'east',
-            location: { address: 'Baner-Pashan Link Road, Baner, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411045', coordinates: { lat: 18.5590, lng: 73.7868 } },
-            amenities: ['parking', 'gym', 'pool', 'garden', 'clubhouse', 'security', 'wifi', 'ac'],
-            owner: admin._id, isFeatured: true, status: 'approved', views: 680,
-            walkabilityScore: 82, connectivityScore: 90,
-            futureDevelopment: 'High Street Baner Commercial corridor expansion scheduled for 2026.',
-            nearbyPOIs: [
-                { name: 'VIBGYOR High School Baner', type: 'school', distanceKm: 0.8, lat: 18.5600, lng: 73.7850 },
-                { name: 'Jupiter Hospital Baner', type: 'hospital', distanceKm: 1.5, lat: 18.5550, lng: 73.7920 }
-            ],
-            images: ['https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800']
-        },
-        // Viman Nagar
-        {
-            title: '1BHK Studio Apartment in Viman Nagar',
-            description: 'Compact studio flat next to Phoenix Marketcity and Symbiosis Campus. Fully furnished with bed, fridge, air conditioner, and work desk.',
-            type: 'studio', listingType: 'rent', price: 16000, area: 480, bhk: 1, bathrooms: 1, floor: 3, totalFloors: 7, yearBuilt: 2021, furnishing: 'fully-furnished', facing: 'north',
-            location: { address: 'Viman Nagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5679, lng: 73.9143 } },
-            amenities: ['wifi', 'ac', 'security', 'elevator', 'power_backup'],
-            owner: owner._id, isFeatured: false, status: 'approved', views: 245,
-            walkabilityScore: 94, connectivityScore: 96,
-            futureDevelopment: 'Pune International Airport expansion & Ramwadi Metro connectivity.',
-            nearbyPOIs: [
-                { name: 'Symbiosis International University', type: 'school', distanceKm: 0.4, lat: 18.5685, lng: 73.9150 },
-                { name: 'Phoenix Marketcity Mall', type: 'shopping', distanceKm: 0.6, lat: 18.5620, lng: 73.9170 }
-            ],
-            images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800']
-        },
-        // Wakad
-        {
-            title: '2BHK Gated Flat in Wakad',
-            description: 'Family-friendly 2BHK flat near Bhumkar Chowk. Swimming pool, children play area, clubhouse, 24hr security guard and CCTV monitoring.',
-            type: 'apartment', listingType: 'sale', price: 6800000, area: 1100, bhk: 2, bathrooms: 2, floor: 8, totalFloors: 12, yearBuilt: 2019, furnishing: 'semi-furnished', facing: 'east',
-            location: { address: 'Bhumkar Chowk, Wakad, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5983, lng: 73.7611 } },
-            amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator'],
-            owner: owner._id, isFeatured: false, status: 'approved', views: 189,
-            walkabilityScore: 75, connectivityScore: 88,
-            nearbyPOIs: [
-                { name: 'EuroSchool Wakad', type: 'school', distanceKm: 1.1, lat: 18.5970, lng: 73.7630 }
-            ],
-            images: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800']
-        },
-        // Shivajinagar
-        {
-            title: 'Commercial Office Space in Shivajinagar',
-            description: '1400 sq.ft prime commercial office layout with 20 workstations, glass cabin, conference room, reception area, and dedicated underground parking.',
-            type: 'commercial', listingType: 'rent', price: 65000, area: 1400, bhk: 0, bathrooms: 2, floor: 2, totalFloors: 6, yearBuilt: 2018, furnishing: 'fully-furnished', facing: 'south-east',
-            location: { address: 'JM Road, Shivajinagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411005', coordinates: { lat: 18.5308, lng: 73.8474 } },
-            amenities: ['parking', 'elevator', 'security', 'power_backup', 'wifi', 'ac'],
-            owner: owner._id, isFeatured: true, status: 'approved', views: 420,
-            walkabilityScore: 96, connectivityScore: 98,
-            nearbyPOIs: [
-                { name: 'Shivajinagar Metro Station', type: 'transport', distanceKm: 0.2, lat: 18.5315, lng: 73.8480 }
-            ],
-            images: ['https://images.unsplash.com/photo-1497366216548-37526070297c?w=800']
-        },
-        // Kharadi
-        {
-            title: 'Premium 3BHK Apartment in Kharadi',
-            description: 'Luxurious 3BHK located near EON IT Park. High-floor unit with panoramic city views, Italian marble flooring, and modular kitchen.',
-            type: 'apartment', listingType: 'sale', price: 12500000, area: 1650, bhk: 3, bathrooms: 3, floor: 12, totalFloors: 22, yearBuilt: 2021, furnishing: 'semi-furnished', facing: 'east',
-            location: { address: 'Near EON IT Park, Kharadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5515, lng: 73.9348 } },
-            amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator', 'clubhouse', 'power_backup'],
-            owner: admin._id, isFeatured: true, status: 'approved', views: 510,
-            walkabilityScore: 85, connectivityScore: 89,
-            futureDevelopment: 'New commercial park development adjacent to EON.',
-            nearbyPOIs: [
-                { name: 'EON IT Park', type: 'other', distanceKm: 0.5, lat: 18.5520, lng: 73.9350 },
-                { name: 'Columbia Asia Hospital', type: 'hospital', distanceKm: 1.2, lat: 18.5500, lng: 73.9300 }
-            ],
-            images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800']
-        },
-        // Hadapsar (Magarpatta)
-        {
-            title: '2BHK Apartment in Magarpatta City',
-            description: 'Well-maintained 2BHK flat inside Magarpatta City. Peaceful environment with huge green spaces, jogging tracks, and excellent security.',
-            type: 'apartment', listingType: 'rent', price: 28000, area: 1050, bhk: 2, bathrooms: 2, floor: 5, totalFloors: 11, yearBuilt: 2015, furnishing: 'fully-furnished', facing: 'north',
-            location: { address: 'Magarpatta City, Hadapsar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411028', coordinates: { lat: 18.5158, lng: 73.9272 } },
-            amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator', 'wifi', 'ac'],
-            owner: owner._id, isFeatured: false, status: 'approved', views: 330,
-            walkabilityScore: 95, connectivityScore: 90,
-            nearbyPOIs: [
-                { name: 'Seasons Mall', type: 'shopping', distanceKm: 0.8, lat: 18.5180, lng: 73.9300 },
-                { name: 'Cybercity IT Park', type: 'other', distanceKm: 0.3, lat: 18.5160, lng: 73.9280 }
-            ],
-            images: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800']
-        },
-        // Aundh
-        {
-            title: '4BHK Penthouse in Aundh',
-            description: 'Exclusive 4BHK penthouse with a private terrace garden in Aundh. Features smart home technology, high-end fittings, and two servant quarters.',
-            type: 'apartment', listingType: 'sale', price: 35000000, area: 3800, bhk: 4, bathrooms: 5, floor: 15, totalFloors: 15, yearBuilt: 2022, furnishing: 'semi-furnished', facing: 'west',
-            location: { address: 'ITI Road, Aundh, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411007', coordinates: { lat: 18.5580, lng: 73.8075 } },
-            amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator', 'clubhouse', 'power_backup'],
-            owner: admin._id, isFeatured: true, status: 'approved', views: 820,
-            walkabilityScore: 92, connectivityScore: 94,
-            nearbyPOIs: [
-                { name: 'Westend Mall', type: 'shopping', distanceKm: 1.5, lat: 18.5610, lng: 73.8050 },
-                { name: 'Medipoint Hospital', type: 'hospital', distanceKm: 0.7, lat: 18.5570, lng: 73.8100 }
-            ],
-            images: ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800']
-        },
-        // Undri
-        {
-            title: 'Affordable 2BHK in Undri',
-            description: 'Brand new 2BHK apartment in a developing locality. Great for investment. Complex includes basic amenities and open parking.',
-            type: 'apartment', listingType: 'sale', price: 4500000, area: 850, bhk: 2, bathrooms: 2, floor: 3, totalFloors: 8, yearBuilt: 2024, furnishing: 'unfurnished', facing: 'east',
-            location: { address: 'NIBM Annexe, Undri, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411060', coordinates: { lat: 18.4555, lng: 73.9055 } },
-            amenities: ['parking', 'security', 'elevator', 'garden'],
-            owner: owner._id, isFeatured: false, status: 'approved', views: 150,
-            walkabilityScore: 60, connectivityScore: 75,
-            futureDevelopment: 'Proposed ring road alignment to improve connectivity to IT hubs.',
-            nearbyPOIs: [
-                { name: 'Bishop\'s Co-Ed School', type: 'school', distanceKm: 1.0, lat: 18.4600, lng: 73.9100 }
-            ],
-            images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800']
-        },
-        // Koregaon Park
-        {
-            title: 'Exquisite 3BHK Apartment in Koregaon Park',
-            description: 'Ultra-luxurious 3BHK apartment in the heart of KP. Walking distance to Osho Ashram, cafes, and boutiques.',
-            type: 'apartment', listingType: 'rent', price: 75000, area: 1800, bhk: 3, bathrooms: 3, floor: 2, totalFloors: 5, yearBuilt: 2018, furnishing: 'fully-furnished', facing: 'north',
-            location: { address: 'Lane 5, Koregaon Park, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411001', coordinates: { lat: 18.5360, lng: 73.8940 } },
-            amenities: ['parking', 'security', 'elevator', 'power_backup', 'ac', 'wifi'],
-            owner: admin._id, isFeatured: true, status: 'approved', views: 600,
-            walkabilityScore: 98, connectivityScore: 95,
-            nearbyPOIs: [
-                { name: 'Osho International Meditation Resort', type: 'park', distanceKm: 0.5, lat: 18.5380, lng: 73.8900 },
-                { name: 'German Bakery', type: 'shopping', distanceKm: 0.3, lat: 18.5370, lng: 73.8920 }
-            ],
-            images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800']
-        }
+        // ===== KOTHRUD (6) =====
+        { title: '3BHK Luxury Apartment in Kothrud', type: 'apartment', listingType: 'sale', price: 8500000, area: 1350, bhk: 3, bathrooms: 2, floor: 4, totalFloors: 10, yearBuilt: 2020, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Paud Road, Kothrud, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411038', coordinates: { lat: 18.5074, lng: 73.8077 } }, amenities: ['parking', 'gym', 'security', 'elevator', 'power_backup', 'wifi'], owner: admin._id, isFeatured: true, status: 'approved', views: 340, walkabilityScore: 88, connectivityScore: 92 },
+        { title: '2BHK Ready-to-Move in Kothrud', type: 'apartment', listingType: 'rent', price: 22000, area: 950, bhk: 2, bathrooms: 2, floor: 2, totalFloors: 7, yearBuilt: 2019, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Karve Road, Kothrud, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411038', coordinates: { lat: 18.5050, lng: 73.8100 } }, amenities: ['security', 'elevator', 'wifi', 'ac'], owner: admin._id, status: 'approved', views: 210 },
+        { title: '1BHK Apartment for Rent near MIT', type: 'apartment', listingType: 'rent', price: 14000, area: 580, bhk: 1, bathrooms: 1, floor: 1, totalFloors: 5, yearBuilt: 2018, furnishing: 'fully-furnished', facing: 'east', location: { address: 'MIT Road, Kothrud, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411038', coordinates: { lat: 18.5085, lng: 73.8090 } }, amenities: ['security', 'wifi'], owner: owner._id, status: 'approved', views: 180 },
+        { title: '4BHK Premium Villa in Kothrud', type: 'villa', listingType: 'sale', price: 18000000, area: 2800, bhk: 4, bathrooms: 4, floor: 1, totalFloors: 2, yearBuilt: 2022, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Prabhat Road, Kothrud, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411004', coordinates: { lat: 18.5120, lng: 73.8050 } }, amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'clubhouse'], owner: admin._id, isFeatured: true, status: 'approved', views: 550 },
+        { title: '2BHK Apartment for Sale near Deccan', type: 'apartment', listingType: 'sale', price: 7200000, area: 1050, bhk: 2, bathrooms: 2, floor: 3, totalFloors: 8, yearBuilt: 2017, furnishing: 'semi-furnished', facing: 'west', location: { address: 'Deccan Gymkhana, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411004', coordinates: { lat: 18.5136, lng: 73.8389 } }, amenities: ['parking', 'security', 'elevator'], owner: owner._id, status: 'approved', views: 120 },
+        { title: 'Commercial Shop near Kothrud Stand', type: 'commercial', listingType: 'rent', price: 35000, area: 450, bhk: 0, bathrooms: 1, floor: 0, totalFloors: 3, yearBuilt: 2015, furnishing: 'unfurnished', facing: 'south', location: { address: 'Kothrud Bus Stand, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411038', coordinates: { lat: 18.5060, lng: 73.8050 } }, amenities: ['power_backup', 'security'], owner: owner._id, status: 'approved', views: 95 },
+
+        // ===== HINJEWADI (7) =====
+        { title: '2BHK Modern Flat near Hinjewadi IT Hub', type: 'apartment', listingType: 'rent', price: 24000, area: 980, bhk: 2, bathrooms: 2, floor: 6, totalFloors: 14, yearBuilt: 2022, furnishing: 'fully-furnished', facing: 'north-east', location: { address: 'Hinjewadi Phase 1, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5912, lng: 73.7389 } }, amenities: ['parking', 'gym', 'security', 'elevator', 'wifi', 'ac', 'power_backup'], owner: admin._id, isFeatured: true, status: 'approved', views: 512, walkabilityScore: 78, connectivityScore: 95 },
+        { title: '1BHK Compact Flat in Hinjewadi Phase 2', type: 'apartment', listingType: 'rent', price: 15000, area: 550, bhk: 1, bathrooms: 1, floor: 4, totalFloors: 10, yearBuilt: 2021, furnishing: 'semi-furnished', facing: 'west', location: { address: 'Hinjewadi Phase 2 Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5930, lng: 73.7420 } }, amenities: ['security', 'wifi', 'elevator'], owner: owner._id, status: 'approved', views: 280 },
+        { title: '3BHK Flat for Sale in Hinjewadi', type: 'apartment', listingType: 'sale', price: 8800000, area: 1400, bhk: 3, bathrooms: 2, floor: 8, totalFloors: 18, yearBuilt: 2023, furnishing: 'unfurnished', facing: 'east', location: { address: 'Wipro Circle, Hinjewadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5898, lng: 73.7380 } }, amenities: ['parking', 'gym', 'pool', 'security', 'elevator', 'clubhouse'], owner: admin._id, isFeatured: true, status: 'approved', views: 430 },
+        { title: '2BHK Studio for IT Professionals', type: 'studio', listingType: 'rent', price: 18000, area: 700, bhk: 1, bathrooms: 1, floor: 3, totalFloors: 12, yearBuilt: 2022, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Infosys Road, Hinjewadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5920, lng: 73.7395 } }, amenities: ['wifi', 'ac', 'security', 'elevator'], owner: owner._id, status: 'approved', views: 322 },
+        { title: 'Office Space for IT Startup in Hinjewadi', type: 'commercial', listingType: 'rent', price: 75000, area: 1600, bhk: 0, bathrooms: 2, floor: 2, totalFloors: 5, yearBuilt: 2020, furnishing: 'fully-furnished', facing: 'east', location: { address: 'Rajiv Gandhi IT Park, Hinjewadi', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5910, lng: 73.7400 } }, amenities: ['parking', 'elevator', 'security', 'power_backup', 'wifi', 'ac'], owner: admin._id, status: 'approved', views: 320 },
+        { title: '3BHK Villa near TCS Hinjewadi', type: 'villa', listingType: 'sale', price: 14500000, area: 2200, bhk: 3, bathrooms: 3, floor: 1, totalFloors: 2, yearBuilt: 2021, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Phase 3, Hinjewadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5880, lng: 73.7360 } }, amenities: ['parking', 'garden', 'security', 'power_backup'], owner: owner._id, status: 'approved', views: 275 },
+        { title: '2BHK Row House in Hinjewadi Annexe', type: 'house', listingType: 'sale', price: 7500000, area: 1100, bhk: 2, bathrooms: 2, floor: 1, totalFloors: 2, yearBuilt: 2020, furnishing: 'unfurnished', facing: 'west', location: { address: 'Hinjewadi Village, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5870, lng: 73.7350 } }, amenities: ['parking', 'garden', 'security'], owner: owner._id, status: 'approved', views: 160 },
+
+        // ===== BANER (5) =====
+        { title: '4BHK Ultra-Luxury Villa in Baner', type: 'villa', listingType: 'sale', price: 19500000, area: 3200, bhk: 4, bathrooms: 4, floor: 1, totalFloors: 2, yearBuilt: 2023, furnishing: 'fully-furnished', facing: 'east', location: { address: 'Baner-Pashan Link Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411045', coordinates: { lat: 18.5590, lng: 73.7868 } }, amenities: ['parking', 'gym', 'pool', 'garden', 'clubhouse', 'security', 'wifi', 'ac'], owner: admin._id, isFeatured: true, status: 'approved', views: 680 },
+        { title: '2BHK Gated Society Flat in Baner', type: 'apartment', listingType: 'rent', price: 26000, area: 1080, bhk: 2, bathrooms: 2, floor: 5, totalFloors: 12, yearBuilt: 2021, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Baner Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411045', coordinates: { lat: 18.5601, lng: 73.7880 } }, amenities: ['parking', 'gym', 'security', 'elevator', 'wifi', 'ac'], owner: owner._id, status: 'approved', views: 390 },
+        { title: '3BHK Apartment for Sale in Baner', type: 'apartment', listingType: 'sale', price: 11000000, area: 1600, bhk: 3, bathrooms: 3, floor: 7, totalFloors: 15, yearBuilt: 2022, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Sus Road, Baner, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411045', coordinates: { lat: 18.5570, lng: 73.7850 } }, amenities: ['parking', 'gym', 'pool', 'security', 'elevator', 'power_backup'], owner: admin._id, status: 'approved', views: 440 },
+        { title: '1BHK Studio near Balewadi Stadium', type: 'studio', listingType: 'rent', price: 17000, area: 510, bhk: 1, bathrooms: 1, floor: 2, totalFloors: 6, yearBuilt: 2020, furnishing: 'fully-furnished', facing: 'south', location: { address: 'Balewadi High Street, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411045', coordinates: { lat: 18.5641, lng: 73.7796 } }, amenities: ['wifi', 'security', 'power_backup'], owner: owner._id, status: 'approved', views: 205 },
+        { title: 'Retail Shop in Baner Market', type: 'commercial', listingType: 'rent', price: 45000, area: 650, bhk: 0, bathrooms: 1, floor: 0, totalFloors: 2, yearBuilt: 2018, furnishing: 'unfurnished', facing: 'east', location: { address: 'Baner Main Market, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411045', coordinates: { lat: 18.5610, lng: 73.7900 } }, amenities: ['parking', 'security'], owner: owner._id, status: 'approved', views: 155 },
+
+        // ===== VIMAN NAGAR (5) =====
+        { title: '1BHK Studio Apartment in Viman Nagar', type: 'studio', listingType: 'rent', price: 16000, area: 480, bhk: 1, bathrooms: 1, floor: 3, totalFloors: 7, yearBuilt: 2021, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Viman Nagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5679, lng: 73.9143 } }, amenities: ['wifi', 'ac', 'security', 'elevator', 'power_backup'], owner: owner._id, status: 'approved', views: 245, walkabilityScore: 94, connectivityScore: 96 },
+        { title: '2BHK Apartment near Phoenix Mall', type: 'apartment', listingType: 'rent', price: 28000, area: 1050, bhk: 2, bathrooms: 2, floor: 4, totalFloors: 9, yearBuilt: 2020, furnishing: 'fully-furnished', facing: 'west', location: { address: 'Nagar Road, Viman Nagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5660, lng: 73.9120 } }, amenities: ['parking', 'security', 'elevator', 'wifi', 'ac', 'gym'], owner: admin._id, isFeatured: true, status: 'approved', views: 350 },
+        { title: '3BHK Flat for Sale near Kharadi Road', type: 'apartment', listingType: 'sale', price: 10500000, area: 1480, bhk: 3, bathrooms: 2, floor: 9, totalFloors: 16, yearBuilt: 2022, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Viman Nagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5690, lng: 73.9160 } }, amenities: ['parking', 'gym', 'pool', 'security', 'elevator', 'clubhouse'], owner: admin._id, status: 'approved', views: 380 },
+        { title: 'Commercial Office near Airport', type: 'commercial', listingType: 'rent', price: 90000, area: 2200, bhk: 0, bathrooms: 3, floor: 4, totalFloors: 8, yearBuilt: 2019, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Airport Road, Viman Nagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5800, lng: 73.9100 } }, amenities: ['parking', 'elevator', 'security', 'power_backup', 'wifi', 'ac'], owner: admin._id, status: 'approved', views: 290 },
+        { title: '4BHK Penthouse in Viman Nagar', type: 'apartment', listingType: 'sale', price: 22000000, area: 2800, bhk: 4, bathrooms: 4, floor: 14, totalFloors: 14, yearBuilt: 2023, furnishing: 'semi-furnished', facing: 'north', location: { address: 'Viman Nagar South, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5700, lng: 73.9150 } }, amenities: ['parking', 'gym', 'pool', 'security', 'elevator', 'clubhouse', 'power_backup'], owner: admin._id, isFeatured: true, status: 'approved', views: 610 },
+
+        // ===== WAKAD (4) =====
+        { title: '2BHK Gated Flat in Wakad', type: 'apartment', listingType: 'sale', price: 6800000, area: 1100, bhk: 2, bathrooms: 2, floor: 8, totalFloors: 12, yearBuilt: 2019, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Bhumkar Chowk, Wakad, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5983, lng: 73.7611 } }, amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator'], owner: owner._id, status: 'approved', views: 189 },
+        { title: '1BHK Flat for Rent in Wakad', type: 'apartment', listingType: 'rent', price: 13000, area: 620, bhk: 1, bathrooms: 1, floor: 3, totalFloors: 8, yearBuilt: 2020, furnishing: 'semi-furnished', facing: 'west', location: { address: 'Wakad, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5970, lng: 73.7625 } }, amenities: ['parking', 'security', 'power_backup'], owner: owner._id, status: 'approved', views: 155 },
+        { title: '3BHK Flat for Sale in Wakad Society', type: 'apartment', listingType: 'sale', price: 9500000, area: 1480, bhk: 3, bathrooms: 2, floor: 6, totalFloors: 14, yearBuilt: 2022, furnishing: 'unfurnished', facing: 'north', location: { address: 'Mumbai-Pune Highway, Wakad, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.6000, lng: 73.7600 } }, amenities: ['parking', 'gym', 'security', 'elevator', 'clubhouse'], owner: admin._id, status: 'approved', views: 250 },
+        { title: 'Row House in Wakad', type: 'house', listingType: 'sale', price: 8200000, area: 1350, bhk: 3, bathrooms: 2, floor: 1, totalFloors: 2, yearBuilt: 2018, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Dange Chowk Road, Wakad, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', coordinates: { lat: 18.5990, lng: 73.7640 } }, amenities: ['parking', 'garden', 'security'], owner: owner._id, status: 'approved', views: 130 },
+
+        // ===== SHIVAJINAGAR (3) =====
+        { title: 'Commercial Office Space in Shivajinagar', type: 'commercial', listingType: 'rent', price: 65000, area: 1400, bhk: 0, bathrooms: 2, floor: 2, totalFloors: 6, yearBuilt: 2018, furnishing: 'fully-furnished', facing: 'south-east', location: { address: 'JM Road, Shivajinagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411005', coordinates: { lat: 18.5308, lng: 73.8474 } }, amenities: ['parking', 'elevator', 'security', 'power_backup', 'wifi', 'ac'], owner: owner._id, isFeatured: true, status: 'approved', views: 420 },
+        { title: '2BHK Flat near FC Road', type: 'apartment', listingType: 'rent', price: 30000, area: 1100, bhk: 2, bathrooms: 2, floor: 3, totalFloors: 7, yearBuilt: 2017, furnishing: 'fully-furnished', facing: 'north', location: { address: 'FC Road, Shivajinagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411005', coordinates: { lat: 18.5290, lng: 73.8450 } }, amenities: ['parking', 'security', 'elevator', 'wifi'], owner: owner._id, status: 'approved', views: 310 },
+        { title: '3BHK High-Rise near Shivajinagar Station', type: 'apartment', listingType: 'sale', price: 13000000, area: 1700, bhk: 3, bathrooms: 3, floor: 10, totalFloors: 20, yearBuilt: 2021, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Near Shivajinagar Station, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411005', coordinates: { lat: 18.5315, lng: 73.8490 } }, amenities: ['parking', 'gym', 'security', 'elevator', 'power_backup', 'clubhouse'], owner: admin._id, status: 'approved', views: 390 },
+
+        // ===== KHARADI (5) =====
+        { title: 'Premium 3BHK Apartment in Kharadi', type: 'apartment', listingType: 'sale', price: 12500000, area: 1650, bhk: 3, bathrooms: 3, floor: 12, totalFloors: 22, yearBuilt: 2021, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Near EON IT Park, Kharadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5515, lng: 73.9348 } }, amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator', 'clubhouse', 'power_backup'], owner: admin._id, isFeatured: true, status: 'approved', views: 510 },
+        { title: '2BHK Apartment for Rent in Kharadi', type: 'apartment', listingType: 'rent', price: 25000, area: 1000, bhk: 2, bathrooms: 2, floor: 5, totalFloors: 12, yearBuilt: 2020, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Kharadi Main Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5520, lng: 73.9360 } }, amenities: ['parking', 'security', 'elevator', 'wifi', 'ac'], owner: owner._id, status: 'approved', views: 280 },
+        { title: 'IT Office Space in Kharadi', type: 'commercial', listingType: 'rent', price: 80000, area: 1800, bhk: 0, bathrooms: 2, floor: 3, totalFloors: 10, yearBuilt: 2019, furnishing: 'fully-furnished', facing: 'east', location: { address: 'EON Free Zone, Kharadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5510, lng: 73.9340 } }, amenities: ['parking', 'elevator', 'security', 'power_backup', 'wifi', 'ac'], owner: admin._id, status: 'approved', views: 350 },
+        { title: '4BHK Luxury Flat in Kharadi', type: 'apartment', listingType: 'sale', price: 17500000, area: 2400, bhk: 4, bathrooms: 4, floor: 15, totalFloors: 25, yearBuilt: 2023, furnishing: 'semi-furnished', facing: 'east', location: { address: 'South Main Road, Kharadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5530, lng: 73.9370 } }, amenities: ['parking', 'gym', 'pool', 'security', 'elevator', 'clubhouse', 'power_backup'], owner: admin._id, isFeatured: true, status: 'approved', views: 470 },
+        { title: '1BHK Flat near Kharadi Bridge', type: 'apartment', listingType: 'rent', price: 14000, area: 560, bhk: 1, bathrooms: 1, floor: 2, totalFloors: 8, yearBuilt: 2021, furnishing: 'semi-furnished', facing: 'west', location: { address: 'Kharadi Bridge Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', coordinates: { lat: 18.5500, lng: 73.9320 } }, amenities: ['security', 'wifi', 'power_backup'], owner: owner._id, status: 'approved', views: 165 },
+
+        // ===== HADAPSAR / MAGARPATTA (4) =====
+        { title: '2BHK Apartment in Magarpatta City', type: 'apartment', listingType: 'rent', price: 28000, area: 1050, bhk: 2, bathrooms: 2, floor: 5, totalFloors: 11, yearBuilt: 2015, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Magarpatta City, Hadapsar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411028', coordinates: { lat: 18.5158, lng: 73.9272 } }, amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator', 'wifi', 'ac'], owner: owner._id, status: 'approved', views: 330 },
+        { title: '3BHK Flat near Amanora Township', type: 'apartment', listingType: 'sale', price: 10800000, area: 1550, bhk: 3, bathrooms: 2, floor: 8, totalFloors: 18, yearBuilt: 2020, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Amanora Park Town, Hadapsar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411028', coordinates: { lat: 18.5190, lng: 73.9300 } }, amenities: ['parking', 'gym', 'pool', 'security', 'elevator', 'clubhouse'], owner: admin._id, status: 'approved', views: 400 },
+        { title: '2BHK Flat for Sale in Hadapsar', type: 'apartment', listingType: 'sale', price: 6500000, area: 980, bhk: 2, bathrooms: 2, floor: 4, totalFloors: 10, yearBuilt: 2018, furnishing: 'unfurnished', facing: 'west', location: { address: 'Hadapsar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411028', coordinates: { lat: 18.5140, lng: 73.9250 } }, amenities: ['parking', 'security', 'elevator'], owner: owner._id, status: 'approved', views: 170 },
+        { title: 'Commercial Space in Hadapsar IT Park', type: 'commercial', listingType: 'rent', price: 55000, area: 1200, bhk: 0, bathrooms: 2, floor: 1, totalFloors: 5, yearBuilt: 2017, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Hadapsar IT Park, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411028', coordinates: { lat: 18.5200, lng: 73.9310 } }, amenities: ['parking', 'security', 'power_backup', 'wifi', 'ac'], owner: owner._id, status: 'approved', views: 230 },
+
+        // ===== AUNDH (4) =====
+        { title: '4BHK Penthouse in Aundh', type: 'apartment', listingType: 'sale', price: 35000000, area: 3800, bhk: 4, bathrooms: 5, floor: 15, totalFloors: 15, yearBuilt: 2022, furnishing: 'semi-furnished', facing: 'west', location: { address: 'ITI Road, Aundh, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411007', coordinates: { lat: 18.5580, lng: 73.8075 } }, amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'elevator', 'clubhouse', 'power_backup'], owner: admin._id, isFeatured: true, status: 'approved', views: 820 },
+        { title: '2BHK Flat in Aundh', type: 'apartment', listingType: 'rent', price: 22000, area: 980, bhk: 2, bathrooms: 2, floor: 3, totalFloors: 8, yearBuilt: 2019, furnishing: 'semi-furnished', facing: 'north', location: { address: 'Aundh, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411007', coordinates: { lat: 18.5570, lng: 73.8100 } }, amenities: ['parking', 'security', 'elevator', 'wifi'], owner: owner._id, status: 'approved', views: 220 },
+        { title: '3BHK Flat for Sale near Westend', type: 'apartment', listingType: 'sale', price: 13500000, area: 1800, bhk: 3, bathrooms: 3, floor: 6, totalFloors: 12, yearBuilt: 2020, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Parihar Chowk, Aundh, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411007', coordinates: { lat: 18.5600, lng: 73.8080 } }, amenities: ['parking', 'gym', 'security', 'elevator', 'power_backup'], owner: admin._id, status: 'approved', views: 380 },
+        { title: '1BHK Flat in Aundh', type: 'apartment', listingType: 'rent', price: 14500, area: 600, bhk: 1, bathrooms: 1, floor: 2, totalFloors: 6, yearBuilt: 2018, furnishing: 'fully-furnished', facing: 'south', location: { address: 'DP Road, Aundh, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411007', coordinates: { lat: 18.5560, lng: 73.8090 } }, amenities: ['wifi', 'security', 'elevator'], owner: owner._id, status: 'approved', views: 190 },
+
+        // ===== KOREGAON PARK (4) =====
+        { title: 'Exquisite 3BHK Apartment in Koregaon Park', type: 'apartment', listingType: 'rent', price: 75000, area: 1800, bhk: 3, bathrooms: 3, floor: 2, totalFloors: 5, yearBuilt: 2018, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Lane 5, Koregaon Park, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411001', coordinates: { lat: 18.5360, lng: 73.8940 } }, amenities: ['parking', 'security', 'elevator', 'power_backup', 'ac', 'wifi'], owner: admin._id, isFeatured: true, status: 'approved', views: 600 },
+        { title: '2BHK Flat in Kalyani Nagar', type: 'apartment', listingType: 'rent', price: 35000, area: 1100, bhk: 2, bathrooms: 2, floor: 4, totalFloors: 8, yearBuilt: 2020, furnishing: 'fully-furnished', facing: 'east', location: { address: 'Kalyani Nagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411006', coordinates: { lat: 18.5448, lng: 73.9021 } }, amenities: ['parking', 'security', 'elevator', 'wifi', 'ac'], owner: owner._id, status: 'approved', views: 310 },
+        { title: '4BHK Bungalow in Koregaon Park', type: 'villa', listingType: 'sale', price: 55000000, area: 4500, bhk: 4, bathrooms: 5, floor: 1, totalFloors: 2, yearBuilt: 2019, furnishing: 'semi-furnished', facing: 'north', location: { address: 'KP Road, Koregaon Park, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411001', coordinates: { lat: 18.5370, lng: 73.8960 } }, amenities: ['parking', 'gym', 'pool', 'garden', 'security', 'clubhouse'], owner: admin._id, isFeatured: true, status: 'approved', views: 750 },
+        { title: 'Studio Apartment in Camp Area', type: 'studio', listingType: 'rent', price: 22000, area: 550, bhk: 1, bathrooms: 1, floor: 3, totalFloors: 6, yearBuilt: 2017, furnishing: 'fully-furnished', facing: 'west', location: { address: 'Boat Club Road, Camp, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411001', coordinates: { lat: 18.5330, lng: 73.8870 } }, amenities: ['wifi', 'ac', 'security', 'elevator'], owner: owner._id, status: 'approved', views: 280 },
+
+        // ===== UNDRI / PISOLI (4) =====
+        { title: 'Affordable 2BHK in Undri', type: 'apartment', listingType: 'sale', price: 4500000, area: 850, bhk: 2, bathrooms: 2, floor: 3, totalFloors: 8, yearBuilt: 2024, furnishing: 'unfurnished', facing: 'east', location: { address: 'NIBM Annexe, Undri, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411060', coordinates: { lat: 18.4555, lng: 73.9055 } }, amenities: ['parking', 'security', 'elevator', 'garden'], owner: owner._id, status: 'approved', views: 150 },
+        { title: '1BHK Budget Apartment in Pisoli', type: 'apartment', listingType: 'rent', price: 9500, area: 520, bhk: 1, bathrooms: 1, floor: 2, totalFloors: 5, yearBuilt: 2022, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Pisoli, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411048', coordinates: { lat: 18.4500, lng: 73.9100 } }, amenities: ['security', 'power_backup'], owner: owner._id, status: 'approved', views: 110 },
+        { title: '3BHK Flat for Sale in Undri', type: 'apartment', listingType: 'sale', price: 7200000, area: 1250, bhk: 3, bathrooms: 2, floor: 4, totalFloors: 10, yearBuilt: 2023, furnishing: 'semi-furnished', facing: 'north', location: { address: 'Undri Main Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411060', coordinates: { lat: 18.4570, lng: 73.9070 } }, amenities: ['parking', 'security', 'elevator', 'garden'], owner: owner._id, status: 'approved', views: 170 },
+        { title: 'Plot in Pisoli for Investment', type: 'plot', listingType: 'sale', price: 3500000, area: 1200, bhk: 0, bathrooms: 0, floor: 0, totalFloors: 0, yearBuilt: 2024, furnishing: 'unfurnished', facing: 'east', location: { address: 'Pisoli Phata, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411048', coordinates: { lat: 18.4480, lng: 73.9120 } }, amenities: [], owner: owner._id, status: 'approved', views: 90 },
+
+        // ===== PUNE CAMP / WANOWRIE (4) =====
+        { title: '2BHK Flat near Wanowrie', type: 'apartment', listingType: 'sale', price: 7500000, area: 1000, bhk: 2, bathrooms: 2, floor: 5, totalFloors: 10, yearBuilt: 2018, furnishing: 'semi-furnished', facing: 'east', location: { address: 'Wanowrie, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411040', coordinates: { lat: 18.5050, lng: 73.9000 } }, amenities: ['parking', 'gym', 'security', 'elevator'], owner: owner._id, status: 'approved', views: 210 },
+        { title: '3BHK Flat in Wanowrie Society', type: 'apartment', listingType: 'rent', price: 28000, area: 1200, bhk: 3, bathrooms: 2, floor: 6, totalFloors: 12, yearBuilt: 2019, furnishing: 'fully-furnished', facing: 'north', location: { address: 'Salunke Vihar Road, Wanowrie, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411040', coordinates: { lat: 18.5030, lng: 73.8980 } }, amenities: ['parking', 'security', 'elevator', 'wifi', 'ac'], owner: owner._id, status: 'approved', views: 190 },
+        { title: '2BHK Army Welfare Flat near Wanowrie', type: 'apartment', listingType: 'rent', price: 18000, area: 850, bhk: 2, bathrooms: 1, floor: 1, totalFloors: 4, yearBuilt: 2016, furnishing: 'semi-furnished', facing: 'west', location: { address: 'NIBM Road, Wanowrie, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411040', coordinates: { lat: 18.5000, lng: 73.8950 } }, amenities: ['parking', 'security', 'garden'], owner: owner._id, status: 'approved', views: 140 },
+        { title: 'Showroom Space in Wanowrie Market', type: 'commercial', listingType: 'rent', price: 42000, area: 800, bhk: 0, bathrooms: 1, floor: 0, totalFloors: 3, yearBuilt: 2017, furnishing: 'unfurnished', facing: 'east', location: { address: 'Wanowrie Market Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411040', coordinates: { lat: 18.5060, lng: 73.9020 } }, amenities: ['parking', 'security', 'power_backup'], owner: owner._id, status: 'approved', views: 120 },
     ];
 
+    // Add realistic images
+    const propsWithImages = properties.map(p => ({ ...p, images: [rImg(propImages)], description: p.title + '. Well-maintained property with excellent connectivity to nearby social infrastructure.' }));
+    await Property.insertMany(propsWithImages);
+    console.log(`✅ Inserted ${propsWithImages.length} properties`);
+
+    // ─── 22 PGs / HOSTELS / CO-LIVING ─────────────────────────────────────────
     const pgs = [
-        // Aundh
-        {
-            name: 'Green Valley Boys PG & Hostel',
-            description: 'Clean and peaceful PG accommodation for male students and young professionals. Offers 3 times nutritious meals, high-speed WiFi, hot water, and daily housekeeping.',
-            type: 'pg', genderType: 'male', rentPerMonth: 8500, securityDeposit: 17000, sharingType: ['single', 'double'],
-            location: { address: 'Near SPPU Gate 2, Aundh, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411007', nearbyInstitutions: ['SPPU University', 'MIT Pune', 'Aundh College'], coordinates: { lat: 18.5589, lng: 73.8088 } },
-            amenities: { wifi: true, food: true, ac: false, laundry: true, parking: false, housekeeping: true, cctv: true, powerBackup: true, hotWater: true, studyRoom: true },
-            meals: { breakfast: true, lunch: false, dinner: true },
-            rules: { curfewTime: '10:30 PM', guestsAllowed: false, smokingAllowed: false, petsAllowed: false },
-            totalRooms: 30, availableRooms: 8, owner: admin._id, isFeatured: true, rating: 4.4, reviewCount: 52,
-            images: ['https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800']
-        },
-        // Viman Nagar
-        {
-            name: 'Sunrise Girls Luxury Hostel',
-            description: 'Female-only residence with 24/7 biometric security access, CCTV surveillance, air-conditioned rooms, study library, and daily laundry service.',
-            type: 'hostel', genderType: 'female', rentPerMonth: 9500, securityDeposit: 19000, sharingType: ['double', 'triple'],
-            location: { address: 'Symbiosis Road, Viman Nagar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', nearbyInstitutions: ['Symbiosis Institute', 'NIBM', 'Christ College'], coordinates: { lat: 18.5679, lng: 73.9143 } },
-            amenities: { wifi: true, food: true, ac: true, laundry: true, housekeeping: true, cctv: true, hotWater: true, studyRoom: true, refrigerator: true },
-            meals: { breakfast: true, lunch: true, dinner: true },
-            rules: { curfewTime: '9:30 PM', guestsAllowed: false, smokingAllowed: false, petsAllowed: false },
-            totalRooms: 25, availableRooms: 4, owner: admin._id, isFeatured: true, rating: 4.7, reviewCount: 94,
-            images: ['https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800']
-        },
-        // Hinjewadi
-        {
-            name: 'Urban Co-Living Space Hinjewadi',
-            description: 'Premium co-living ecosystem designed for tech professionals in IT Park Phase 2. Gaming lounge, high-speed fiber internet, rooftop cafe, and gym.',
-            type: 'coliving', genderType: 'unisex', rentPerMonth: 13000, securityDeposit: 26000, sharingType: ['single', 'double'],
-            location: { address: 'Phase 2 Road, Hinjewadi, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411057', nearbyInstitutions: ['Infosys', 'TCS', 'Wipro', 'Tech Mahindra'], coordinates: { lat: 18.5912, lng: 73.7389 } },
-            amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, parking: true, cctv: true, tv: true, refrigerator: true, powerBackup: true, hotWater: true },
-            meals: { breakfast: false, lunch: false, dinner: false },
-            rules: { curfewTime: 'None', guestsAllowed: true, smokingAllowed: false, petsAllowed: false },
-            totalRooms: 45, availableRooms: 10, owner: owner._id, isFeatured: true, rating: 4.5, reviewCount: 78,
-            images: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800']
-        },
-        // Deccan
-        {
-            name: "Scholar's Den Student PG",
-            description: 'Budget-friendly PG close to Fergusson College and BMCC. Silent study room, high-speed WiFi, home-cooked Maharashtrian meals included.',
-            type: 'pg', genderType: 'male', rentPerMonth: 6800, securityDeposit: 13600, sharingType: ['double', 'triple', 'quad'],
-            location: { address: 'FC Road, Deccan Gymkhana, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411004', nearbyInstitutions: ['Fergusson College', 'BMCC', 'COEP Pune'], coordinates: { lat: 18.5136, lng: 73.8389 } },
-            amenities: { wifi: true, food: true, ac: false, cctv: true, hotWater: true, studyRoom: true, housekeeping: true },
-            meals: { breakfast: true, lunch: false, dinner: true },
-            rules: { curfewTime: '10:00 PM', guestsAllowed: false, smokingAllowed: false, petsAllowed: false },
-            totalRooms: 22, availableRooms: 5, owner: owner._id, isFeatured: false, rating: 4.1, reviewCount: 39,
-            images: ['https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800']
-        },
-        // Koregaon Park
-        {
-            name: 'Lotus Girls Premium PG Koregaon Park',
-            description: 'Boutique accommodation for female working professionals and students in posh Koregaon Park. Single & double occupancy available.',
-            type: 'pg', genderType: 'female', rentPerMonth: 11500, securityDeposit: 23000, sharingType: ['single', 'double'],
-            location: { address: 'Lane 7, Koregaon Park, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411001', nearbyInstitutions: ['IIIT Pune', 'Army Institute of Technology'], coordinates: { lat: 18.5362, lng: 73.8938 } },
-            amenities: { wifi: true, food: true, ac: true, laundry: true, cctv: true, hotWater: true, housekeeping: true, refrigerator: true },
-            meals: { breakfast: true, lunch: false, dinner: true },
-            rules: { curfewTime: '10:30 PM', guestsAllowed: true, smokingAllowed: false, petsAllowed: false },
-            totalRooms: 16, availableRooms: 3, owner: owner._id, isFeatured: true, rating: 4.8, reviewCount: 82,
-            images: ['https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800']
-        },
-        // Kharadi
-        {
-            name: 'Tech-Hub Co-Living Kharadi',
-            description: 'Modern PG near EON IT Park. Perfect for IT professionals. Includes gym, recreation area, and weekly events.',
-            type: 'coliving', genderType: 'unisex', rentPerMonth: 12500, securityDeposit: 25000, sharingType: ['double', 'triple'],
-            location: { address: 'Kharadi South Main Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411014', nearbyInstitutions: ['EON IT Park', 'Zensar', 'Barclays'], coordinates: { lat: 18.5525, lng: 73.9355 } },
-            amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, cctv: true, hotWater: true, housekeeping: true },
-            meals: { breakfast: false, lunch: false, dinner: false },
-            rules: { curfewTime: 'None', guestsAllowed: true, smokingAllowed: false, petsAllowed: false },
-            totalRooms: 35, availableRooms: 12, owner: admin._id, isFeatured: true, rating: 4.3, reviewCount: 45,
-            images: ['https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800']
-        },
-        // Hadapsar
-        {
-            name: 'Magarpatta City Boys Hostel',
-            description: 'Conveniently located boys hostel near Cybercity. Good food, regular cleaning, and secure environment.',
-            type: 'hostel', genderType: 'male', rentPerMonth: 7500, securityDeposit: 15000, sharingType: ['double', 'quad'],
-            location: { address: 'Magarpatta North Gate, Hadapsar, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411028', nearbyInstitutions: ['Cybercity', 'Amanora Park Town'], coordinates: { lat: 18.5170, lng: 73.9290 } },
-            amenities: { wifi: true, food: true, ac: false, laundry: false, cctv: true, hotWater: true, housekeeping: true },
-            meals: { breakfast: true, lunch: true, dinner: true },
-            rules: { curfewTime: '11:00 PM', guestsAllowed: false, smokingAllowed: false, petsAllowed: false },
-            totalRooms: 20, availableRooms: 6, owner: owner._id, isFeatured: false, rating: 4.0, reviewCount: 28,
-            images: ['https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800']
-        }
+        // AUNDH (3)
+        { name: 'Green Valley Boys PG - Aundh', type: 'pg', genderType: 'male', rentPerMonth: 8500, securityDeposit: 17000, sharingType: ['single', 'double'], location: { address: 'Near SPPU Gate 2, Aundh, Pune', city: 'Pune', pincode: '411007', nearbyInstitutions: ['SPPU University', 'MIT Pune'], coordinates: { lat: 18.5589, lng: 73.8088 } }, amenities: { wifi: true, food: true, ac: false, laundry: true, cctv: true, hotWater: true, studyRoom: true, housekeeping: true, powerBackup: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '10:30 PM' }, totalRooms: 30, availableRooms: 8, owner: admin._id, isFeatured: true, rating: 4.4, reviewCount: 52, views: 180 },
+        { name: 'Sunrise Girls Hostel - Aundh', type: 'hostel', genderType: 'female', rentPerMonth: 9200, securityDeposit: 18000, sharingType: ['double', 'triple'], location: { address: 'Aundh Road, Pune', city: 'Pune', pincode: '411007', nearbyInstitutions: ['SPPU', 'Dhole Patil College'], coordinates: { lat: 18.5600, lng: 73.8100 } }, amenities: { wifi: true, food: true, ac: true, laundry: true, cctv: true, hotWater: true, studyRoom: true, housekeeping: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '9:30 PM' }, totalRooms: 20, availableRooms: 5, owner: admin._id, rating: 4.5, reviewCount: 40, views: 150 },
+        { name: 'Nexus Co-Living Aundh', type: 'coliving', genderType: 'unisex', rentPerMonth: 12000, securityDeposit: 24000, sharingType: ['single', 'double'], location: { address: 'DP Road, Aundh, Pune', city: 'Pune', pincode: '411007', nearbyInstitutions: ['SPPU', 'Cognizant', 'Persistent Systems'], coordinates: { lat: 18.5580, lng: 73.8080 } }, amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, cctv: true, hotWater: true, tv: true }, meals: { breakfast: false, lunch: false, dinner: false }, rules: { curfewTime: 'None', guestsAllowed: true }, totalRooms: 25, availableRooms: 7, owner: owner._id, rating: 4.3, reviewCount: 35, views: 200 },
+
+        // VIMAN NAGAR (3)
+        { name: 'Sunrise Girls Luxury Hostel - Viman Nagar', type: 'hostel', genderType: 'female', rentPerMonth: 9500, securityDeposit: 19000, sharingType: ['double', 'triple'], location: { address: 'Symbiosis Road, Viman Nagar, Pune', city: 'Pune', pincode: '411014', nearbyInstitutions: ['Symbiosis Institute', 'NIBM'], coordinates: { lat: 18.5679, lng: 73.9143 } }, amenities: { wifi: true, food: true, ac: true, laundry: true, cctv: true, hotWater: true, studyRoom: true, refrigerator: true }, meals: { breakfast: true, lunch: true, dinner: true }, rules: { curfewTime: '9:30 PM' }, totalRooms: 25, availableRooms: 4, owner: admin._id, isFeatured: true, rating: 4.7, reviewCount: 94, views: 320 },
+        { name: 'Atlas Boys PG - Viman Nagar', type: 'pg', genderType: 'male', rentPerMonth: 8000, securityDeposit: 16000, sharingType: ['double', 'triple'], location: { address: 'Nagar Road, Viman Nagar, Pune', city: 'Pune', pincode: '411014', nearbyInstitutions: ['Symbiosis', 'Genext Hospital'], coordinates: { lat: 18.5660, lng: 73.9120 } }, amenities: { wifi: true, food: true, ac: false, laundry: false, cctv: true, hotWater: true, studyRoom: false }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '11:00 PM' }, totalRooms: 18, availableRooms: 6, owner: owner._id, rating: 3.9, reviewCount: 25, views: 110 },
+        { name: 'SkyNest Co-Living - Viman Nagar', type: 'coliving', genderType: 'unisex', rentPerMonth: 14000, securityDeposit: 28000, sharingType: ['single', 'double'], location: { address: 'Phoenix Road, Viman Nagar, Pune', city: 'Pune', pincode: '411014', nearbyInstitutions: ['Phoenix Marketcity', 'TCS', 'Wipro BPO'], coordinates: { lat: 18.5640, lng: 73.9130 } }, amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, cctv: true, hotWater: true, refrigerator: true, tv: true }, meals: { breakfast: false, lunch: false, dinner: false }, rules: { curfewTime: 'None', guestsAllowed: true }, totalRooms: 30, availableRooms: 8, owner: admin._id, isFeatured: true, rating: 4.6, reviewCount: 60, views: 280 },
+
+        // HINJEWADI (3)
+        { name: 'Urban Co-Living Space Hinjewadi', type: 'coliving', genderType: 'unisex', rentPerMonth: 13000, securityDeposit: 26000, sharingType: ['single', 'double'], location: { address: 'Phase 2 Road, Hinjewadi, Pune', city: 'Pune', pincode: '411057', nearbyInstitutions: ['Infosys', 'TCS', 'Wipro', 'Tech Mahindra'], coordinates: { lat: 18.5912, lng: 73.7389 } }, amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, parking: true, cctv: true, tv: true, refrigerator: true, hotWater: true }, meals: { breakfast: false, lunch: false, dinner: false }, rules: { curfewTime: 'None', guestsAllowed: true }, totalRooms: 45, availableRooms: 10, owner: owner._id, isFeatured: true, rating: 4.5, reviewCount: 78, views: 340 },
+        { name: 'TechStay PG - Hinjewadi Phase 1', type: 'pg', genderType: 'male', rentPerMonth: 9000, securityDeposit: 18000, sharingType: ['double', 'triple'], location: { address: 'Phase 1, Hinjewadi, Pune', city: 'Pune', pincode: '411057', nearbyInstitutions: ['Infosys Phase 1', 'Wipro', 'Cognizant'], coordinates: { lat: 18.5905, lng: 73.7380 } }, amenities: { wifi: true, food: true, ac: false, cctv: true, hotWater: true, housekeeping: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '11:00 PM' }, totalRooms: 22, availableRooms: 7, owner: owner._id, rating: 4.1, reviewCount: 35, views: 160 },
+        { name: 'Bliss Girls PG - Hinjewadi', type: 'pg', genderType: 'female', rentPerMonth: 9500, securityDeposit: 19000, sharingType: ['double', 'triple'], location: { address: 'Wakad-Hinjewadi Road, Pune', city: 'Pune', pincode: '411057', nearbyInstitutions: ['Wipro', 'Accenture', 'Capgemini'], coordinates: { lat: 18.5895, lng: 73.7400 } }, amenities: { wifi: true, food: true, ac: true, laundry: true, cctv: true, hotWater: true, studyRoom: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '10:00 PM' }, totalRooms: 20, availableRooms: 4, owner: admin._id, isFeatured: true, rating: 4.4, reviewCount: 50, views: 220 },
+
+        // DECCAN / FC ROAD (2)
+        { name: "Scholar's Den PG - Deccan", type: 'pg', genderType: 'male', rentPerMonth: 6800, securityDeposit: 13600, sharingType: ['double', 'triple', 'quad'], location: { address: 'FC Road, Deccan Gymkhana, Pune', city: 'Pune', pincode: '411004', nearbyInstitutions: ['Fergusson College', 'BMCC', 'COEP'], coordinates: { lat: 18.5136, lng: 73.8389 } }, amenities: { wifi: true, food: true, cctv: true, hotWater: true, studyRoom: true, housekeeping: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '10:00 PM' }, totalRooms: 22, availableRooms: 5, owner: owner._id, rating: 4.1, reviewCount: 39, views: 140 },
+        { name: 'Campus Connect Girls Hostel - FC Road', type: 'hostel', genderType: 'female', rentPerMonth: 7500, securityDeposit: 15000, sharingType: ['double', 'triple'], location: { address: 'Law College Road, Deccan, Pune', city: 'Pune', pincode: '411004', nearbyInstitutions: ['ILS Law College', 'Fergusson College', 'SNDT'], coordinates: { lat: 18.5145, lng: 73.8400 } }, amenities: { wifi: true, food: true, ac: false, laundry: true, cctv: true, hotWater: true, studyRoom: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '9:00 PM' }, totalRooms: 25, availableRooms: 6, owner: owner._id, rating: 4.2, reviewCount: 45, views: 165 },
+
+        // KOREGAON PARK (2)
+        { name: 'Lotus Girls Premium PG - Koregaon Park', type: 'pg', genderType: 'female', rentPerMonth: 11500, securityDeposit: 23000, sharingType: ['single', 'double'], location: { address: 'Lane 7, Koregaon Park, Pune', city: 'Pune', pincode: '411001', nearbyInstitutions: ['IIIT Pune', 'Army Institute'], coordinates: { lat: 18.5362, lng: 73.8938 } }, amenities: { wifi: true, food: true, ac: true, laundry: true, cctv: true, hotWater: true, housekeeping: true, refrigerator: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '10:30 PM', guestsAllowed: true }, totalRooms: 16, availableRooms: 3, owner: owner._id, isFeatured: true, rating: 4.8, reviewCount: 82, views: 290 },
+        { name: 'KP Luxe Co-Living', type: 'coliving', genderType: 'unisex', rentPerMonth: 18000, securityDeposit: 36000, sharingType: ['single'], location: { address: 'North Main Road, Koregaon Park, Pune', city: 'Pune', pincode: '411001', nearbyInstitutions: ['German Bakery', 'Osho Ashram', 'Malpani School'], coordinates: { lat: 18.5370, lng: 73.8950 } }, amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, cctv: true, hotWater: true, refrigerator: true, tv: true }, meals: { breakfast: false, lunch: false, dinner: false }, rules: { curfewTime: 'None', guestsAllowed: true }, totalRooms: 12, availableRooms: 2, owner: admin._id, isFeatured: true, rating: 4.9, reviewCount: 40, views: 350 },
+
+        // KHARADI (2)
+        { name: 'Tech-Hub Co-Living - Kharadi', type: 'coliving', genderType: 'unisex', rentPerMonth: 12500, securityDeposit: 25000, sharingType: ['double', 'triple'], location: { address: 'Kharadi South Main Road, Pune', city: 'Pune', pincode: '411014', nearbyInstitutions: ['EON IT Park', 'Zensar', 'Barclays'], coordinates: { lat: 18.5525, lng: 73.9355 } }, amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, cctv: true, hotWater: true, housekeeping: true }, meals: { breakfast: false, lunch: false, dinner: false }, rules: { curfewTime: 'None', guestsAllowed: true }, totalRooms: 35, availableRooms: 12, owner: admin._id, isFeatured: true, rating: 4.3, reviewCount: 45, views: 210 },
+        { name: 'ProStay Boys PG - Kharadi', type: 'pg', genderType: 'male', rentPerMonth: 8500, securityDeposit: 17000, sharingType: ['double', 'triple'], location: { address: 'Kharadi Bypass, Pune', city: 'Pune', pincode: '411014', nearbyInstitutions: ['EON IT Park', 'InfoSystems Park'], coordinates: { lat: 18.5510, lng: 73.9340 } }, amenities: { wifi: true, food: true, ac: false, cctv: true, hotWater: true, housekeeping: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '11:00 PM' }, totalRooms: 24, availableRooms: 8, owner: owner._id, rating: 4.0, reviewCount: 30, views: 140 },
+
+        // HADAPSAR / MAGARPATTA (2)
+        { name: 'Magarpatta City Boys Hostel', type: 'hostel', genderType: 'male', rentPerMonth: 7500, securityDeposit: 15000, sharingType: ['double', 'quad'], location: { address: 'Magarpatta North Gate, Hadapsar, Pune', city: 'Pune', pincode: '411028', nearbyInstitutions: ['Cybercity', 'Amanora Park Town'], coordinates: { lat: 18.5170, lng: 73.9290 } }, amenities: { wifi: true, food: true, ac: false, cctv: true, hotWater: true, housekeeping: true }, meals: { breakfast: true, lunch: true, dinner: true }, rules: { curfewTime: '11:00 PM' }, totalRooms: 20, availableRooms: 6, owner: owner._id, rating: 4.0, reviewCount: 28, views: 130 },
+        { name: 'CyberCity Girls PG - Hadapsar', type: 'pg', genderType: 'female', rentPerMonth: 8200, securityDeposit: 16400, sharingType: ['double', 'triple'], location: { address: 'Hadapsar, near Seasons Mall, Pune', city: 'Pune', pincode: '411028', nearbyInstitutions: ['Cybercity IT Park', 'Symbiosis Hadapsar'], coordinates: { lat: 18.5180, lng: 73.9300 } }, amenities: { wifi: true, food: true, ac: false, laundry: true, cctv: true, hotWater: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '10:00 PM' }, totalRooms: 18, availableRooms: 5, owner: owner._id, rating: 4.1, reviewCount: 33, views: 140 },
+
+        // WAKAD / PIMPLE SAUDAGAR (2)
+        { name: 'ValueStay Boys PG - Wakad', type: 'pg', genderType: 'male', rentPerMonth: 7000, securityDeposit: 14000, sharingType: ['double', 'triple'], location: { address: 'Bhumkar Chowk, Wakad, Pune', city: 'Pune', pincode: '411057', nearbyInstitutions: ['HCL Wakad', 'Capgemini Pimple Saudagar'], coordinates: { lat: 18.5988, lng: 73.7620 } }, amenities: { wifi: true, food: true, ac: false, cctv: true, hotWater: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '11:00 PM' }, totalRooms: 20, availableRooms: 8, owner: owner._id, rating: 3.9, reviewCount: 22, views: 100 },
+        { name: 'Milestone Co-Living - Pimple Saudagar', type: 'coliving', genderType: 'unisex', rentPerMonth: 11000, securityDeposit: 22000, sharingType: ['single', 'double'], location: { address: 'Pimple Saudagar, Pune', city: 'Pune', pincode: '411027', nearbyInstitutions: ['Persistent Systems', 'Cybage', 'Infosys BPO'], coordinates: { lat: 18.6160, lng: 73.7780 } }, amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, cctv: true, hotWater: true, tv: true }, meals: { breakfast: false, lunch: false, dinner: false }, rules: { curfewTime: 'None', guestsAllowed: true }, totalRooms: 30, availableRooms: 10, owner: admin._id, rating: 4.3, reviewCount: 38, views: 180 },
     ];
 
-    await Property.insertMany(properties);
-    await PG.insertMany(pgs);
+    const pgsWithImages = pgs.map(p => ({
+        ...p,
+        images: [rImg(pgImages)],
+        description: p.description || `${p.name} offers comfortable, safe accommodation near major institutions and IT parks. Ideal for working professionals and students looking for a well-maintained space.`
+    }));
+    await PG.insertMany(pgsWithImages);
+    console.log(`✅ Inserted ${pgsWithImages.length} PGs/Hostels/Co-Living spaces`);
 
-    console.log(`\n✅ SEED SUCCESSFUL!`);
-    console.log(`- Seeded ${properties.length} realistic Properties with Map Coordinates & Price Trends`);
-    console.log(`- Seeded ${pgs.length} realistic PGs with Nearby Institutions & Ratings`);
-    console.log('Admin Account: admin@estatexai.com / Admin@123');
-    console.log('Owner Account: owner@estatexai.com / Owner@123');
-
+    console.log('\n🎉 FULL SEED COMPLETE!');
+    console.log(`📦 Total: ${propsWithImages.length} Properties + ${pgsWithImages.length} PGs`);
+    console.log('Admin: admin@estatexai.com / Admin@123');
+    console.log('Owner: owner@estatexai.com / Owner@123');
     process.exit(0);
 }
 
 main().catch(err => {
-    console.error('Seed Error:', err);
+    console.error('Seed Error:', err.message);
     process.exit(1);
 });
