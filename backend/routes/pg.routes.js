@@ -3,6 +3,8 @@ const router = express.Router();
 const PG = require('../models/PG');
 const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const Interaction = require('../models/Interaction');
+const apicache = require('apicache');
+const cache = apicache.middleware;
 
 // @GET /api/pgs - Get all PGs with filters
 router.get('/', async (req, res) => {
@@ -45,7 +47,7 @@ router.get('/', async (req, res) => {
 });
 
 // @GET /api/pgs/featured
-router.get('/featured', async (req, res) => {
+router.get('/featured', cache('5 minutes'), async (req, res) => {
     try {
         const pgs = await PG.find({ isFeatured: true, isAvailable: true })
             .populate('owner', 'name phone email')

@@ -4,6 +4,8 @@ const Property = require('../models/Property');
 const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const Interaction = require('../models/Interaction');
 const { upload, getImageUrls } = require('../middleware/upload');
+const apicache = require('apicache');
+const cache = apicache.middleware;
 
 // @GET /api/properties - Get all properties with filters
 router.get('/', async (req, res) => {
@@ -48,7 +50,7 @@ router.get('/', async (req, res) => {
 });
 
 // @GET /api/properties/featured
-router.get('/featured', async (req, res) => {
+router.get('/featured', cache('5 minutes'), async (req, res) => {
     try {
         const properties = await Property.find({ isFeatured: true, isAvailable: true })
             .populate('owner', 'name phone email')
