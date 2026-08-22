@@ -76,7 +76,7 @@ export default function Footer() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7298', fontSize: 14 }}>
                                 <MapPin size={16} color="#6c63ff" />
-                                Survey Park, SBUP, Pune - 411041
+                                Pune, Maharashtra
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7298', fontSize: 14 }}>
                                 <Mail size={16} color="#6c63ff" />
