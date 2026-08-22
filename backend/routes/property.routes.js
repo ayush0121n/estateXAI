@@ -94,8 +94,40 @@ router.get('/:id', optionalAuth, async (req, res) => {
 router.post('/', protect, authorize('owner', 'admin'), upload.array('images', 10), async (req, res) => {
     try {
         const imageUrls = getImageUrls(req);
-        const data = { ...req.body, owner: req.user._id };
+        let data = { ...req.body, owner: req.user._id };
         if (imageUrls.length > 0) data.images = imageUrls;
+        
+        // Handle both nested and flat location structures from form-data
+        const address = data.location?.address || data['location.address'] || data['location[address]'];
+        const city = data.location?.city || data['location.city'] || data['location[city]'] || 'Pune';
+        const hasLat = data.location?.coordinates?.lat || data['location.coordinates.lat'];
+        const hasLng = data.location?.coordinates?.lng || data['location.coordinates.lng'];
+
+        // Auto-geocode location if not provided
+        if (address && (!hasLat || !hasLng)) {
+            try {
+                const query = encodeURIComponent(`${address}, ${city}, India`);
+                const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`, {
+                    headers: { 'User-Agent': 'EstateXAi/1.0 (info@estatexai.com)' }
+                });
+                const geoData = await geoRes.json();
+                
+                // Initialize location object properly if it doesn't exist
+                if (!data.location) data.location = {};
+                if (!data.location.coordinates) data.location.coordinates = {};
+
+                if (geoData && geoData.length > 0) {
+                    data.location.coordinates.lat = parseFloat(geoData[0].lat);
+                    data.location.coordinates.lng = parseFloat(geoData[0].lon);
+                } else {
+                    data.location.coordinates.lat = 18.5204;
+                    data.location.coordinates.lng = 73.8567;
+                }
+            } catch (err) {
+                console.error('Geocoding failed:', err.message);
+            }
+        }
+
         // Admin-created properties are auto-approved; owner listings go to pending
         if (req.user.role !== 'admin') data.status = 'pending';
 
