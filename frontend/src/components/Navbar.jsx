@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -64,20 +65,8 @@ export default function Navbar() {
             <div className="container">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 70 }}>
                     {/* Logo */}
-                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{
-                            width: 36, height: 36,
-                            background: 'var(--primary)',
-                            borderRadius: 4,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: '0 4px 14px rgba(201, 163, 94, 0.2)'
-                        }}>
-                            <Building2 size={20} color="#000" />
-                        </div>
-                        <div>
-                            <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 300, fontSize: 22, color: 'white', letterSpacing: 1 }}>ESTATE</span>
-                            <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: 22, color: 'var(--primary)', fontStyle: 'italic' }}>XAi</span>
-                        </div>
+                    <Link to="/" style={{ textDecoration: 'none' }}>
+                        <Logo size="medium" />
                     </Link>
 
                     {/* Desktop Nav Links */}

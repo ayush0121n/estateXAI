@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Building2, Mail, Phone, MapPin, Github, Twitter, Linkedin } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Footer() {
     const year = new Date().getFullYear();
@@ -15,14 +16,8 @@ export default function Footer() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, marginBottom: 48 }}>
                     {/* Brand */}
                     <div>
-                        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                            <div style={{ width: 36, height: 36, background: 'var(--primary)', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Building2 size={20} color="#000" />
-                            </div>
-                            <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 300, fontSize: 22 }}>
-                                <span style={{ color: 'white', letterSpacing: 1 }}>ESTATE</span>
-                                <span style={{ color: 'var(--primary)', fontWeight: 600, fontStyle: 'italic' }}>XAi</span>
-                            </span>
+                        <Link to="/" style={{ display: 'inline-block', textDecoration: 'none', marginBottom: 16 }}>
+                            <Logo size="medium" />
                         </Link>
                         <p style={{ color: '#6b7298', fontSize: 14, lineHeight: 1.8 }}>
                             AI-powered real estate platform connecting property buyers, tenants, and PG seekers with verified listings.
