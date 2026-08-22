@@ -82,10 +82,6 @@ export default function Footer() {
                                 <Mail size={16} color="#6c63ff" />
                                 contact@estatexai.com
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7298', fontSize: 14 }}>
-                                <Phone size={16} color="#6c63ff" />
-                                +91 98765 43210
-                            </div>
                         </div>
                     </div>
                 </div>
