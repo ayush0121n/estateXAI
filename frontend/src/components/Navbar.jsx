@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles } from 'lucide-react';
+import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles, Heart } from 'lucide-react';
 import Logo from './Logo';
 
 export default function Navbar() {
