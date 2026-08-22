@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, BedDouble, Bath, Square, Phone, Mail, ArrowLeft, Heart, Share2, Eye, Calendar, Shield, Wifi, Car, Dumbbell, Waves, GitCompare } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Square, Phone, Mail, ArrowLeft, Heart, Share2, Eye, Calendar, Shield, Wifi, Car, Dumbbell, Waves, GitCompare, Footprints, Link2, Sparkles } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { PropertyCard } from '../components/ListingCard';
@@ -262,14 +262,65 @@ export default function PropertyDetail() {
                 )}
 
                 {/* AI Commute Scorer & Neighborhood */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 8 }}>
+                <div style={{ marginTop: 40, marginBottom: 24 }}>
+                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 800, color: 'white', marginBottom: 24 }}>Location Intelligence</h2>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 24 }}>
+                        {/* Walkability & Connectivity */}
+                        <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 16, padding: 24 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                                <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(201,163,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Sparkles size={20} color="var(--primary)" />
+                                </div>
+                                <div>
+                                    <h3 style={{ color: 'white', fontSize: 16, fontWeight: 600, margin: 0 }}>Area Analysis</h3>
+                                    <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Smart scores based on surroundings</div>
+                                </div>
+                            </div>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 14 }}>
+                                            <Footprints size={16} color="var(--primary)" /> Walkability Score
+                                        </div>
+                                        <div style={{ color: 'white', fontWeight: 600 }}>{property.walkabilityScore || 85}/100</div>
+                                    </div>
+                                    <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+                                        <div style={{ width: `${property.walkabilityScore || 85}%`, height: '100%', background: 'var(--primary)', borderRadius: 3 }} />
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 14 }}>
+                                            <Link2 size={16} color="var(--primary)" /> Connectivity Score
+                                        </div>
+                                        <div style={{ color: 'white', fontWeight: 600 }}>{property.connectivityScore || 88}/100</div>
+                                    </div>
+                                    <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+                                        <div style={{ width: `${property.connectivityScore || 88}%`, height: '100%', background: '#4CAF50', borderRadius: 3 }} />
+                                    </div>
+                                </div>
+                                
+                                {property.futureDevelopment && (
+                                    <div style={{ marginTop: 8, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--dark-border)', borderRadius: 8 }}>
+                                        <div style={{ color: 'var(--primary)', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>NEIGHBORHOOD VIBE</div>
+                                        <div style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.5 }}>"{property.futureDevelopment}"</div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <NeighborhoodCard
+                            area={property?.location?.city || property?.location?.address}
+                            city={property?.location?.city}
+                        />
+                    </div>
+
                     <CommuteScorer
                         propertyLat={property?.location?.coordinates?.lat}
                         propertyLng={property?.location?.coordinates?.lng}
-                    />
-                    <NeighborhoodCard
-                        area={property?.location?.city || property?.location?.address}
-                        city={property?.location?.city}
                     />
                 </div>
             </div>
