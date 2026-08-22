@@ -125,6 +125,42 @@ async function main() {
         { title: 'Showroom Space in Wanowrie Market', type: 'commercial', listingType: 'rent', price: 42000, area: 800, bhk: 0, bathrooms: 1, floor: 0, totalFloors: 3, yearBuilt: 2017, furnishing: 'unfurnished', facing: 'east', location: { address: 'Wanowrie Market Road, Pune', city: 'Pune', state: 'Maharashtra', pincode: '411040', coordinates: { lat: 18.5060, lng: 73.9020 } }, amenities: ['parking', 'security', 'power_backup'], owner: owner._id, status: 'approved', views: 120 },
     ];
 
+    // ===== PROGRAMMATIC GENERATION: Add 50 properties in popular areas =====
+    const popularAreasProp = ['Kothrud', 'Hinjewadi', 'Baner', 'Viman Nagar', 'Wakad', 'Shivajinagar', 'Kharadi', 'Hadapsar', 'Aundh', 'Koregaon Park'];
+    const propTypes = ['apartment', 'villa', 'studio'];
+    const listingTypes = ['sale', 'rent'];
+    
+    for (let i = 0; i < 50; i++) {
+        const area = popularAreasProp[i % popularAreasProp.length];
+        const isSale = Math.random() > 0.5;
+        const b = Math.floor(Math.random() * 3) + 1; // 1 to 3 BHK
+        properties.push({
+            title: `${b}BHK Premium Property in ${area}`,
+            type: propTypes[Math.floor(Math.random() * propTypes.length)],
+            listingType: isSale ? 'sale' : 'rent',
+            price: isSale ? 5000000 + Math.random() * 10000000 : 15000 + Math.random() * 20000,
+            area: 600 + b * 300,
+            bhk: b,
+            bathrooms: b,
+            floor: Math.floor(Math.random() * 10) + 1,
+            totalFloors: 15,
+            yearBuilt: 2022,
+            furnishing: 'semi-furnished',
+            facing: 'east',
+            location: {
+                address: `Main Road, ${area}, Pune`,
+                city: 'Pune',
+                state: 'Maharashtra',
+                pincode: '411000',
+                coordinates: { lat: 18.5204 + (Math.random() * 0.05), lng: 73.8567 + (Math.random() * 0.05) }
+            },
+            amenities: ['parking', 'security', 'elevator', 'wifi', 'gym'],
+            owner: admin._id,
+            status: 'approved',
+            views: Math.floor(Math.random() * 500)
+        });
+    }
+
     // Add realistic images
     const propsWithImages = properties.map(p => ({ ...p, images: [rImg(propImages)], description: p.title + '. Well-maintained property with excellent connectivity to nearby social infrastructure.' }));
     await Property.insertMany(propsWithImages);
@@ -167,6 +203,38 @@ async function main() {
         { name: 'ValueStay Boys PG - Wakad', type: 'pg', genderType: 'male', rentPerMonth: 7000, securityDeposit: 14000, sharingType: ['double', 'triple'], location: { address: 'Bhumkar Chowk, Wakad, Pune', city: 'Pune', pincode: '411057', nearbyInstitutions: ['HCL Wakad', 'Capgemini Pimple Saudagar'], coordinates: { lat: 18.5988, lng: 73.7620 } }, amenities: { wifi: true, food: true, ac: false, cctv: true, hotWater: true }, meals: { breakfast: true, lunch: false, dinner: true }, rules: { curfewTime: '11:00 PM' }, totalRooms: 20, availableRooms: 8, owner: owner._id, rating: 3.9, reviewCount: 22, views: 100 },
         { name: 'Milestone Co-Living - Pimple Saudagar', type: 'coliving', genderType: 'unisex', rentPerMonth: 11000, securityDeposit: 22000, sharingType: ['single', 'double'], location: { address: 'Pimple Saudagar, Pune', city: 'Pune', pincode: '411027', nearbyInstitutions: ['Persistent Systems', 'Cybage', 'Infosys BPO'], coordinates: { lat: 18.6160, lng: 73.7780 } }, amenities: { wifi: true, food: false, ac: true, laundry: true, gym: true, cctv: true, hotWater: true, tv: true }, meals: { breakfast: false, lunch: false, dinner: false }, rules: { curfewTime: 'None', guestsAllowed: true }, totalRooms: 30, availableRooms: 10, owner: admin._id, rating: 4.3, reviewCount: 38, views: 180 },
     ];
+
+    // ===== PROGRAMMATIC GENERATION: Add 20 PGs in popular areas =====
+    const pgAreas = ['Hinjewadi', 'Viman Nagar', 'Kharadi', 'Wakad', 'Baner'];
+    const pgGenders = ['male', 'female', 'unisex'];
+    for (let i = 0; i < 20; i++) {
+        const area = pgAreas[i % pgAreas.length];
+        const gType = pgGenders[i % pgGenders.length];
+        pgs.push({
+            name: `Comfort ${gType} PG - ${area}`,
+            type: gType === 'unisex' ? 'coliving' : 'pg',
+            genderType: gType,
+            rentPerMonth: 7000 + Math.floor(Math.random() * 5000),
+            securityDeposit: 15000,
+            sharingType: ['double', 'triple'],
+            location: {
+                address: `IT Park Road, ${area}, Pune`,
+                city: 'Pune',
+                pincode: '411000',
+                nearbyInstitutions: ['Local IT Park'],
+                coordinates: { lat: 18.5204 + (Math.random() * 0.05), lng: 73.8567 + (Math.random() * 0.05) }
+            },
+            amenities: { wifi: true, food: true, ac: false, laundry: true, cctv: true, hotWater: true },
+            meals: { breakfast: true, lunch: false, dinner: true },
+            rules: { curfewTime: '10:30 PM' },
+            totalRooms: 20,
+            availableRooms: 5,
+            owner: owner._id,
+            rating: 4.0 + (Math.random() * 1.0),
+            reviewCount: 30,
+            views: 100
+        });
+    }
 
     const pgsWithImages = pgs.map(p => ({
         ...p,

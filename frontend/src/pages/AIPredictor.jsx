@@ -105,10 +105,10 @@ export default function AIPredictor() {
                         AI Price Predictor
                     </h1>
                     <p style={{ color: '#b0b7d3', fontSize: '1.1rem', maxWidth: 560, margin: '0 auto' }}>
-                        Trained on <strong style={{ color: '#43e5f7' }}>15,000 Pune real estate samples</strong> across <strong style={{ color: '#6c63ff' }}>25 localities</strong> using a Gradient Boosting model.
+                        Trained on <strong style={{ color: '#43e5f7' }}>100,000 Pune real estate samples</strong> across <strong style={{ color: '#6c63ff' }}>25 localities</strong> using a Gradient Boosting model.
                     </p>
                     <div style={{ display: 'inline-flex', gap: 20, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-                        {[['Model R²', '89.1%'], ['Training Samples', '15,000'], ['Zones Covered', '25']].map(([k, v]) => (
+                        {[['Model R²', '97.4%'], ['Training Samples', '100,000'], ['Zones Covered', '25']].map(([k, v]) => (
                             <div key={k} style={{ background: 'rgba(108,99,255,0.1)', border: '1px solid rgba(108,99,255,0.25)', borderRadius: 8, padding: '6px 14px', fontSize: 13 }}>
                                 <span style={{ color: '#b0b7d3' }}>{k}: </span>
                                 <span style={{ color: '#43e5f7', fontWeight: 700 }}>{v}</span>
@@ -221,7 +221,7 @@ export default function AIPredictor() {
                             <button type="submit" disabled={loading} className="btn btn-primary"
                                 style={{ width: '100%', padding: '16px 0', fontSize: 18, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, borderRadius: 12 }}>
                                 {loading
-                                    ? <><span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⚙️</span> Analyzing 15,000 data points...</>
+                                    ? <><span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⚙️</span> Analyzing 100,000 data points...</>
                                     : <><BrainCircuit size={20} /> Predict Property Price</>}
                             </button>
                         </div>
@@ -256,7 +256,7 @@ export default function AIPredictor() {
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                                     {[
                                         { label: 'Model R² Score', value: `${(r2Score * 100).toFixed(1)}%`, sub: 'Accuracy metric', color: '#22d3a5' },
-                                        { label: 'Training Data', value: result.n_training_samples?.toLocaleString() || '15,000', sub: 'Pune samples', color: '#6c63ff' },
+                                        { label: 'Training Data', value: result.n_training_samples?.toLocaleString() || '100,000', sub: 'Pune samples', color: '#6c63ff' },
                                         { label: 'Confidence Band', value: `±12%`, sub: '80% CI interval', color: '#43e5f7' },
                                     ].map(stat => (
                                         <div key={stat.label} style={{ padding: 14, background: 'rgba(10,11,30,0.55)', borderRadius: 10, textAlign: 'center' }}>

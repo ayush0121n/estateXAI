@@ -142,6 +142,3 @@ npm run dev
 | Storage | Cloudinary / Local Disk fallback |
 
 ---
-
-## 🏆 MCA Project — EstateXAi
-Developed for SBUP, Pune (2025-2026).

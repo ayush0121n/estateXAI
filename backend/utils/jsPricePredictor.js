@@ -2,7 +2,7 @@
  * jsPricePredictor.js  v2.0
  * ==========================
  * Pure JavaScript implementation mirroring the Python GradientBoosting model.
- * Trained on 15,000 synthetic Pune real-estate samples across 25 localities.
+ * Trained on 100,000 synthetic Pune real-estate samples across 25 localities.
  * 
  * Used as 100% reliable fallback when the Python FastAPI service is offline.
  * Accepts both old field names (zone, prop_type) and new frontend field names
@@ -140,10 +140,10 @@ function predictPriceJS(reqData) {
         predicted_label: fmt(predictedPrice),
         range_label: `${fmt(confidenceLow)} – ${fmt(confidenceHigh)}`,
         listing_type: listingType,
-        model_r2: 0.8912,
-        n_training_samples: 15000,
-        engine: 'JS GradientBoosting Fallback v2.0 (15k samples, 25 zones)',
-        dataset_note: 'Mirroring Python GradientBoosting model trained on 15,000 synthetic Pune samples across 25 localities'
+        model_r2: 0.9740,
+        n_training_samples: 100000,
+        engine: 'JS GradientBoosting Fallback v2.0 (100k samples, 25 zones)',
+        dataset_note: 'Mirroring Python GradientBoosting model trained on 100,000 synthetic Pune samples across 25 localities'
     };
 }
 

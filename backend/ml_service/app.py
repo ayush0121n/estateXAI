@@ -50,7 +50,7 @@ with open(META_PATH) as f:
     METADATA = json.load(f)
 
 METRO_ZONES = set(METADATA.get('metro_zones', []))
-print(f"✅ Model v2.0 loaded. R² = {METRICS.get('r2', 'N/A'):.4f} | {METRICS.get('n_samples', 0):,} training samples")
+print(f"[OK] Model v2.0 loaded. R2 = {METRICS.get('r2', 'N/A'):.4f} | {METRICS.get('n_samples', 0):,} training samples")
 
 # ─── Request Schema ───────────────────────────────────────────────────────────
 class PredictRequest(BaseModel):
@@ -147,9 +147,9 @@ def predict_price(req: PredictRequest):
             "range_label": f"{fmt(confidence_low)} – {fmt(confidence_high)}",
             "listing_type": listing_type_val,
             "model_r2": round(METRICS.get('r2', 0), 4),
-            "n_training_samples": METRICS.get('n_samples', 15000),
-            "engine": "GradientBoosting v2.0 (15k samples, 25 zones)",
-            "dataset_note": "Trained on 15,000 synthetic Pune market samples across 25 localities"
+            "n_training_samples": METRICS.get('n_samples', 100000),
+            "engine": "GradientBoosting v2.0 (100k samples, 25 zones)",
+            "dataset_note": "Trained on 100,000 synthetic Pune market samples across 25 localities"
         }
 
     except HTTPException:

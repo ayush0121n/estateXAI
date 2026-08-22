@@ -6,16 +6,16 @@ import api from '../utils/api';
 import { PropertyCard, PGCard } from '../components/ListingCard';
 
 const stats = [
-    { icon: Building2, label: 'Properties Listed', value: '2,400+', color: '#6c63ff' },
-    { icon: Users, label: 'Happy Tenants', value: '8,500+', color: '#43e5f7' },
-    { icon: MapPin, label: 'Cities Covered', value: '15+', color: '#ff6584' },
-    { icon: TrendingUp, label: 'Deals Closed', value: '1,200+', color: '#ffd700' }
+    { icon: Building2, label: 'Exclusive Properties', value: '2,400+', color: 'var(--primary)' },
+    { icon: Users, label: 'Premium Clients', value: '8,500+', color: '#94a3b8' },
+    { icon: MapPin, label: 'Prime Locations', value: '25+', color: 'var(--primary-light)' },
+    { icon: TrendingUp, label: 'Estates Sold', value: '1,200+', color: '#f59e0b' }
 ];
 
 const features = [
-    { icon: Zap, title: 'AI-Smart Recommendations', desc: 'Our engine analyzes your institution & workplace to suggest the perfect PG near you — instantly.', color: '#6c63ff' },
-    { icon: Shield, title: 'Verified Listings', desc: 'Every property and PG is verified with standardized details including amenities, food, and rules.', color: '#43e5f7' },
-    { icon: BarChart3, title: 'Unified Platform', desc: 'Buy, rent, or find PGs. All in one platform. No more hopping between multiple portals.', color: '#ff6584' }
+    { icon: Zap, title: 'Smart Curation', desc: 'Our algorithm precisely matches your lifestyle preferences to exclusive properties and elegant PGs.', color: 'var(--primary)' },
+    { icon: Shield, title: 'Verified Estates', desc: 'Every listed property undergoes a rigorous verification process to ensure unparalleled quality.', color: '#94a3b8' },
+    { icon: BarChart3, title: 'Market Intelligence', desc: 'Make informed decisions backed by our robust real-time market data and predictive analytics.', color: 'var(--primary)' }
 ];
 
 export default function Home() {
@@ -57,67 +57,53 @@ export default function Home() {
         <div style={{ paddingTop: 0 }}>
             {/* HERO */}
             <section style={{
-                minHeight: '100vh',
+                minHeight: '90vh',
                 display: 'flex',
                 alignItems: 'center',
                 position: 'relative',
                 overflow: 'hidden',
-                background: 'radial-gradient(ellipse at 20% 50%, rgba(108, 99, 255, 0.25) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(67, 229, 247, 0.12) 0%, transparent 50%), #0a0b1e'
+                backgroundImage: 'linear-gradient(rgba(9, 9, 11, 0.7), rgba(9, 9, 11, 0.95)), url("https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1920&q=80")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed'
             }}>
-                {/* Animated bg circles */}
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-                    {[...Array(5)].map((_, i) => (
-                        <div key={i} style={{
-                            position: 'absolute',
-                            borderRadius: '50%',
-                            background: `radial-gradient(circle, rgba(108,99,255,${0.05 + i * 0.02}) 0%, transparent 70%)`,
-                            width: `${200 + i * 150}px`,
-                            height: `${200 + i * 150}px`,
-                            top: `${10 + i * 15}%`,
-                            left: `${5 + i * 18}%`,
-                            animation: `float ${4 + i * 1.5}s ease-in-out infinite`,
-                            animationDelay: `${i * 0.8}s`
-                        }} />
-                    ))}
-                </div>
 
                 <div className="container" style={{ position: 'relative', zIndex: 2, paddingTop: 100, paddingBottom: 80 }}>
                     <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
                         {/* Tag */}
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(108,99,255,0.12)', border: '1px solid rgba(108,99,255,0.3)', borderRadius: 20, padding: '6px 16px', marginBottom: 28, fontSize: 13, color: '#8b85ff' }}>
-                            <Zap size={14} />
-                            AI-Powered Real Estate Platform
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid var(--primary)', borderRadius: 2, padding: '6px 16px', marginBottom: 28, fontSize: 11, textTransform: 'uppercase', letterSpacing: 3, color: 'var(--primary)' }}>
+                            <Building2 size={14} />
+                            Premium Real Estate
                         </div>
 
-                        <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(36px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.1, marginBottom: 20, color: 'white' }}>
-                            Find Your
-                            <span style={{ display: 'block', background: 'linear-gradient(135deg, #6c63ff 0%, #43e5f7 50%, #ff6584 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                                Perfect Space
+                        <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(36px, 7vw, 68px)', fontWeight: 400, lineHeight: 1.1, marginBottom: 20, color: 'white' }}>
+                            Discover Your
+                            <span style={{ display: 'block', color: 'var(--primary)', fontWeight: 600, fontStyle: 'italic' }}>
+                                Extraordinary Home
                             </span>
                         </h1>
 
-                        <p style={{ fontSize: 18, color: '#b0b7d3', marginBottom: 40, lineHeight: 1.8, maxWidth: 580, margin: '0 auto 40px' }}>
-                            Buy, rent properties or discover PGs & hostels near your college or workplace. All in one AI-powered platform.
+                        <p style={{ fontSize: 17, color: 'var(--text-secondary)', marginBottom: 40, lineHeight: 1.8, maxWidth: 580, margin: '0 auto 40px' }}>
+                            Explore an exclusive collection of luxury properties, estates, and premium residences tailored to your distinguished lifestyle.
                         </p>
 
                         {/* Search Box */}
                         <form onSubmit={handleSearch} style={{
-                            background: 'rgba(17,19,38,0.8)',
-                            backdropFilter: 'blur(20px)',
-                            border: '1px solid rgba(108,99,255,0.3)',
-                            borderRadius: 20,
+                            background: 'rgba(20, 20, 21, 0.95)',
+                            border: '1px solid var(--dark-border)',
+                            borderRadius: 4,
                             padding: 8,
                             display: 'flex',
                             gap: 8,
                             alignItems: 'center',
                             maxWidth: 660,
                             margin: '0 auto',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(108,99,255,0.1)'
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
                         }}>
                             <select
                                 value={searchType}
                                 onChange={e => setSearchType(e.target.value)}
-                                style={{ background: 'rgba(108,99,255,0.15)', border: '1px solid rgba(108,99,255,0.3)', borderRadius: 12, color: 'white', padding: '10px 14px', fontSize: 14, outline: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                                style={{ background: 'transparent', border: '1px solid var(--dark-border)', borderRadius: 4, color: 'var(--primary)', padding: '10px 14px', fontSize: 14, outline: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
                             >
                                 <option value="all">All</option>
                                 <option value="property">Property</option>
@@ -133,18 +119,18 @@ export default function Home() {
                                     style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: 15, fontFamily: 'inherit' }}
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary" style={{ borderRadius: 12, padding: '12px 24px', whiteSpace: 'nowrap' }}>
+                            <button type="submit" className="btn btn-primary" style={{ borderRadius: 4, padding: '12px 28px', whiteSpace: 'nowrap' }}>
                                 Search
                             </button>
                         </form>
 
                         {/* Quick search tags */}
-                        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 20 }}>
+                        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 24 }}>
                             {['Kothrud', 'Hinjewadi', 'Viman Nagar', 'Koregaon Park', 'Baner'].map(area => (
                                 <button key={area} onClick={() => navigate(`/properties?city=${area}`)}
-                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '6px 14px', color: '#b0b7d3', fontSize: 13, cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit' }}
-                                    onMouseEnter={e => { e.target.style.background = 'rgba(108,99,255,0.15)'; e.target.style.borderColor = 'rgba(108,99,255,0.4)'; e.target.style.color = '#8b85ff'; }}
-                                    onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.05)'; e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.color = '#b0b7d3'; }}>
+                                    style={{ background: 'transparent', border: '1px solid var(--dark-border)', borderRadius: 4, padding: '6px 16px', color: 'var(--text-secondary)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit' }}
+                                    onMouseEnter={e => { e.target.style.borderColor = 'var(--primary)'; e.target.style.color = 'var(--primary)'; }}
+                                    onMouseLeave={e => { e.target.style.borderColor = 'var(--dark-border)'; e.target.style.color = 'var(--text-secondary)'; }}>
                                     {area}
                                 </button>
                             ))}
@@ -154,16 +140,16 @@ export default function Home() {
             </section>
 
             {/* STATS */}
-            <section style={{ padding: '60px 0', background: 'rgba(17,19,38,0.5)', borderTop: '1px solid rgba(108,99,255,0.1)', borderBottom: '1px solid rgba(108,99,255,0.1)' }}>
+            <section style={{ padding: '60px 0', background: 'var(--dark-card)', borderTop: '1px solid var(--dark-border)', borderBottom: '1px solid var(--dark-border)' }}>
                 <div className="container">
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
                         {stats.map((stat, i) => (
                             <div key={i} style={{ textAlign: 'center', padding: '24px 16px' }}>
-                                <div style={{ width: 56, height: 56, borderRadius: 16, background: `${stat.color}20`, border: `1px solid ${stat.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-                                    <stat.icon size={24} color={stat.color} />
+                                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'transparent', border: `1px solid ${stat.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+                                    <stat.icon size={22} color={stat.color} />
                                 </div>
-                                <div style={{ fontSize: 28, fontWeight: 800, fontFamily: 'Outfit, sans-serif', color: stat.color, marginBottom: 4 }}>{stat.value}</div>
-                                <div style={{ fontSize: 14, color: '#6b7298' }}>{stat.label}</div>
+                                <div style={{ fontSize: 26, fontWeight: 300, fontFamily: 'Outfit, sans-serif', color: stat.color, marginBottom: 4 }}>{stat.value}</div>
+                                <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 2, color: 'var(--text-secondary)' }}>{stat.label}</div>
                             </div>
                         ))}
                     </div>
@@ -174,13 +160,13 @@ export default function Home() {
             {/* FEATURED PROPERTIES */}
             <section className="section">
                 <div className="container">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, borderBottom: '1px solid var(--dark-border)', paddingBottom: 16 }}>
                         <div>
-                            <p style={{ color: '#6c63ff', fontSize: 13, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>Handpicked for You</p>
-                            <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 800, color: 'white' }}>Featured Properties</h2>
+                            <p style={{ color: 'var(--primary)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Curated Collection</p>
+                            <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 400, color: 'white' }}>Featured Residences</h2>
                         </div>
-                        <Link to="/properties" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6c63ff', fontSize: 14, fontWeight: 600 }}>
-                            View All <ArrowRight size={16} />
+                        <Link to="/properties" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontSize: 13, textTransform: 'uppercase', letterSpacing: 1 }}>
+                            View Portfolio <ArrowRight size={16} />
                         </Link>
                     </div>
                     {loading ? (
@@ -208,13 +194,13 @@ export default function Home() {
             {/* FEATURED PGs */}
             <section className="section" style={{ paddingTop: 0 }}>
                 <div className="container">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, borderBottom: '1px solid var(--dark-border)', paddingBottom: 16 }}>
                         <div>
-                            <p style={{ color: '#43e5f7', fontSize: 13, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>Student & Professional Living</p>
-                            <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 800, color: 'white' }}>Top PGs & Hostels</h2>
+                            <p style={{ color: 'var(--accent)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Executive Living</p>
+                            <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 400, color: 'white' }}>Premium Accommodations</h2>
                         </div>
-                        <Link to="/pgs" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#43e5f7', fontSize: 14, fontWeight: 600 }}>
-                            View All <ArrowRight size={16} />
+                        <Link to="/pgs" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--accent)', fontSize: 13, textTransform: 'uppercase', letterSpacing: 1 }}>
+                            View Directory <ArrowRight size={16} />
                         </Link>
                     </div>
                     {loading ? (
@@ -240,23 +226,22 @@ export default function Home() {
             </section>
 
             {/* WHY ESTATEXAI */}
-            <section className="section" style={{ background: 'rgba(17,19,38,0.4)' }}>
+            <section className="section" style={{ background: 'var(--dark-card)' }}>
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: 60 }}>
-                        <p style={{ color: '#6c63ff', fontSize: 13, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>Why Choose Us</p>
-                        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 800, color: 'white' }}>
-                            The Smarter Way to
-                            <span className="gradient-text"> Find Home</span>
+                        <p style={{ color: 'var(--primary)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>The EstateXAi Difference</p>
+                        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 300, color: 'white' }}>
+                            Uncompromising <span style={{ fontStyle: 'italic', color: 'var(--primary)' }}>Quality</span>
                         </h2>
                     </div>
                     <div className="grid-3">
                         {features.map((f, i) => (
-                            <div key={i} className="glass-card" style={{ padding: 32, textAlign: 'center' }}>
-                                <div style={{ width: 64, height: 64, borderRadius: 20, background: `${f.color}20`, border: `1px solid ${f.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', animation: 'glow-pulse 3s ease-in-out infinite', animationDelay: `${i * 0.5}s` }}>
-                                    <f.icon size={28} color={f.color} />
+                            <div key={i} className="glass-card" style={{ padding: 40, textAlign: 'center', borderRadius: 4, border: '1px solid var(--dark-border)' }}>
+                                <div style={{ width: 64, height: 64, borderRadius: '50%', border: `1px solid ${f.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                                    <f.icon size={26} color={f.color} strokeWidth={1.5} />
                                 </div>
-                                <h3 style={{ fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 12 }}>{f.title}</h3>
-                                <p style={{ color: '#6b7298', lineHeight: 1.8, fontSize: 14 }}>{f.desc}</p>
+                                <h3 style={{ fontSize: 16, fontWeight: 400, textTransform: 'uppercase', letterSpacing: 1, color: 'white', marginBottom: 16 }}>{f.title}</h3>
+                                <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: 14, fontWeight: 300 }}>{f.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -267,28 +252,27 @@ export default function Home() {
             <section className="section">
                 <div className="container">
                     <div style={{
-                        background: 'linear-gradient(135deg, rgba(108,99,255,0.3) 0%, rgba(67,229,247,0.15) 50%, rgba(255,101,132,0.1) 100%)',
-                        border: '1px solid rgba(108,99,255,0.3)',
-                        borderRadius: 28,
+                        background: 'var(--dark-card)',
+                        border: '1px solid var(--primary)',
+                        borderRadius: 4,
                         padding: 'clamp(40px, 6vw, 80px)',
                         textAlign: 'center',
                         position: 'relative',
                         overflow: 'hidden'
                     }}>
-                        <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(108,99,255,0.3) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                        <p style={{ color: '#6c63ff', fontSize: 13, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>Own a Property?</p>
-                        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 44px)', fontWeight: 800, color: 'white', marginBottom: 16 }}>
-                            List Your Property for Free
+                        <p style={{ color: 'var(--primary)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 16 }}>Exclusive Network</p>
+                        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 44px)', fontWeight: 300, color: 'white', marginBottom: 20 }}>
+                            List Your Property with <span style={{ fontStyle: 'italic', color: 'var(--primary)' }}>EstateXAi</span>
                         </h2>
-                        <p style={{ color: '#b0b7d3', marginBottom: 36, maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.8 }}>
-                            Reach thousands of potential buyers and tenants. Manage inquiries from a single dashboard.
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: 40, maxWidth: 500, margin: '0 auto 40px', lineHeight: 1.8, fontWeight: 300 }}>
+                            Join an elite directory of premium properties. Connect with qualified buyers and distinguished tenants effortlessly.
                         </p>
                         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-                            <Link to="/register" className="btn btn-primary" style={{ padding: '14px 32px', fontSize: 16, borderRadius: 14 }}>
-                                Get Started — It's Free
+                            <Link to="/register" className="btn btn-primary" style={{ padding: '14px 32px', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, borderRadius: 2 }}>
+                                Become a Partner
                             </Link>
-                            <Link to="/properties" className="btn btn-ghost" style={{ padding: '14px 32px', fontSize: 16, borderRadius: 14 }}>
-                                Browse Listings
+                            <Link to="/properties" className="btn btn-ghost" style={{ padding: '14px 32px', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, borderRadius: 2, border: '1px solid var(--primary)', color: 'var(--primary)' }}>
+                                Explore Directory
                             </Link>
                         </div>
                     </div>

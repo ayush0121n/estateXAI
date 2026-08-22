@@ -54,14 +54,14 @@
     "Chinchwad": 0.88
   },
   "metro_zones": [
-    "Kharadi",
-    "Kothrud",
-    "Baner",
-    "Aundh",
+    "Hinjewadi",
+    "Shivajinagar",
     "Viman Nagar",
     "Wakad",
-    "Shivajinagar",
-    "Hinjewadi"
+    "Kharadi",
+    "Aundh",
+    "Baner",
+    "Kothrud"
   ],
   "prop_types": [
     "apartment",
@@ -94,6 +94,6 @@
     "total_floors",
     "has_metro"
   ],
-  "n_training_samples": 15000,
+  "n_training_samples": 100000,
   "model_version": "2.0"
 }
