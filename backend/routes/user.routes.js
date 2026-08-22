@@ -187,10 +187,10 @@ router.put('/roommate-profile', protect, async (req, res) => {
         if (sleepSchedule) profileUpdate['roommateProfile.sleepSchedule'] = sleepSchedule;
         if (profession) profileUpdate['roommateProfile.profession'] = profession;
         if (preferredArea !== undefined) profileUpdate['roommateProfile.preferredArea'] = preferredArea;
-        if (budgetMin !== undefined) profileUpdate['roommateProfile.budgetMin'] = budgetMin;
-        if (budgetMax !== undefined) profileUpdate['roommateProfile.budgetMax'] = budgetMax;
+        if (budgetMin !== undefined) profileUpdate['roommateProfile.budgetMin'] = Number(budgetMin) || 0;
+        if (budgetMax !== undefined) profileUpdate['roommateProfile.budgetMax'] = Number(budgetMax) || 0;
         if (bio !== undefined) profileUpdate['roommateProfile.bio'] = bio;
-        if (age !== undefined) profileUpdate['roommateProfile.age'] = age;
+        if (age !== undefined) profileUpdate['roommateProfile.age'] = Number(age) || 0;
 
         const user = await User.findByIdAndUpdate(req.user._id, profileUpdate, { new: true, runValidators: true });
         res.json({ success: true, roommateProfile: user.roommateProfile });
