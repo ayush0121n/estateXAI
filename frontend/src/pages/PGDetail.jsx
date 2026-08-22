@@ -96,7 +96,7 @@ export default function PGDetail() {
                                 <div style={{ display: 'flex', gap: 8, padding: 12 }}>
                                     {images.map((img, i) => (
                                         <img key={i} src={img} alt="" onClick={() => setActiveImg(i)}
-                                            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: activeImg === i ? '2px solid #6c63ff' : '2px solid transparent', opacity: activeImg === i ? 1 : 0.6 }}
+                                            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: activeImg === i ? '2px solid var(--primary)' : '2px solid transparent', opacity: activeImg === i ? 1 : 0.6 }}
                                             onError={e => { e.target.src = 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=300&q=80'; }} />
                                     ))}
                                 </div>
@@ -109,7 +109,7 @@ export default function PGDetail() {
                                 <div>
                                     <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 8 }}>{pg.name}</h1>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7298', fontSize: 14, marginBottom: 8 }}>
-                                        <MapPin size={14} color="#6c63ff" /> {pg.location?.address}, {pg.location?.city}
+                                        <MapPin size={14} color="var(--primary)" /> {pg.location?.address}, {pg.location?.city}
                                     </div>
                                     {pg.rating > 0 && (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#ffd700', fontSize: 14 }}>
@@ -118,7 +118,7 @@ export default function PGDetail() {
                                     )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                    <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                         ₹{pg.rentPerMonth?.toLocaleString()}
                                     </div>
                                     <div style={{ fontSize: 12, color: '#6b7298' }}>per month</div>
@@ -127,7 +127,7 @@ export default function PGDetail() {
                             </div>
 
                             {/* Quick stats */}
-                            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', padding: 20, background: 'rgba(108,99,255,0.07)', borderRadius: 14, marginBottom: 20 }}>
+                            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', padding: 20, background: 'rgba(201, 163, 94,0.07)', borderRadius: 14, marginBottom: 20 }}>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: 18, fontWeight: 700, color: 'white' }}>{pg.totalRooms}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Total Rooms</div></div>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: 18, fontWeight: 700, color: '#22d3a5' }}>{pg.availableRooms}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Available</div></div>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: 18, fontWeight: 700, color: 'white', textTransform: 'capitalize' }}>{pg.type}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Type</div></div>
@@ -201,7 +201,7 @@ export default function PGDetail() {
                         <div className="glass-card" style={{ padding: 24, marginBottom: 20 }}>
                             <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 16 }}>Contact Owner</h3>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
-                                <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: 'white' }}>
+                                <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: 'white' }}>
                                     {pg.owner?.name?.[0]?.toUpperCase() || 'O'}
                                 </div>
                                 <div>

@@ -5,7 +5,7 @@ import { Check, X, ShieldAlert, Sliders, TrendingUp, Users, Building2, CheckCirc
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 
-const COLORS = ['#6c63ff', '#22d3a5', '#f59e0b', '#ef4444', '#a855f7', '#3b82f6'];
+const COLORS = ['var(--primary)', '#22d3a5', '#f59e0b', '#ef4444', '#a855f7', '#3b82f6'];
 
 export default function AdminDashboardTab() {
     const [subTab, setSubTab] = useState('analytics'); // 'analytics' | 'moderation' | 'config'
@@ -70,7 +70,7 @@ export default function AdminDashboardTab() {
                     <button key={st.id} onClick={() => setSubTab(st.id)}
                         style={{
                             padding: '8px 16px', borderRadius: 10, border: 'none',
-                            background: subTab === st.id ? '#6c63ff' : 'rgba(255,255,255,0.04)',
+                            background: subTab === st.id ? 'var(--primary)' : 'rgba(255,255,255,0.04)',
                             color: subTab === st.id ? '#fff' : '#aaa',
                             fontWeight: 600, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8
                         }}>
@@ -91,7 +91,7 @@ export default function AdminDashboardTab() {
                                     <XAxis dataKey="label" tick={{ fill: '#aaa', fontSize: 11 }} />
                                     <YAxis tick={{ fill: '#aaa', fontSize: 11 }} />
                                     <Tooltip />
-                                    <Bar dataKey="count" fill="#6c63ff" radius={[6, 6, 0, 0]} />
+                                    <Bar dataKey="count" fill="var(--primary)" radius={[6, 6, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>

@@ -41,34 +41,34 @@ export function PropertyCard({ property, onSave, saved }) {
 
                 {/* Content */}
                 <div style={{ padding: '16px' }}>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: '#6c63ff', fontFamily: 'Outfit, sans-serif', marginBottom: 4 }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif', marginBottom: 4 }}>
                         {formatPrice(property.price, property.listingType)}
                     </div>
                     <h3 style={{ fontSize: 16, fontWeight: 600, color: 'white', marginBottom: 8, lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {property.title}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7298', fontSize: 13, marginBottom: 14 }}>
-                        <MapPin size={13} color="#6c63ff" />
+                        <MapPin size={13} color="var(--primary)" />
                         {property.location?.address}
                     </div>
 
                     <div style={{ display: 'flex', gap: 16, color: '#b0b7d3', fontSize: 13 }}>
                         {property.bhk && (
                             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                <BedDouble size={14} color="#6c63ff" /> {property.bhk} BHK
+                                <BedDouble size={14} color="var(--primary)" /> {property.bhk} BHK
                             </span>
                         )}
                         {property.bathrooms && (
                             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                <Bath size={14} color="#6c63ff" /> {property.bathrooms} Bath
+                                <Bath size={14} color="var(--primary)" /> {property.bathrooms} Bath
                             </span>
                         )}
                         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <Square size={14} color="#6c63ff" /> {property.area} sqft
+                            <Square size={14} color="var(--primary)" /> {property.area} sqft
                         </span>
                     </div>
 
-                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(108,99,255,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#6b7298' }}>
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(201, 163, 94,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#6b7298' }}>
                         <span style={{ textTransform: 'capitalize', color: '#b0b7d3' }}>{property.type}</span>
                         <span style={{ textTransform: 'capitalize' }}>{property.furnishing?.replace('-', ' ')}</span>
                     </div>
@@ -117,14 +117,14 @@ export function PGCard({ pg, onSave, saved }) {
 
                 {/* Content */}
                 <div style={{ padding: 16 }}>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: '#6c63ff', fontFamily: 'Outfit, sans-serif', marginBottom: 4 }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif', marginBottom: 4 }}>
                         ₹{pg.rentPerMonth?.toLocaleString()}<span style={{ fontSize: 13, fontWeight: 400, color: '#6b7298' }}>/month</span>
                     </div>
                     <h3 style={{ fontSize: 16, fontWeight: 600, color: 'white', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {pg.name}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7298', fontSize: 13, marginBottom: 14 }}>
-                        <MapPin size={13} color="#6c63ff" />
+                        <MapPin size={13} color="var(--primary)" />
                         {pg.location?.address}
                     </div>
 
@@ -135,7 +135,7 @@ export function PGCard({ pg, onSave, saved }) {
                         {pg.amenities?.ac && <span className="amenity-chip"><AirVent size={12} /> AC</span>}
                     </div>
 
-                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(108,99,255,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(201, 163, 94,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#ffd700', fontSize: 13 }}>
                             <Star size={13} fill="#ffd700" />
                             {pg.rating?.toFixed(1)} <span style={{ color: '#6b7298' }}>({pg.reviewCount})</span>

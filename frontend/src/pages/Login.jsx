@@ -26,11 +26,11 @@ export default function Login() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', background: 'radial-gradient(ellipse at 30% 40%, rgba(108,99,255,0.2) 0%, transparent 60%), #0a0b1e' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', background: 'radial-gradient(ellipse at 30% 40%, rgba(201, 163, 94,0.2) 0%, transparent 60%), var(--dark)' }}>
             <div style={{ width: '100%', maxWidth: 420 }}>
                 {/* Logo */}
                 <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                    <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 30px rgba(108,99,255,0.4)' }}>
+                    <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 30px rgba(201, 163, 94,0.4)' }}>
                         <Building2 size={28} color="white" />
                     </div>
                     <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 28, fontWeight: 800, color: 'white', marginBottom: 8 }}>Welcome Back</h1>
@@ -66,14 +66,14 @@ export default function Login() {
                     <div className="divider" />
 
                     {/* Demo credentials */}
-                    <div style={{ background: 'rgba(108,99,255,0.08)', border: '1px solid rgba(108,99,255,0.2)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
+                    <div style={{ background: 'rgba(201, 163, 94,0.08)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
                         <p style={{ fontSize: 12, color: '#6b7298', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Demo Credentials</p>
                         <p style={{ fontSize: 13, color: '#b0b7d3' }}>Register an account to get started, or use the admin seed feature.</p>
                     </div>
 
                     <p style={{ textAlign: 'center', color: '#6b7298', fontSize: 14 }}>
                         Don't have an account?{' '}
-                        <Link to="/register" style={{ color: '#6c63ff', fontWeight: 600 }}>Create one free</Link>
+                        <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>Create one free</Link>
                     </p>
                 </div>
             </div>

@@ -16,9 +16,9 @@ const FURNISHING_TYPES = ['unfurnished','semi-furnished','fully-furnished'];
 const CUSTOM_TOOLTIP = ({ active, payload }) => {
     if (active && payload && payload.length) {
         return (
-            <div style={{ background: '#1a1f3a', border: '1px solid rgba(108,99,255,0.4)', borderRadius: 8, padding: '8px 14px', fontSize: 13, color: '#fff' }}>
+            <div style={{ background: '#1a1f3a', border: '1px solid rgba(201, 163, 94,0.4)', borderRadius: 8, padding: '8px 14px', fontSize: 13, color: '#fff' }}>
                 <p style={{ margin: 0 }}>{payload[0].payload.label}</p>
-                <p style={{ margin: 0, color: '#6c63ff', fontWeight: 700 }}>
+                <p style={{ margin: 0, color: 'var(--primary)', fontWeight: 700 }}>
                     {payload[0].value?.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
                 </p>
             </div>
@@ -77,7 +77,7 @@ export default function PricePredictionWidget({ property }) {
                 whileTap={{ scale: 0.98 }}
                 style={{
                     width: '100%', padding: '14px 20px', borderRadius: 14,
-                    background: 'linear-gradient(135deg, #6c63ff 0%, #22d3a5 100%)',
+                    background: 'linear-gradient(135deg, var(--primary) 0%, #22d3a5 100%)',
                     border: 'none', color: '#fff', fontWeight: 700, fontSize: 15,
                     cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
                     justifyContent: 'space-between',
@@ -97,7 +97,7 @@ export default function PricePredictionWidget({ property }) {
                         exit={{ opacity: 0, height: 0 }}
                         style={{ overflow: 'hidden' }}
                     >
-                        <div style={{ background: 'rgba(108,99,255,0.05)', border: '1px solid rgba(108,99,255,0.2)', borderRadius: 14, padding: 20, marginTop: 10 }}>
+                        <div style={{ background: 'rgba(201, 163, 94,0.05)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 14, padding: 20, marginTop: 10 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, color: '#aaa', fontSize: 12 }}>
                                 <Info size={14} />
                                 Trained on 5,000 synthetic Pune market samples · Random Forest · R² = 0.8292
@@ -119,20 +119,20 @@ export default function PricePredictionWidget({ property }) {
                                         <label style={{ display: 'block', fontSize: 11, color: '#aaa', marginBottom: 4 }}>{field.label}</label>
                                         {field.type === 'select' ? (
                                             <select name={field.name} value={form[field.name]} onChange={handleChange}
-                                                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, background: '#0f1124', border: '1px solid rgba(108,99,255,0.3)', color: '#fff', fontSize: 13 }}>
+                                                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, background: '#0f1124', border: '1px solid rgba(201, 163, 94,0.3)', color: '#fff', fontSize: 13 }}>
                                                 {field.options.map(o => <option key={o} value={o}>{o}</option>)}
                                             </select>
                                         ) : (
                                             <input type="number" name={field.name} value={form[field.name]} onChange={handleChange}
                                                 min={field.min} max={field.max}
-                                                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, background: '#0f1124', border: '1px solid rgba(108,99,255,0.3)', color: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
+                                                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, background: '#0f1124', border: '1px solid rgba(201, 163, 94,0.3)', color: '#fff', fontSize: 13, boxSizing: 'border-box' }} />
                                         )}
                                     </div>
                                 ))}
                             </div>
 
                             <motion.button onClick={handlePredict} disabled={loading} whileTap={{ scale: 0.97 }}
-                                style={{ width: '100%', padding: '11px', borderRadius: 10, background: '#6c63ff', border: 'none', color: '#fff', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+                                style={{ width: '100%', padding: '11px', borderRadius: 10, background: 'var(--primary)', border: 'none', color: '#fff', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
                                 {loading ? 'Predicting...' : 'Predict Price'}
                             </motion.button>
 
@@ -140,9 +140,9 @@ export default function PricePredictionWidget({ property }) {
 
                             {result && (
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ marginTop: 16 }}>
-                                    <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(108,99,255,0.1)', borderRadius: 12 }}>
+                                    <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(201, 163, 94,0.1)', borderRadius: 12 }}>
                                         <div style={{ fontSize: 13, color: '#aaa', marginBottom: 4 }}>Predicted {result.listing_type === 'rent' ? 'Monthly Rent' : 'Sale Price'}</div>
-                                        <div style={{ fontSize: 28, fontWeight: 800, background: 'linear-gradient(90deg,#6c63ff,#22d3a5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                        <div style={{ fontSize: 28, fontWeight: 800, background: 'linear-gradient(90deg,var(--primary),#22d3a5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                             {result.predicted_label}
                                         </div>
                                         <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>80% CI: {result.range_label}</div>
@@ -164,7 +164,7 @@ export default function PricePredictionWidget({ property }) {
                                                     <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                                                         {chartData.map((entry, index) => (
                                                             <Cell key={index}
-                                                                fill={entry.isPredicted ? '#6c63ff' : entry.isListed ? '#22d3a5' : '#4a4075'}
+                                                                fill={entry.isPredicted ? 'var(--primary)' : entry.isListed ? '#22d3a5' : '#4a4075'}
                                                             />
                                                         ))}
                                                     </Bar>
@@ -172,7 +172,7 @@ export default function PricePredictionWidget({ property }) {
                                             </ResponsiveContainer>
                                             <div style={{ display: 'flex', gap: 16, justifyContent: 'center', fontSize: 11, color: '#aaa' }}>
                                                 <span><span style={{ color: '#4a4075' }}>■</span> Historical Avg</span>
-                                                <span><span style={{ color: '#6c63ff' }}>■</span> AI Predicted</span>
+                                                <span><span style={{ color: 'var(--primary)' }}>■</span> AI Predicted</span>
                                                 {property?.price && <span><span style={{ color: '#22d3a5' }}>■</span> Listed Price</span>}
                                             </div>
                                         </div>

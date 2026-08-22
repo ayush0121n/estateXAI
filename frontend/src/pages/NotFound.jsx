@@ -5,7 +5,7 @@ export default function NotFound() {
     return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '100px 24px 60px' }}>
             <div>
-                <div style={{ fontSize: 120, fontWeight: 900, fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1, marginBottom: 16 }}>
+                <div style={{ fontSize: 120, fontWeight: 900, fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1, marginBottom: 16 }}>
                     404
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 700, color: 'white', marginBottom: 12 }}>Page Not Found</h1>

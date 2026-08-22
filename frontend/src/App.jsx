@@ -31,7 +31,7 @@ function App() {
               style: {
                 background: '#161933',
                 color: '#ffffff',
-                border: '1px solid rgba(108, 99, 255, 0.3)',
+                border: '1px solid rgba(201, 163, 94, 0.3)',
                 borderRadius: '12px',
                 fontSize: '14px',
               },

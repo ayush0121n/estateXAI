@@ -90,7 +90,7 @@ export default function Compare() {
                 {/* Header */}
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 32 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg,#6c63ff,#22d3a5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg,var(--primary),#22d3a5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <GitCompare size={22} color="#fff" />
                         </div>
                         <div>
@@ -101,15 +101,15 @@ export default function Compare() {
                 </motion.div>
 
                 {/* Search */}
-                <div style={{ background: 'rgba(108,99,255,0.06)', border: '1px solid rgba(108,99,255,0.2)', borderRadius: 16, padding: 20, marginBottom: 28 }}>
+                <div style={{ background: 'rgba(201, 163, 94,0.06)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 16, padding: 20, marginBottom: 28 }}>
                     <form onSubmit={handleSearch} style={{ display: 'flex', gap: 10 }}>
                         <input
                             value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Search for a property to compare..."
-                            style={{ flex: 1, padding: '10px 16px', borderRadius: 10, background: '#0f1124', border: '1px solid rgba(108,99,255,0.3)', color: '#fff', fontSize: 14 }}
+                            style={{ flex: 1, padding: '10px 16px', borderRadius: 10, background: '#0f1124', border: '1px solid rgba(201, 163, 94,0.3)', color: '#fff', fontSize: 14 }}
                         />
                         <motion.button type="submit" whileTap={{ scale: 0.97 }} disabled={searching || selected.length >= MAX_COMPARE}
-                            style={{ padding: '10px 20px', borderRadius: 10, background: '#6c63ff', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            style={{ padding: '10px 20px', borderRadius: 10, background: 'var(--primary)', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                             {searching ? 'Searching...' : <><Plus size={16} /> Add Property</>}
                         </motion.button>
                     </form>
@@ -127,7 +127,7 @@ export default function Compare() {
                                         </div>
                                         <motion.button whileTap={{ scale: 0.95 }}
                                             onClick={() => addToCompare(prop)} disabled={isAdded || selected.length >= MAX_COMPARE}
-                                            style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: isAdded ? '#22d3a5' : '#6c63ff', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                            style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: isAdded ? '#22d3a5' : 'var(--primary)', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                                             {isAdded ? <><Check size={12} /> Added</> : <><Plus size={12} /> Compare</>}
                                         </motion.button>
                                     </div>
@@ -148,7 +148,7 @@ export default function Compare() {
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
                                 <thead>
-                                    <tr style={{ background: 'rgba(108,99,255,0.1)' }}>
+                                    <tr style={{ background: 'rgba(201, 163, 94,0.1)' }}>
                                         <th style={{ width: 160, padding: '14px 16px', textAlign: 'left', fontSize: 12, color: '#aaa', fontWeight: 600 }}>Feature</th>
                                         {selected.map(prop => (
                                             <th key={prop._id} style={{ padding: '14px 16px', textAlign: 'center' }}>
@@ -163,7 +163,7 @@ export default function Compare() {
                                                     <div style={{ fontWeight: 700, fontSize: 13 }}>{prop.title}</div>
                                                     <div style={{ color: '#22d3a5', fontWeight: 800, fontSize: 15, marginTop: 4 }}>{formatPrice(prop.price, prop.listingType)}</div>
                                                     <button onClick={() => navigate(`/properties/${prop._id}`)}
-                                                        style={{ marginTop: 8, padding: '4px 12px', borderRadius: 8, border: '1px solid rgba(108,99,255,0.4)', background: 'transparent', color: '#6c63ff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, margin: '8px auto 0' }}>
+                                                        style={{ marginTop: 8, padding: '4px 12px', borderRadius: 8, border: '1px solid rgba(201, 163, 94,0.4)', background: 'transparent', color: 'var(--primary)', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, margin: '8px auto 0' }}>
                                                         View <ChevronRight size={11} />
                                                     </button>
                                                 </div>
@@ -172,7 +172,7 @@ export default function Compare() {
                                         {/* Empty slots */}
                                         {Array.from({ length: emptySlots }).map((_, i) => (
                                             <th key={`empty-${i}`} style={{ padding: '14px 16px', textAlign: 'center' }}>
-                                                <div style={{ height: 130, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed rgba(108,99,255,0.3)', borderRadius: 10, color: '#555', fontSize: 13 }}>
+                                                <div style={{ height: 130, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed rgba(201, 163, 94,0.3)', borderRadius: 10, color: '#555', fontSize: 13 }}>
                                                     + Add Property
                                                 </div>
                                             </th>
@@ -197,7 +197,7 @@ export default function Compare() {
                                             <td key={prop._id} style={{ padding: '10px 16px', textAlign: 'center' }}>
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
                                                     {(prop.amenities || []).map(a => (
-                                                        <span key={a} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 10, background: 'rgba(108,99,255,0.15)', color: '#aaa', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                        <span key={a} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 10, background: 'rgba(201, 163, 94,0.15)', color: '#aaa', display: 'flex', alignItems: 'center', gap: 4 }}>
                                                             {AMENITY_ICONS[a]} {a}
                                                         </span>
                                                     ))}

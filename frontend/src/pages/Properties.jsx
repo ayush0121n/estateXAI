@@ -123,9 +123,9 @@ export default function Properties() {
                     </select>
 
                     <button onClick={() => setShowFilters(!showFilters)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 8, background: showFilters ? 'rgba(108,99,255,0.2)' : 'rgba(255,255,255,0.05)', border: `1px solid ${showFilters ? 'rgba(108,99,255,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, padding: '10px 16px', color: showFilters ? '#6c63ff' : '#b0b7d3', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', transition: 'all 0.2s' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, background: showFilters ? 'rgba(201, 163, 94,0.2)' : 'rgba(255,255,255,0.05)', border: `1px solid ${showFilters ? 'rgba(201, 163, 94,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, padding: '10px 16px', color: showFilters ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', transition: 'all 0.2s' }}>
                         <SlidersHorizontal size={16} />
-                        Filters {activeFiltersCount > 0 && <span style={{ background: '#6c63ff', color: 'white', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{activeFiltersCount}</span>}
+                        Filters {activeFiltersCount > 0 && <span style={{ background: 'var(--primary)', color: 'white', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{activeFiltersCount}</span>}
                     </button>
 
                     {activeFiltersCount > 0 && (
@@ -178,7 +178,7 @@ export default function Properties() {
                 {loading ? (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
                         {[...Array(6)].map((_, i) => (
-                            <div key={i} className="glass-card" style={{ height: 400, background: 'rgba(108,99,255,0.05)', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
+                            <div key={i} className="glass-card" style={{ height: 400, background: 'rgba(201, 163, 94,0.05)', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
                         ))}
                     </div>
                 ) : properties.length > 0 ? (
@@ -198,7 +198,7 @@ export default function Properties() {
                                 </button>
                                 {[...Array(pages)].map((_, i) => (
                                     <button key={i} onClick={() => fetchProperties(i + 1)}
-                                        style={{ background: currentPage === i + 1 ? 'rgba(108,99,255,0.3)' : 'rgba(255,255,255,0.05)', border: `1px solid ${currentPage === i + 1 ? 'rgba(108,99,255,0.6)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, width: 40, height: 40, color: currentPage === i + 1 ? '#6c63ff' : 'white', cursor: 'pointer', fontFamily: 'inherit', fontWeight: currentPage === i + 1 ? 700 : 400 }}>
+                                        style={{ background: currentPage === i + 1 ? 'rgba(201, 163, 94,0.3)' : 'rgba(255,255,255,0.05)', border: `1px solid ${currentPage === i + 1 ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, width: 40, height: 40, color: currentPage === i + 1 ? 'var(--primary)' : 'white', cursor: 'pointer', fontFamily: 'inherit', fontWeight: currentPage === i + 1 ? 700 : 400 }}>
                                         {i + 1}
                                     </button>
                                 ))}

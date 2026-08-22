@@ -104,7 +104,7 @@ export default function PropertyDetail() {
                                 <div style={{ display: 'flex', gap: 8, padding: 12, overflowX: 'auto' }}>
                                     {images.map((img, i) => (
                                         <img key={i} src={img} alt="" onClick={() => setActiveImg(i)}
-                                            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: activeImg === i ? '2px solid #6c63ff' : '2px solid transparent', opacity: activeImg === i ? 1 : 0.6, transition: 'all 0.2s' }}
+                                            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: activeImg === i ? '2px solid var(--primary)' : '2px solid transparent', opacity: activeImg === i ? 1 : 0.6, transition: 'all 0.2s' }}
                                             onError={e => { e.target.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&q=80'; }} />
                                     ))}
                                 </div>
@@ -117,11 +117,11 @@ export default function PropertyDetail() {
                                 <div>
                                     <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 8 }}>{property.title}</h1>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7298', fontSize: 14 }}>
-                                        <MapPin size={14} color="#6c63ff" /> {property.location?.address}, {property.location?.city}
+                                        <MapPin size={14} color="var(--primary)" /> {property.location?.address}, {property.location?.city}
                                     </div>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                    <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                         {formatPrice(property.price, property.listingType)}
                                     </div>
                                     {property.listingType === 'rent' && <div style={{ fontSize: 12, color: '#6b7298' }}>per month</div>}
@@ -129,7 +129,7 @@ export default function PropertyDetail() {
                             </div>
 
                             {/* Quick Stats */}
-                            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', padding: 20, background: 'rgba(108,99,255,0.07)', borderRadius: 14, marginBottom: 20 }}>
+                            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', padding: 20, background: 'rgba(201, 163, 94,0.07)', borderRadius: 14, marginBottom: 20 }}>
                                 {property.bhk && <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white' }}>{property.bhk}</div><div style={{ fontSize: 12, color: '#6b7298' }}>BHK</div></div>}
                                 {property.bathrooms && <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white' }}>{property.bathrooms}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Bathrooms</div></div>}
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white' }}>{property.area}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Sq. Ft.</div></div>
@@ -177,7 +177,7 @@ export default function PropertyDetail() {
                                         }
                                         navigate('/compare');
                                     }}
-                                    style={{ marginLeft: 'auto', background: 'rgba(108,99,255,0.15)', border: '1px solid rgba(108,99,255,0.3)', color: '#6c63ff', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                                    style={{ marginLeft: 'auto', background: 'rgba(201, 163, 94,0.15)', border: '1px solid rgba(201, 163, 94,0.3)', color: 'var(--primary)', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
                                 >
                                     <GitCompare size={14} /> Compare Property
                                 </button>
@@ -197,7 +197,7 @@ export default function PropertyDetail() {
                         <div className="glass-card" style={{ padding: 24, marginBottom: 20, marginTop: 20 }}>
                             <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 16 }}>Posted By</h3>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
-                                <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: 'white' }}>
+                                <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: 'white' }}>
                                     {property.owner?.name?.[0]?.toUpperCase() || 'O'}
                                 </div>
                                 <div>
@@ -213,7 +213,7 @@ export default function PropertyDetail() {
                                     </a>
                                 )}
                                 {property.owner?.email && (
-                                    <a href={`mailto:${property.owner.email}`} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(108,99,255,0.1)', border: '1px solid rgba(108,99,255,0.3)', borderRadius: 10, padding: 12, color: '#6c63ff', fontSize: 14 }}>
+                                    <a href={`mailto:${property.owner.email}`} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(201, 163, 94,0.1)', border: '1px solid rgba(201, 163, 94,0.3)', borderRadius: 10, padding: 12, color: 'var(--primary)', fontSize: 14 }}>
                                         <Mail size={16} /> {property.owner.email}
                                     </a>
                                 )}

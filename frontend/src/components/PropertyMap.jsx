@@ -21,7 +21,7 @@ const POI_COLOR_MAP = {
     transport: '#f59e0b',
     shopping: '#a855f7',
     park: '#22d3a5',
-    other: '#6c63ff',
+    other: 'var(--primary)',
 };
 
 function calculateWalkabilityScore(pois) {
@@ -70,7 +70,7 @@ export default function PropertyMap({ property }) {
             // Main property marker
             const mainIcon = L.divIcon({
                 className: '',
-                html: `<div style="background:#6c63ff;width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
+                html: `<div style="background:var(--primary);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
                 iconSize: [36, 36],
                 iconAnchor: [18, 36],
             });
@@ -81,7 +81,7 @@ export default function PropertyMap({ property }) {
 
             // POI markers
             pois.forEach(poi => {
-                const color = POI_COLOR_MAP[poi.type] || '#6c63ff';
+                const color = POI_COLOR_MAP[poi.type] || 'var(--primary)';
                 const poiIcon = L.divIcon({
                     className: '',
                     html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;"></div>`,
@@ -109,7 +109,7 @@ export default function PropertyMap({ property }) {
     return (
         <div style={{ marginTop: 28 }}>
             <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <MapPin size={18} color="#6c63ff" /> Location Intelligence
+                <MapPin size={18} color="var(--primary)" /> Location Intelligence
             </h3>
 
             {/* Map */}
@@ -117,12 +117,12 @@ export default function PropertyMap({ property }) {
                 <>
                     {/* Add Leaflet CSS dynamically */}
                     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-                    <div ref={mapRef} style={{ height: 320, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(108,99,255,0.2)', marginBottom: 16 }} />
+                    <div ref={mapRef} style={{ height: 320, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(201, 163, 94,0.2)', marginBottom: 16 }} />
                 </>
             ) : (
-                <div style={{ height: 200, borderRadius: 16, background: 'rgba(108,99,255,0.05)', border: '1px dashed rgba(108,99,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', marginBottom: 16 }}>
+                <div style={{ height: 200, borderRadius: 16, background: 'rgba(201, 163, 94,0.05)', border: '1px dashed rgba(201, 163, 94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', marginBottom: 16 }}>
                     <div style={{ textAlign: 'center' }}>
-                        <MapPin size={32} color="#6c63ff" style={{ opacity: 0.5, marginBottom: 8 }} />
+                        <MapPin size={32} color="var(--primary)" style={{ opacity: 0.5, marginBottom: 8 }} />
                         <p style={{ margin: 0, fontSize: 14 }}>Map coordinates not available for this property.</p>
                         <p style={{ margin: '4px 0 0', fontSize: 12 }}>{property?.location?.address}</p>
                     </div>
@@ -135,7 +135,7 @@ export default function PropertyMap({ property }) {
                     { label: 'Walkability Score', score: walkabilityScore, icon: '🚶' },
                     { label: 'Connectivity Score', score: connectivityScore, icon: '🔗' },
                 ].map(({ label, score, icon }) => (
-                    <div key={label} style={{ background: 'rgba(108,99,255,0.07)', border: '1px solid rgba(108,99,255,0.2)', borderRadius: 12, padding: '14px 16px' }}>
+                    <div key={label} style={{ background: 'rgba(201, 163, 94,0.07)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 12, padding: '14px 16px' }}>
                         <div style={{ fontSize: 11, color: '#aaa', marginBottom: 6 }}>{icon} {label}</div>
                         <div style={{ fontSize: 26, fontWeight: 800, color: scoreColor(score) }}>{score}<span style={{ fontSize: 14, color: '#aaa', fontWeight: 400 }}>/100</span></div>
                         <div style={{ marginTop: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 6, height: 6, overflow: 'hidden' }}>
@@ -155,10 +155,10 @@ export default function PropertyMap({ property }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {pois.map((poi, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
-                                <span style={{ color: POI_COLOR_MAP[poi.type] || '#6c63ff' }}>{POI_ICON_MAP[poi.type]}</span>
+                                <span style={{ color: POI_COLOR_MAP[poi.type] || 'var(--primary)' }}>{POI_ICON_MAP[poi.type]}</span>
                                 <span style={{ flex: 1, fontSize: 13 }}>{poi.name}</span>
                                 <span style={{ fontSize: 12, color: '#888' }}>{poi.distanceKm} km</span>
-                                <span style={{ fontSize: 11, color: POI_COLOR_MAP[poi.type] || '#6c63ff', background: 'rgba(108,99,255,0.1)', padding: '2px 8px', borderRadius: 12, textTransform: 'capitalize' }}>{poi.type}</span>
+                                <span style={{ fontSize: 11, color: POI_COLOR_MAP[poi.type] || 'var(--primary)', background: 'rgba(201, 163, 94,0.1)', padding: '2px 8px', borderRadius: 12, textTransform: 'capitalize' }}>{poi.type}</span>
                             </div>
                         ))}
                     </div>

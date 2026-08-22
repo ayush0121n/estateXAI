@@ -53,7 +53,7 @@ export default function ListPG() {
 
     const Section = ({ title, children }) => (
         <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
-            <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(108,99,255,0.2)', paddingBottom: 12 }}>{title}</h3>
+            <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(201, 163, 94,0.2)', paddingBottom: 12 }}>{title}</h3>
             {children}
         </div>
     );
@@ -69,7 +69,7 @@ export default function ListPG() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
             <span style={{ color: '#b0b7d3', fontSize: 14 }}>{label}</span>
             <button type="button" onClick={() => onChange(!checked)}
-                style={{ width: 44, height: 24, borderRadius: 12, background: checked ? '#6c63ff' : 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'all 0.3s' }}>
+                style={{ width: 44, height: 24, borderRadius: 12, background: checked ? 'var(--primary)' : 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'all 0.3s' }}>
                 <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: checked ? 23 : 3, transition: 'left 0.3s' }} />
             </button>
         </div>
@@ -79,7 +79,7 @@ export default function ListPG() {
         <div style={{ paddingTop: 90, minHeight: '100vh' }}>
             <div className="container" style={{ paddingTop: 24, paddingBottom: 60, maxWidth: 800 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-                    <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #43e5f7, #6c63ff)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, var(--primary-light), var(--primary))', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Users size={22} color="white" />
                     </div>
                     <div>
@@ -135,7 +135,7 @@ export default function ListPG() {
                             <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
                                 {['single', 'double', 'triple', 'quad'].map(s => (
                                     <button key={s} type="button" onClick={() => toggleSharing(s)}
-                                        style={{ padding: '8px 16px', borderRadius: 20, border: `1px solid ${form.sharingType.includes(s) ? 'rgba(108,99,255,0.6)' : 'rgba(255,255,255,0.1)'}`, background: form.sharingType.includes(s) ? 'rgba(108,99,255,0.2)' : 'transparent', color: form.sharingType.includes(s) ? '#6c63ff' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', textTransform: 'capitalize', transition: 'all 0.2s' }}>
+                                        style={{ padding: '8px 16px', borderRadius: 20, border: `1px solid ${form.sharingType.includes(s) ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, background: form.sharingType.includes(s) ? 'rgba(201, 163, 94,0.2)' : 'transparent', color: form.sharingType.includes(s) ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', textTransform: 'capitalize', transition: 'all 0.2s' }}>
                                         {form.sharingType.includes(s) ? '✓ ' : ''}{s}
                                     </button>
                                 ))}

@@ -64,7 +64,7 @@ export default function ListProperty() {
 
     const Section = ({ title, children }) => (
         <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
-            <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(108,99,255,0.2)', paddingBottom: 12 }}>{title}</h3>
+            <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(201, 163, 94,0.2)', paddingBottom: 12 }}>{title}</h3>
             {children}
         </div>
     );
@@ -82,7 +82,7 @@ export default function ListProperty() {
         <div style={{ paddingTop: 90, minHeight: '100vh' }}>
             <div className="container" style={{ paddingTop: 24, paddingBottom: 60, maxWidth: 800 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-                    <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Building2 size={22} color="white" />
                     </div>
                     <div>
@@ -177,7 +177,7 @@ export default function ListProperty() {
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                             {amenityOptions.map(a => (
                                 <button key={a} type="button" onClick={() => toggleAmenity(a)}
-                                    style={{ padding: '8px 16px', borderRadius: 20, border: `1px solid ${form.amenities.includes(a) ? 'rgba(108,99,255,0.6)' : 'rgba(255,255,255,0.1)'}`, background: form.amenities.includes(a) ? 'rgba(108,99,255,0.2)' : 'transparent', color: form.amenities.includes(a) ? '#6c63ff' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', textTransform: 'capitalize', transition: 'all 0.2s' }}>
+                                    style={{ padding: '8px 16px', borderRadius: 20, border: `1px solid ${form.amenities.includes(a) ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, background: form.amenities.includes(a) ? 'rgba(201, 163, 94,0.2)' : 'transparent', color: form.amenities.includes(a) ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', textTransform: 'capitalize', transition: 'all 0.2s' }}>
                                     {form.amenities.includes(a) ? '✓ ' : ''}{a.replace('_', ' ')}
                                 </button>
                             ))}

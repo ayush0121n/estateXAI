@@ -55,8 +55,8 @@ export default function Profile() {
     const set = (key, val) => setForm(p => ({ ...p, [key]: val }));
     const setPref = (key, val) => setForm(p => ({ ...p, preferences: { ...p.preferences, [key]: val } }));
 
-    const roleColors = { admin: '#ffd700', owner: '#43e5f7', user: '#6c63ff' };
-    const roleColor = roleColors[user?.role] || '#6c63ff';
+    const roleColors = { admin: '#ffd700', owner: 'var(--primary-light)', user: 'var(--primary)' };
+    const roleColor = roleColors[user?.role] || 'var(--primary)';
 
     return (
         <div style={{ paddingTop: 90, minHeight: '100vh', background: '#0a0d1a' }}>
@@ -90,7 +90,7 @@ export default function Profile() {
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                             style={{
                                 padding: '10px 18px', borderRadius: 12, border: 'none',
-                                background: activeTab === tab.id ? '#6c63ff' : 'rgba(255,255,255,0.04)',
+                                background: activeTab === tab.id ? 'var(--primary)' : 'rgba(255,255,255,0.04)',
                                 color: activeTab === tab.id ? '#fff' : '#aaa',
                                 fontWeight: 600, fontSize: 13, cursor: 'pointer',
                                 display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap'
@@ -103,7 +103,7 @@ export default function Profile() {
                 {/* Tab Content */}
                 {activeTab === 'info' && (
                     <div className="glass-card" style={{ padding: 28 }}>
-                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid rgba(108,99,255,0.2)' }}>Personal Information</h3>
+                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid rgba(201, 163, 94,0.2)' }}>Personal Information</h3>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                             <div>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}><User size={13} /> Full Name</label>
@@ -118,7 +118,7 @@ export default function Profile() {
                                 <input className="input" placeholder="+91 98765 43210" value={form.phone} onChange={e => set('phone', e.target.value)} />
                             </div>
                             <div>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}><Building2 size={13} /> College / Institution <span style={{ fontSize: 11, color: '#6c63ff' }}>(AI PG Match)</span></label>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}><Building2 size={13} /> College / Institution <span style={{ fontSize: 11, color: 'var(--primary)' }}>(AI PG Match)</span></label>
                                 <input className="input" placeholder="e.g. SPPU University, MIT Pune" value={form.institution} onChange={e => set('institution', e.target.value)} />
                             </div>
                             <div>
@@ -135,7 +135,7 @@ export default function Profile() {
 
                 {activeTab === 'preferences' && (
                     <div className="glass-card" style={{ padding: 28 }}>
-                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid rgba(108,99,255,0.2)' }}>Property Search Preferences</h3>
+                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid rgba(201, 163, 94,0.2)' }}>Property Search Preferences</h3>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                                 <div>
@@ -210,7 +210,7 @@ export default function Profile() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                             {history.map((h, i) => (
                                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 8, fontSize: 13 }}>
-                                    <span style={{ color: h.interactionType === 'favorite' ? '#ef4444' : '#6c63ff', textTransform: 'capitalize', fontWeight: 600 }}>
+                                    <span style={{ color: h.interactionType === 'favorite' ? '#ef4444' : 'var(--primary)', textTransform: 'capitalize', fontWeight: 600 }}>
                                         {h.interactionType}
                                     </span>
                                     <span style={{ color: '#aaa' }}>{h.itemType} ({h.itemId})</span>

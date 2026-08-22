@@ -172,7 +172,7 @@ export default function Home() {
                     {loading ? (
                         <div style={{ display: 'flex', gap: 24 }}>
                             {[1, 2, 3].map(i => (
-                                <div key={i} className="glass-card" style={{ flex: 1, height: 400, background: 'rgba(108,99,255,0.05)' }} />
+                                <div key={i} className="glass-card" style={{ flex: 1, height: 400, background: 'rgba(201, 163, 94,0.05)' }} />
                             ))}
                         </div>
                     ) : featuredProperties.length > 0 ? (
@@ -206,7 +206,7 @@ export default function Home() {
                     {loading ? (
                         <div style={{ display: 'flex', gap: 24 }}>
                             {[1, 2, 3].map(i => (
-                                <div key={i} className="glass-card" style={{ flex: 1, height: 400, background: 'rgba(108,99,255,0.05)' }} />
+                                <div key={i} className="glass-card" style={{ flex: 1, height: 400, background: 'rgba(201, 163, 94,0.05)' }} />
                             ))}
                         </div>
                     ) : featuredPGs.length > 0 ? (

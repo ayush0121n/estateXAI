@@ -33,7 +33,7 @@ const ZONES = [
 const inputStyle = {
     width: '100%', padding: '12px 14px', borderRadius: 10,
     background: 'rgba(10, 11, 30, 0.6)',
-    border: '1px solid rgba(108, 99, 255, 0.3)',
+    border: '1px solid rgba(201, 163, 94, 0.3)',
     color: 'white', fontSize: 15,
     outline: 'none', boxSizing: 'border-box',
 };
@@ -94,31 +94,31 @@ export default function AIPredictor() {
     const confidencePct = Math.round(r2Score * 100);
 
     return (
-        <div style={{ paddingTop: 100, minHeight: '100vh', background: '#0a0b1e' }}>
+        <div style={{ paddingTop: 100, minHeight: '100vh', background: 'var(--dark)' }}>
             <div className="container" style={{ maxWidth: 860 }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 70, height: 70, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(108,99,255,0.25), rgba(67,229,247,0.25))', border: '1px solid rgba(108,99,255,0.4)', marginBottom: 20 }}>
-                        <BrainCircuit size={34} color="#43e5f7" />
+                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 70, height: 70, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(201, 163, 94,0.25), rgba(223, 194, 136,0.25))', border: '1px solid rgba(201, 163, 94,0.4)', marginBottom: 20 }}>
+                        <BrainCircuit size={34} color="var(--primary-light)" />
                     </div>
                     <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.6rem', marginBottom: 10, background: 'linear-gradient(135deg, #fff, #b0b7d3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                         AI Price Predictor
                     </h1>
                     <p style={{ color: '#b0b7d3', fontSize: '1.1rem', maxWidth: 560, margin: '0 auto' }}>
-                        Trained on <strong style={{ color: '#43e5f7' }}>100,000 Pune real estate samples</strong> across <strong style={{ color: '#6c63ff' }}>25 localities</strong> using a Gradient Boosting model.
+                        Trained on <strong style={{ color: 'var(--primary-light)' }}>100,000 Pune real estate samples</strong> across <strong style={{ color: 'var(--primary)' }}>25 localities</strong> using a Gradient Boosting model.
                     </p>
                     <div style={{ display: 'inline-flex', gap: 20, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
                         {[['Model R²', '97.4%'], ['Training Samples', '100,000'], ['Zones Covered', '25']].map(([k, v]) => (
-                            <div key={k} style={{ background: 'rgba(108,99,255,0.1)', border: '1px solid rgba(108,99,255,0.25)', borderRadius: 8, padding: '6px 14px', fontSize: 13 }}>
+                            <div key={k} style={{ background: 'rgba(201, 163, 94,0.1)', border: '1px solid rgba(201, 163, 94,0.25)', borderRadius: 8, padding: '6px 14px', fontSize: 13 }}>
                                 <span style={{ color: '#b0b7d3' }}>{k}: </span>
-                                <span style={{ color: '#43e5f7', fontWeight: 700 }}>{v}</span>
+                                <span style={{ color: 'var(--primary-light)', fontWeight: 700 }}>{v}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Form */}
-                <div style={{ background: '#161933', borderRadius: 20, padding: 32, border: '1px solid rgba(108,99,255,0.2)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}>
+                <div style={{ background: '#161933', borderRadius: 20, padding: 32, border: '1px solid rgba(201, 163, 94,0.2)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}>
                     <form onSubmit={handlePredict} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
 
                         {/* Zone */}
@@ -177,9 +177,9 @@ export default function AIPredictor() {
 
                         {/* Area */}
                         <div>
-                            <label style={labelStyle}>📐 Area (Sq. Ft): <strong style={{ color: '#43e5f7' }}>{parseInt(formData.area).toLocaleString()} sqft</strong></label>
+                            <label style={labelStyle}>📐 Area (Sq. Ft): <strong style={{ color: 'var(--primary-light)' }}>{parseInt(formData.area).toLocaleString()} sqft</strong></label>
                             <input type="range" name="area" min={200} max={8000} step={50} value={formData.area} onChange={handleChange}
-                                style={{ width: '100%', accentColor: '#6c63ff', height: 6, cursor: 'pointer' }} />
+                                style={{ width: '100%', accentColor: 'var(--primary)', height: 6, cursor: 'pointer' }} />
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6b7298', marginTop: 4 }}>
                                 <span>200 sqft</span><span>8,000 sqft</span>
                             </div>
@@ -187,9 +187,9 @@ export default function AIPredictor() {
 
                         {/* Age */}
                         <div>
-                            <label style={labelStyle}>🏗️ Age of Property: <strong style={{ color: '#43e5f7' }}>{formData.age} yrs</strong></label>
+                            <label style={labelStyle}>🏗️ Age of Property: <strong style={{ color: 'var(--primary-light)' }}>{formData.age} yrs</strong></label>
                             <input type="range" name="age" min={0} max={30} step={1} value={formData.age} onChange={handleChange}
-                                style={{ width: '100%', accentColor: '#6c63ff', height: 6, cursor: 'pointer' }} />
+                                style={{ width: '100%', accentColor: 'var(--primary)', height: 6, cursor: 'pointer' }} />
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6b7298', marginTop: 4 }}>
                                 <span>New (0 yrs)</span><span>Old (30 yrs)</span>
                             </div>
@@ -197,9 +197,9 @@ export default function AIPredictor() {
 
                         {/* Amenities */}
                         <div>
-                            <label style={labelStyle}>✨ Amenities Count: <strong style={{ color: '#43e5f7' }}>{formData.amenities_count} / 10</strong></label>
+                            <label style={labelStyle}>✨ Amenities Count: <strong style={{ color: 'var(--primary-light)' }}>{formData.amenities_count} / 10</strong></label>
                             <input type="range" name="amenities_count" min={0} max={10} step={1} value={formData.amenities_count} onChange={handleChange}
-                                style={{ width: '100%', accentColor: '#6c63ff', height: 6, cursor: 'pointer' }} />
+                                style={{ width: '100%', accentColor: 'var(--primary)', height: 6, cursor: 'pointer' }} />
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6b7298', marginTop: 4 }}>
                                 <span>None</span><span>All (Pool, Gym…)</span>
                             </div>
@@ -207,7 +207,7 @@ export default function AIPredictor() {
 
                         {/* Floor */}
                         <div>
-                            <label style={labelStyle}>🏢 Floor: <strong style={{ color: '#43e5f7' }}>{formData.floor}</strong> of <strong style={{ color: '#43e5f7' }}>{formData.total_floors}</strong></label>
+                            <label style={labelStyle}>🏢 Floor: <strong style={{ color: 'var(--primary-light)' }}>{formData.floor}</strong> of <strong style={{ color: 'var(--primary-light)' }}>{formData.total_floors}</strong></label>
                             <div style={{ display: 'flex', gap: 10 }}>
                                 <input type="number" name="floor" min={0} max={60} value={formData.floor} onChange={handleChange}
                                     placeholder="Floor" style={{ ...inputStyle, width: '50%' }} />
@@ -238,12 +238,12 @@ export default function AIPredictor() {
                     {/* Result */}
                     {result && (
                         <div style={{ marginTop: 30 }}>
-                            <div style={{ padding: 28, background: 'linear-gradient(135deg, rgba(108,99,255,0.12), rgba(67,229,247,0.06))', borderRadius: 16, border: '1px solid rgba(108,99,255,0.35)' }}>
+                            <div style={{ padding: 28, background: 'linear-gradient(135deg, rgba(201, 163, 94,0.12), rgba(223, 194, 136,0.06))', borderRadius: 16, border: '1px solid rgba(201, 163, 94,0.35)' }}>
                                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
                                     <div style={{ color: '#b0b7d3', fontSize: 12, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>
                                         {result.listing_type === 'rent' ? '📅 Estimated Monthly Rent' : '🏷️ Estimated Market Value'}
                                     </div>
-                                    <div style={{ fontSize: 46, fontWeight: 900, color: '#43e5f7', fontFamily: 'Outfit, sans-serif', lineHeight: 1.1 }}>
+                                    <div style={{ fontSize: 46, fontWeight: 900, color: 'var(--primary-light)', fontFamily: 'Outfit, sans-serif', lineHeight: 1.1 }}>
                                         {result.predicted_label}
                                     </div>
                                     <div style={{ color: '#b0b7d3', marginTop: 8, fontSize: 14 }}>
@@ -256,8 +256,8 @@ export default function AIPredictor() {
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                                     {[
                                         { label: 'Model R² Score', value: `${(r2Score * 100).toFixed(1)}%`, sub: 'Accuracy metric', color: '#22d3a5' },
-                                        { label: 'Training Data', value: result.n_training_samples?.toLocaleString() || '100,000', sub: 'Pune samples', color: '#6c63ff' },
-                                        { label: 'Confidence Band', value: `±12%`, sub: '80% CI interval', color: '#43e5f7' },
+                                        { label: 'Training Data', value: result.n_training_samples?.toLocaleString() || '100,000', sub: 'Pune samples', color: 'var(--primary)' },
+                                        { label: 'Confidence Band', value: `±12%`, sub: '80% CI interval', color: 'var(--primary-light)' },
                                     ].map(stat => (
                                         <div key={stat.label} style={{ padding: 14, background: 'rgba(10,11,30,0.55)', borderRadius: 10, textAlign: 'center' }}>
                                             <div style={{ color: stat.color, fontWeight: 800, fontSize: 20, fontFamily: 'Outfit, sans-serif' }}>{stat.value}</div>
@@ -274,14 +274,14 @@ export default function AIPredictor() {
                                         <span style={{ color: '#22d3a5', fontWeight: 600 }}>{confidencePct}% R²</span>
                                     </div>
                                     <div style={{ height: 8, background: 'rgba(10,11,30,0.6)', borderRadius: 4, overflow: 'hidden' }}>
-                                        <div style={{ height: '100%', width: `${Math.min(confidencePct, 100)}%`, background: 'linear-gradient(90deg, #6c63ff, #43e5f7)', borderRadius: 4, transition: 'width 1s ease' }} />
+                                        <div style={{ height: '100%', width: `${Math.min(confidencePct, 100)}%`, background: 'linear-gradient(90deg, var(--primary), var(--primary-light))', borderRadius: 4, transition: 'width 1s ease' }} />
                                     </div>
                                 </div>
 
-                                <div style={{ marginTop: 14, padding: 10, background: 'rgba(67,229,247,0.06)', borderRadius: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
-                                    <Info size={15} color="#43e5f7" />
+                                <div style={{ marginTop: 14, padding: 10, background: 'rgba(223, 194, 136,0.06)', borderRadius: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
+                                    <Info size={15} color="var(--primary-light)" />
                                     <span style={{ color: '#b0b7d3', fontSize: 12 }}>
-                                        Engine: <strong style={{ color: '#43e5f7' }}>{result.engine || 'GradientBoosting v2.0'}</strong>. Prices based on Pune 2024 market data. For informational purposes only.
+                                        Engine: <strong style={{ color: 'var(--primary-light)' }}>{result.engine || 'GradientBoosting v2.0'}</strong>. Prices based on Pune 2024 market data. For informational purposes only.
                                     </span>
                                 </div>
                             </div>
@@ -294,13 +294,13 @@ export default function AIPredictor() {
                                     </h3>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 18 }}>
                                         {relatedProperties.map(prop => (
-                                            <div key={prop._id} style={{ background: 'rgba(22,25,51,0.9)', borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(108,99,255,0.2)', transition: 'transform 0.2s' }}>
+                                            <div key={prop._id} style={{ background: 'rgba(22,25,51,0.9)', borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(201, 163, 94,0.2)', transition: 'transform 0.2s' }}>
                                                 <div style={{ height: 130, backgroundImage: `url(${prop.images?.[0] || 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?w=400'})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
                                                 <div style={{ padding: 14 }}>
                                                     <div style={{ color: 'white', fontWeight: 600, fontSize: 13, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.title}</div>
-                                                    <div style={{ color: '#43e5f7', fontWeight: 800, fontSize: 17 }}>{fmtCurrency(prop.price)}</div>
+                                                    <div style={{ color: 'var(--primary-light)', fontWeight: 800, fontSize: 17 }}>{fmtCurrency(prop.price)}</div>
                                                     <div style={{ color: '#b0b7d3', fontSize: 12, marginTop: 4 }}>{prop.bhk} BHK · {prop.area?.toLocaleString()} sqft</div>
-                                                    <a href={`/properties/${prop._id}`} style={{ display: 'block', marginTop: 10, textAlign: 'center', background: 'rgba(108,99,255,0.15)', color: '#6c63ff', padding: '7px 0', borderRadius: 7, fontSize: 12, textDecoration: 'none', fontWeight: 600, border: '1px solid rgba(108,99,255,0.25)' }}>View Details →</a>
+                                                    <a href={`/properties/${prop._id}`} style={{ display: 'block', marginTop: 10, textAlign: 'center', background: 'rgba(201, 163, 94,0.15)', color: 'var(--primary)', padding: '7px 0', borderRadius: 7, fontSize: 12, textDecoration: 'none', fontWeight: 600, border: '1px solid rgba(201, 163, 94,0.25)' }}>View Details →</a>
                                                 </div>
                                             </div>
                                         ))}

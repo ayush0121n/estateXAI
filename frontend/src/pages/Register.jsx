@@ -29,10 +29,10 @@ export default function Register() {
     const set = (key, val) => setForm(p => ({ ...p, [key]: val }));
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', background: 'radial-gradient(ellipse at 70% 30%, rgba(67,229,247,0.1) 0%, transparent 60%), #0a0b1e' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', background: 'radial-gradient(ellipse at 70% 30%, rgba(223, 194, 136,0.1) 0%, transparent 60%), var(--dark)' }}>
             <div style={{ width: '100%', maxWidth: 480 }}>
                 <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                    <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 30px rgba(108,99,255,0.4)' }}>
+                    <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 30px rgba(201, 163, 94,0.4)' }}>
                         <Building2 size={28} color="white" />
                     </div>
                     <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 28, fontWeight: 800, color: 'white', marginBottom: 8 }}>Create Account</h1>
@@ -47,8 +47,8 @@ export default function Register() {
                             { value: 'owner', label: '🏠 I\'m an Owner', desc: 'List my properties' }
                         ].map(r => (
                             <button key={r.value} type="button" onClick={() => set('role', r.value)}
-                                style={{ flex: 1, padding: '14px', borderRadius: 12, border: `1px solid ${form.role === r.value ? 'rgba(108,99,255,0.6)' : 'rgba(255,255,255,0.1)'}`, background: form.role === r.value ? 'rgba(108,99,255,0.2)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit', textAlign: 'center' }}>
-                                <div style={{ fontSize: 16, fontWeight: 600, color: form.role === r.value ? '#6c63ff' : '#b0b7d3', marginBottom: 4 }}>{r.label}</div>
+                                style={{ flex: 1, padding: '14px', borderRadius: 12, border: `1px solid ${form.role === r.value ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, background: form.role === r.value ? 'rgba(201, 163, 94,0.2)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit', textAlign: 'center' }}>
+                                <div style={{ fontSize: 16, fontWeight: 600, color: form.role === r.value ? 'var(--primary)' : '#b0b7d3', marginBottom: 4 }}>{r.label}</div>
                                 <div style={{ fontSize: 11, color: '#6b7298' }}>{r.desc}</div>
                             </button>
                         ))}
@@ -103,7 +103,7 @@ export default function Register() {
 
                     <p style={{ textAlign: 'center', color: '#6b7298', fontSize: 14 }}>
                         Already have an account?{' '}
-                        <Link to="/login" style={{ color: '#6c63ff', fontWeight: 600 }}>Sign in</Link>
+                        <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</Link>
                     </p>
                 </div>
             </div>

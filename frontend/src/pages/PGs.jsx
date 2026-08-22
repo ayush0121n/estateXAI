@@ -74,9 +74,9 @@ export default function PGs() {
             onClick={() => handleFilterChange(filterKey, filters[filterKey] === 'true' ? '' : 'true')}
             style={{
                 display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px',
-                background: filters[filterKey] === 'true' ? 'rgba(108,99,255,0.25)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${filters[filterKey] === 'true' ? 'rgba(108,99,255,0.6)' : 'rgba(255,255,255,0.1)'}`,
-                borderRadius: 20, color: filters[filterKey] === 'true' ? '#6c63ff' : '#b0b7d3',
+                background: filters[filterKey] === 'true' ? 'rgba(201, 163, 94,0.25)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${filters[filterKey] === 'true' ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                borderRadius: 20, color: filters[filterKey] === 'true' ? 'var(--primary)' : '#b0b7d3',
                 cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', transition: 'all 0.2s'
             }}>
             {icon} {label}
@@ -104,7 +104,7 @@ export default function PGs() {
                     <div style={{ display: 'flex', gap: 8 }}>
                         {['', 'male', 'female', 'unisex'].map(g => (
                             <button key={g} onClick={() => handleFilterChange('genderType', g)}
-                                style={{ padding: '8px 14px', borderRadius: 20, border: `1px solid ${filters.genderType === g ? 'rgba(108,99,255,0.6)' : 'rgba(255,255,255,0.1)'}`, background: filters.genderType === g ? 'rgba(108,99,255,0.2)' : 'transparent', color: filters.genderType === g ? '#6c63ff' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', transition: 'all 0.2s' }}>
+                                style={{ padding: '8px 14px', borderRadius: 20, border: `1px solid ${filters.genderType === g ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, background: filters.genderType === g ? 'rgba(201, 163, 94,0.2)' : 'transparent', color: filters.genderType === g ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', transition: 'all 0.2s' }}>
                                 {g === '' ? 'All' : g === 'male' ? '♂ Boys' : g === 'female' ? '♀ Girls' : '⚥ Unisex'}
                             </button>
                         ))}
@@ -118,7 +118,7 @@ export default function PGs() {
                     </select>
 
                     <button onClick={() => setShowFilters(!showFilters)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 8, background: showFilters ? 'rgba(108,99,255,0.2)' : 'rgba(255,255,255,0.05)', border: `1px solid ${showFilters ? 'rgba(108,99,255,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, padding: '10px 16px', color: showFilters ? '#6c63ff' : '#b0b7d3', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, background: showFilters ? 'rgba(201, 163, 94,0.2)' : 'rgba(255,255,255,0.05)', border: `1px solid ${showFilters ? 'rgba(201, 163, 94,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, padding: '10px 16px', color: showFilters ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}>
                         <SlidersHorizontal size={16} /> Filters
                     </button>
 
@@ -180,7 +180,7 @@ export default function PGs() {
                             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 48 }}>
                                 {[...Array(pages)].map((_, i) => (
                                     <button key={i} onClick={() => fetchPGs(i + 1)}
-                                        style={{ background: currentPage === i + 1 ? 'rgba(108,99,255,0.3)' : 'rgba(255,255,255,0.05)', border: `1px solid ${currentPage === i + 1 ? 'rgba(108,99,255,0.6)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, width: 40, height: 40, color: 'white', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                        style={{ background: currentPage === i + 1 ? 'rgba(201, 163, 94,0.3)' : 'rgba(255,255,255,0.05)', border: `1px solid ${currentPage === i + 1 ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, width: 40, height: 40, color: 'white', cursor: 'pointer', fontFamily: 'inherit' }}>
                                         {i + 1}
                                     </button>
                                 ))}

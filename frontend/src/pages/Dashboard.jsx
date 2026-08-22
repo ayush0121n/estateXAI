@@ -45,7 +45,7 @@ export default function Dashboard() {
 
     const Tab = ({ id, label, icon: Icon }) => (
         <button onClick={() => setActiveTab(id)}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, transition: 'all 0.2s', background: activeTab === id ? 'rgba(108,99,255,0.2)' : 'transparent', color: activeTab === id ? '#6c63ff' : '#6b7298', borderBottom: activeTab === id ? '2px solid #6c63ff' : '2px solid transparent' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, transition: 'all 0.2s', background: activeTab === id ? 'rgba(201, 163, 94,0.2)' : 'transparent', color: activeTab === id ? 'var(--primary)' : '#6b7298', borderBottom: activeTab === id ? '2px solid var(--primary)' : '2px solid transparent' }}>
             <Icon size={16} /> {label}
         </button>
     );
@@ -80,9 +80,9 @@ export default function Dashboard() {
                 {/* Stats Cards */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20, marginBottom: 36 }}>
                     {[
-                        { icon: Building2, label: 'My Properties', value: myProperties.length, color: '#6c63ff' },
-                        { icon: Users, label: 'PG Listings', value: myPGs.length, color: '#43e5f7' },
-                        { icon: MessageSquare, label: 'My Inquiries', value: myInquiries.length, color: '#ff6584' },
+                        { icon: Building2, label: 'My Properties', value: myProperties.length, color: 'var(--primary)' },
+                        { icon: Users, label: 'PG Listings', value: myPGs.length, color: 'var(--primary-light)' },
+                        { icon: MessageSquare, label: 'My Inquiries', value: myInquiries.length, color: 'var(--accent)' },
                         { icon: TrendingUp, label: 'Received', value: receivedInquiries.length, color: '#ffd700' }
                     ].map((stat, i) => (
                         <div key={i} className="glass-card" style={{ padding: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -98,7 +98,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Tabs */}
-                <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid rgba(108,99,255,0.15)', marginBottom: 28, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid rgba(201, 163, 94,0.15)', marginBottom: 28, flexWrap: 'wrap' }}>
                     <Tab id="overview" label="Overview" icon={TrendingUp} />
                     {recommendations.length > 0 && <Tab id="recommended" label="AI Recommendations" icon={Zap} />}
                     {(user.role === 'owner' || user.role === 'admin') && <Tab id="listings" label="My Listings" icon={Building2} />}
@@ -131,11 +131,11 @@ export default function Dashboard() {
                             <div className="glass-card" style={{ padding: 28 }}>
                                 <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 16, fontSize: 16 }}>Quick Links</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                    <Link to="/properties" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, background: 'rgba(108,99,255,0.08)', borderRadius: 10, color: '#b0b7d3', fontSize: 14 }}>
-                                        <Building2 size={16} color="#6c63ff" /> Browse Properties
+                                    <Link to="/properties" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, background: 'rgba(201, 163, 94,0.08)', borderRadius: 10, color: '#b0b7d3', fontSize: 14 }}>
+                                        <Building2 size={16} color="var(--primary)" /> Browse Properties
                                     </Link>
-                                    <Link to="/pgs" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, background: 'rgba(67,229,247,0.08)', borderRadius: 10, color: '#b0b7d3', fontSize: 14 }}>
-                                        <Users size={16} color="#43e5f7" /> Browse PGs & Hostels
+                                    <Link to="/pgs" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, background: 'rgba(223, 194, 136,0.08)', borderRadius: 10, color: '#b0b7d3', fontSize: 14 }}>
+                                        <Users size={16} color="var(--primary-light)" /> Browse PGs & Hostels
                                     </Link>
                                     {user.role === 'user' && (
                                         <div style={{ padding: 12, background: 'rgba(255,101,132,0.08)', borderRadius: 10, fontSize: 13, color: '#b0b7d3' }}>
@@ -154,7 +154,7 @@ export default function Dashboard() {
                             <Zap size={20} color="#ffd700" />
                             <div>
                                 <h2 style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>AI Recommendations for You</h2>
-                                <p style={{ color: '#6b7298', fontSize: 13 }}>Based on: <strong style={{ color: '#6c63ff' }}>{user.institution || user.workplace || 'Pune'}</strong></p>
+                                <p style={{ color: '#6b7298', fontSize: 13 }}>Based on: <strong style={{ color: 'var(--primary)' }}>{user.institution || user.workplace || 'Pune'}</strong></p>
                             </div>
                         </div>
                         <div className="grid-3">
@@ -168,9 +168,9 @@ export default function Dashboard() {
                                     <div style={{ padding: 16 }}>
                                         <h4 style={{ color: 'white', fontWeight: 600, marginBottom: 6 }}>{pg.name}</h4>
                                         <div style={{ fontSize: 13, color: '#6b7298', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
-                                            <MapPin size={12} color="#6c63ff" /> {pg.location?.address}
+                                            <MapPin size={12} color="var(--primary)" /> {pg.location?.address}
                                         </div>
-                                        <div style={{ fontSize: 18, fontWeight: 700, color: '#6c63ff', fontFamily: 'Outfit, sans-serif' }}>₹{pg.rentPerMonth?.toLocaleString()}/mo</div>
+                                        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif' }}>₹{pg.rentPerMonth?.toLocaleString()}/mo</div>
                                     </div>
                                 </Link>
                             ))}
@@ -204,7 +204,7 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                     <div style={{ textAlign: 'right' }}>
-                                                        <div style={{ fontSize: 16, fontWeight: 700, color: '#6c63ff', fontFamily: 'Outfit, sans-serif' }}>
+                                                        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif' }}>
                                                             ₹{prop.price >= 100000 ? `${(prop.price / 100000).toFixed(1)}L` : prop.price?.toLocaleString()}
                                                         </div>
                                                         <span className={`badge ${prop.isAvailable ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: 11 }}>
@@ -231,7 +231,7 @@ export default function Dashboard() {
                                                         </div>
                                                     </div>
                                                     <div style={{ textAlign: 'right' }}>
-                                                        <div style={{ fontSize: 16, fontWeight: 700, color: '#6c63ff', fontFamily: 'Outfit, sans-serif' }}>₹{pg.rentPerMonth?.toLocaleString()}/mo</div>
+                                                        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif' }}>₹{pg.rentPerMonth?.toLocaleString()}/mo</div>
                                                         <div style={{ fontSize: 12, color: '#22d3a5' }}>{pg.availableRooms} rooms free</div>
                                                     </div>
                                                 </Link>
@@ -295,7 +295,7 @@ export default function Dashboard() {
                                     <div key={inq._id} className="glass-card" style={{ padding: 20 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                                <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg, #6c63ff, #43e5f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: 'white' }}>
+                                                <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: 'white' }}>
                                                     {inq.user?.name?.[0]?.toUpperCase()}
                                                 </div>
                                                 <div>
