@@ -95,6 +95,7 @@ npm run dev
 
 ### Module 5: Property Management
 - Image upload using `multer` with `Cloudinary` storage (falls back to local disk if Cloudinary keys aren't set).
+- **Auto-Geocoding**: Silently intercepts user-submitted addresses and calls OpenStreetMap Nominatim API to generate exact Latitude/Longitude coordinates for all new properties/PGs.
 - Admin approval workflow: `draft` → `pending` → `approved` → `live`.
 - Side-by-side Property Comparison tool (`/compare`) for comparing up to 3 properties.
 
