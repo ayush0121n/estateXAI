@@ -52,6 +52,17 @@ npm run dev
 | Admin | `admin@estatexai.com` | `Admin@123` |
 | Owner | `owner@estatexai.com` | `Owner@123` |
 
+## 🌟 Key Features
+
+### 🏡 For Buyers & Tenants
+- **AI Price Prediction Model**: Get accurate market value predictions based on historical property data and ML algorithms before you make an offer.
+- **Smart Roommate Matcher (Tinder for Flatmates)**: Complete a lifestyle questionnaire (diet, smoking, sleep schedule) and instantly browse AI-matched compatible roommates.
+- **AI Commute & Liveability Scorer**: Enter your workplace on any listing to instantly see the commute time (bike/auto/bus) and get an automated Liveability Score (0-100) based on distance and traffic.
+- **Neighborhood Safety & Vibe Ratings**: Access community-driven ratings for safety, noise levels, and cleanliness for every neighborhood.
+- **Advanced Filtering**: Search for properties and PGs using highly granular filters including rent, amenities, sharing type, and proximity to major institutions.
+- **One-Click Comparison**: Save properties and compare them side-by-side on an interactive dashboard.
+- **Interactive Maps**: Browse real-estate using map-based visual search powered by Leaflet.
+
 ---
 
 ## 🤖 Modules Built (Report Section 2.5 Scope)
