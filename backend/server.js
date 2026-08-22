@@ -117,6 +117,8 @@ app.use('/api/admin', require('./routes/admin.routes'));
 app.use('/api/predict-price', apiLimiter, require('./routes/prediction.routes'));
 app.use('/api/user', require('./routes/user.routes'));
 app.use('/api/search', apiLimiter, require('./routes/search.routes'));
+app.use('/api/commute', apiLimiter, require('./routes/commute.routes'));
+app.use('/api/neighborhood', require('./routes/neighborhood.routes'));
 
 // Health check
 app.get('/api/health', (req, res) => {

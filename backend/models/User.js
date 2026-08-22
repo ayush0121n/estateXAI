@@ -69,6 +69,20 @@ const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    // Roommate Matching Profile
+    roommateProfile: {
+        isLookingForRoommate: { type: Boolean, default: false },
+        gender: { type: String, enum: ['male', 'female', 'any'], default: 'any' },
+        diet: { type: String, enum: ['veg', 'non-veg', 'vegan', 'any'], default: 'any' },
+        smoking: { type: String, enum: ['yes', 'no', 'outside-only'], default: 'no' },
+        sleepSchedule: { type: String, enum: ['early-bird', 'night-owl', 'flexible'], default: 'flexible' },
+        profession: { type: String, enum: ['student', 'working-professional', 'any'], default: 'any' },
+        preferredArea: { type: String, default: '' },
+        budgetMin: { type: Number, default: 3000 },
+        budgetMax: { type: Number, default: 20000 },
+        bio: { type: String, maxlength: 300, default: '' },
+        age: { type: Number, default: 0 }
     }
 }, { timestamps: true });
 

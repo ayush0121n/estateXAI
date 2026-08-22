@@ -175,4 +175,82 @@ router.get('/history', protect, async (req, res) => {
     }
 });
 
+// @PUT /api/user/roommate-profile - Create or update roommate profile
+router.put('/roommate-profile', protect, async (req, res) => {
+    try {
+        const { isLookingForRoommate, gender, diet, smoking, sleepSchedule, profession, preferredArea, budgetMin, budgetMax, bio, age } = req.body;
+        const profileUpdate = {};
+        if (isLookingForRoommate !== undefined) profileUpdate['roommateProfile.isLookingForRoommate'] = isLookingForRoommate;
+        if (gender) profileUpdate['roommateProfile.gender'] = gender;
+        if (diet) profileUpdate['roommateProfile.diet'] = diet;
+        if (smoking) profileUpdate['roommateProfile.smoking'] = smoking;
+        if (sleepSchedule) profileUpdate['roommateProfile.sleepSchedule'] = sleepSchedule;
+        if (profession) profileUpdate['roommateProfile.profession'] = profession;
+        if (preferredArea !== undefined) profileUpdate['roommateProfile.preferredArea'] = preferredArea;
+        if (budgetMin !== undefined) profileUpdate['roommateProfile.budgetMin'] = budgetMin;
+        if (budgetMax !== undefined) profileUpdate['roommateProfile.budgetMax'] = budgetMax;
+        if (bio !== undefined) profileUpdate['roommateProfile.bio'] = bio;
+        if (age !== undefined) profileUpdate['roommateProfile.age'] = age;
+
+        const user = await User.findByIdAndUpdate(req.user._id, profileUpdate, { new: true, runValidators: true });
+        res.json({ success: true, roommateProfile: user.roommateProfile });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+});
+
+// @GET /api/user/roommates/match - Get ranked roommate matches
+router.get('/roommates/match', protect, async (req, res) => {
+    try {
+        const me = await User.findById(req.user._id);
+        if (!me.roommateProfile?.isLookingForRoommate) {
+            return res.status(400).json({ success: false, message: 'Please enable your roommate profile first.' });
+        }
+
+        // Fetch all active seekers except self
+        const candidates = await User.find({
+            _id: { $ne: req.user._id },
+            'roommateProfile.isLookingForRoommate': true
+        }).select('name avatar roommateProfile createdAt');
+
+        // Compatibility scoring algorithm
+        const scored = candidates.map(c => {
+            let score = 0;
+            const p = me.roommateProfile;
+            const cp = c.roommateProfile;
+
+            // Diet (25%)
+            if (p.diet === 'any' || cp.diet === 'any' || p.diet === cp.diet) score += 25;
+            else score += 5;
+
+            // Sleep schedule (20%)
+            if (p.sleepSchedule === 'flexible' || cp.sleepSchedule === 'flexible' || p.sleepSchedule === cp.sleepSchedule) score += 20;
+
+            // Smoking (20%)
+            if (p.smoking === cp.smoking) score += 20;
+            else if ((p.smoking === 'outside-only' && cp.smoking === 'no') || (p.smoking === 'no' && cp.smoking === 'outside-only')) score += 8;
+
+            // Profession (15%)
+            if (p.profession === 'any' || cp.profession === 'any' || p.profession === cp.profession) score += 15;
+
+            // Gender preference (10%)
+            if (p.gender === 'any' || cp.gender === 'any' || p.gender === cp.gender) score += 10;
+
+            // Budget overlap (10%)
+            const budgetOverlap = Math.min(p.budgetMax, cp.budgetMax) - Math.max(p.budgetMin, cp.budgetMin);
+            if (budgetOverlap >= 0) score += 10;
+            else if (budgetOverlap > -3000) score += 4;
+
+            return { user: c, compatibilityScore: Math.min(score, 100) };
+        });
+
+        // Sort by score descending, return top 20
+        scored.sort((a, b) => b.compatibilityScore - a.compatibilityScore);
+        res.json({ success: true, matches: scored.slice(0, 20) });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 module.exports = router;
+

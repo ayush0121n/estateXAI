@@ -7,6 +7,8 @@ import { PropertyCard } from '../components/ListingCard';
 import toast from 'react-hot-toast';
 import PricePredictionWidget from '../components/PricePredictionWidget';
 import PropertyMap from '../components/PropertyMap';
+import CommuteScorer from '../components/CommuteScorer';
+import NeighborhoodCard from '../components/NeighborhoodCard';
 
 const amenityIcons = { parking: <Car size={14} />, gym: <Dumbbell size={14} />, pool: <Waves size={14} />, security: <Shield size={14} />, wifi: <Wifi size={14} /> };
 
@@ -258,6 +260,18 @@ export default function PropertyDetail() {
                         </div>
                     </div>
                 )}
+
+                {/* AI Commute Scorer & Neighborhood */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 8 }}>
+                    <CommuteScorer
+                        propertyLat={property?.location?.coordinates?.lat}
+                        propertyLng={property?.location?.coordinates?.lng}
+                    />
+                    <NeighborhoodCard
+                        area={property?.location?.city || property?.location?.address}
+                        city={property?.location?.city}
+                    />
+                </div>
             </div>
             <style>{`@media(max-width:1024px){.container > div:nth-child(2){grid-template-columns:1fr !important}}`}</style>
         </div>

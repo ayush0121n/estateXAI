@@ -5,6 +5,8 @@ import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { PGCard } from '../components/ListingCard';
 import toast from 'react-hot-toast';
+import CommuteScorer from '../components/CommuteScorer';
+import NeighborhoodCard from '../components/NeighborhoodCard';
 
 export default function PGDetail() {
     const { id } = useParams();
@@ -247,6 +249,18 @@ export default function PGDetail() {
                         </div>
                     </div>
                 )}
+
+                {/* AI Commute Scorer & Neighborhood */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 8 }}>
+                    <CommuteScorer
+                        propertyLat={pg?.location?.coordinates?.lat}
+                        propertyLng={pg?.location?.coordinates?.lng}
+                    />
+                    <NeighborhoodCard
+                        area={pg?.location?.city || pg?.location?.address}
+                        city={pg?.location?.city}
+                    />
+                </div>
             </div>
             <style>{`@media(max-width:1024px){.container > div:nth-child(2){grid-template-columns:1fr !important}}`}</style>
         </div>

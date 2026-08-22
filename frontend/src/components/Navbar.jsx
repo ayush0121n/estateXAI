@@ -80,6 +80,9 @@ export default function Navbar() {
                         <Link to="/pgs" style={linkStyle('/pgs')}>
                             <Users size={16} /> PG / Hostel
                         </Link>
+                        <Link to="/roommates" style={linkStyle('/roommates')}>
+                            <Heart size={16} /> Find Flatmates
+                        </Link>
                         <Link to="/ai-prediction" style={{...linkStyle('/ai-prediction'), color: isActive('/ai-prediction') ? 'var(--primary)' : 'var(--text-secondary)', background: isActive('/ai-prediction') ? 'rgba(255, 255, 255, 0.05)' : 'transparent'}}>
                             <Sparkles size={16} color={isActive('/ai-prediction') ? 'var(--primary)' : 'var(--text-secondary)'} /> AI Predictor
                         </Link>
@@ -159,6 +162,7 @@ export default function Navbar() {
                         <Link to="/" style={{ ...linkStyle('/'), justifyContent: 'flex-start' }}><Home size={16} /> Home</Link>
                         <Link to="/properties" style={{ ...linkStyle('/properties'), justifyContent: 'flex-start' }}><Building2 size={16} /> Properties</Link>
                         <Link to="/pgs" style={{ ...linkStyle('/pgs'), justifyContent: 'flex-start' }}><Users size={16} /> PG / Hostel</Link>
+                        <Link to="/roommates" style={{ ...linkStyle('/roommates'), justifyContent: 'flex-start' }}><Heart size={16} /> Find Flatmates</Link>
                         <Link to="/ai-prediction" style={{ ...linkStyle('/ai-prediction'), justifyContent: 'flex-start' }}><Sparkles size={16} /> AI Predictor</Link>
                         {user ? (
                             <>
