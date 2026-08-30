@@ -81,7 +81,14 @@ const pgSchema = new mongoose.Schema({
     isFeatured: { type: Boolean, default: false },
     rating: { type: Number, default: 0, min: 0, max: 5 },
     reviewCount: { type: Number, default: 0 },
-    views: { type: Number, default: 0 }
+    views: { type: Number, default: 0 },
+    reviews: [{
+        user: { type: String, required: true },
+        userType: { type: String, enum: ['owner', 'user', 'agent'], default: 'user' },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now }
+    }]
 }, { timestamps: true });
 
 pgSchema.index({ 'location.city': 1, genderType: 1, rentPerMonth: 1 });

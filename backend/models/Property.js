@@ -102,6 +102,13 @@ const propertySchema = new mongoose.Schema({
     priceTrend: [{
         month: { type: String }, // e.g. "Jan 2025"
         avgPrice: { type: Number }
+    }],
+    reviews: [{
+        user: { type: String, required: true },
+        userType: { type: String, enum: ['owner', 'user', 'agent'], default: 'user' },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now }
     }]
 }, { timestamps: true });
 

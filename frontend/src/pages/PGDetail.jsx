@@ -196,6 +196,42 @@ export default function PGDetail() {
                             <div style={{ fontSize: 13, color: '#6b7298', display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <Eye size={13} /> {pg.views} people viewed this listing
                             </div>
+
+                            {/* Reviews Section */}
+                            {pg.reviews && pg.reviews.length > 0 && (
+                                <>
+                                    <div className="divider" />
+                                    <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 20 }}>Reviews & Ratings</h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                        {pg.reviews.map((r, i) => (
+                                            <div key={i} style={{ background: 'var(--dark-bg)', padding: 16, borderRadius: 12, border: '1px solid var(--dark-border)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: r.userType === 'owner' ? 'var(--primary)' : '#2a2d3e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                                                            {r.user.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ color: 'white', fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                                {r.user}
+                                                                {r.userType === 'owner' && <span style={{ fontSize: 10, background: 'rgba(201,163,94,0.2)', color: 'var(--primary)', padding: '2px 6px', borderRadius: 4 }}>Owner</span>}
+                                                            </div>
+                                                            <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
+                                                                {new Date(r.createdAt).toLocaleDateString()}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ color: '#fbbf24', fontSize: 16, letterSpacing: 2 }}>
+                                                        {'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}
+                                                    </div>
+                                                </div>
+                                                <p style={{ color: '#a0aabf', fontSize: 14, lineHeight: 1.5, margin: 0 }}>
+                                                    "{r.comment}"
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
