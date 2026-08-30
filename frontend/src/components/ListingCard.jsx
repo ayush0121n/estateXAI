@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { MapPin, BedDouble, Bath, Square, Heart, Star, Wifi, UtensilsCrossed, AirVent } from 'lucide-react';
 
 const formatPrice = (price, type) => {
@@ -151,4 +151,5 @@ export function PGCard({ pg, onSave, saved }) {
         </motion.div>
     );
 }
+
 
