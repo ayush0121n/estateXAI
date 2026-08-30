@@ -55,11 +55,11 @@ export default function Footer() {
                     <div>
                         <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, fontSize: 15 }}>Popular Areas</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            {['Kothrud', 'Hinjewadi', 'Viman Nagar', 'Baner', 'Koregaon Park', 'Aundh'].map(area => (
+                            {['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Kolkata'].map(area => (
                                 <Link key={area} to={`/properties?city=${area}`} style={{ color: '#6b7298', fontSize: 14, transition: 'color 0.2s' }}
                                     onMouseEnter={e => e.target.style.color = 'var(--primary)'}
                                     onMouseLeave={e => e.target.style.color = '#6b7298'}>
-                                    <MapPin size={12} style={{ display: 'inline', marginRight: 6 }} />{area}, Pune
+                                    <MapPin size={12} style={{ display: 'inline', marginRight: 6 }} />{area}
                                 </Link>
                             ))}
                         </div>
@@ -71,7 +71,7 @@ export default function Footer() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7298', fontSize: 14 }}>
                                 <MapPin size={16} color="var(--primary)" />
-                                Pune, Maharashtra
+                                India
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7298', fontSize: 14 }}>
                                 <Mail size={16} color="var(--primary)" />

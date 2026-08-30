@@ -155,7 +155,7 @@ export default function Dashboard() {
                             <Zap size={20} color="#ffd700" />
                             <div>
                                 <h2 style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>AI Recommendations for You</h2>
-                                <p style={{ color: '#6b7298', fontSize: 13 }}>Based on: <strong style={{ color: 'var(--primary)' }}>{user.institution || user.workplace || 'Pune'}</strong></p>
+                                <p style={{ color: '#6b7298', fontSize: 13 }}>Based on: <strong style={{ color: 'var(--primary)' }}>{user.institution || user.workplace || 'your preferences'}</strong></p>
                             </div>
                         </div>
                         <div className="grid-3">

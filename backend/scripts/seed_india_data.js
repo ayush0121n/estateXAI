@@ -57,7 +57,7 @@ async function seedData() {
 
         console.log('Seeding India-wide Properties and PGs...');
 
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < 200; i++) {
             const city = cities[i % cities.length];
             const cityData = INDIA_LOCATIONS[city];
             const area = cityData.areas[i % cityData.areas.length];
@@ -105,7 +105,7 @@ async function seedData() {
                 reviews: propertyReviews
             });
 
-            if (i < 30) {
+            if (i < 100) {
                 const gender = ['male', 'female', 'unisex'][i % 3];
                 pgs.push({
                     name: `EstateXAi Premium ${gender.charAt(0).toUpperCase() + gender.slice(1)} PG in ${area}`,

@@ -17,7 +17,7 @@ export default function Profile() {
             budgetMin: user?.preferences?.budgetMin || 0,
             budgetMax: user?.preferences?.budgetMax || 10000000,
             listingType: user?.preferences?.listingType || 'any',
-            preferredCities: user?.preferences?.preferredCities?.join(', ') || 'Pune',
+            preferredCities: user?.preferences?.preferredCities?.join(', ') || 'Mumbai, Delhi',
             propertyTypes: user?.preferences?.propertyTypes || ['apartment'],
         }
     });
@@ -119,7 +119,7 @@ export default function Profile() {
                             </div>
                             <div>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}><Building2 size={13} /> College / Institution <span style={{ fontSize: 11, color: 'var(--primary)' }}>(AI PG Match)</span></label>
-                                <input className="input" placeholder="e.g. SPPU University, MIT Pune" value={form.institution} onChange={e => set('institution', e.target.value)} />
+                                <input className="input" placeholder="e.g. Delhi University, IIT Bombay" value={form.institution} onChange={e => set('institution', e.target.value)} />
                             </div>
                             <div>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}><Briefcase size={13} /> Workplace</label>

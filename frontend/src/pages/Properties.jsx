@@ -148,7 +148,7 @@ export default function Properties() {
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>City</label>
-                            <input type="text" placeholder="e.g. Pune" value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input" />
+                            <input type="text" placeholder="e.g. Mumbai" value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input" />
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>BHK</label>

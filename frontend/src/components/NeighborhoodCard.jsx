@@ -28,7 +28,7 @@ function StarRating({ value, onChange, disabled }) {
     );
 }
 
-export default function NeighborhoodCard({ area, city = 'Pune' }) {
+export default function NeighborhoodCard({ area, city = 'India' }) {
     const { user, token } = useAuth();
     const [stats, setStats] = useState(null);
     const [reviews, setReviews] = useState([]);

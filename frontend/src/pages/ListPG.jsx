@@ -13,7 +13,7 @@ export default function ListPG() {
     const [form, setForm] = useState({
         name: '', description: '', type: 'pg', genderType: 'male',
         rentPerMonth: '', securityDeposit: '', sharingType: [],
-        location: { address: '', city: 'Pune', state: 'Maharashtra', pincode: '', nearbyInstitutions: [] },
+        location: { address: '', city: '', state: '', pincode: '', nearbyInstitutions: [] },
         amenities: { wifi: false, food: false, ac: false, laundry: false, parking: false, housekeeping: false, gym: false, studyRoom: false, cctv: false, powerBackup: false, hotWater: true, refrigerator: false, tv: false },
         meals: { breakfast: false, lunch: false, dinner: false },
         rules: { curfewTime: '', guestsAllowed: false, smokingAllowed: false, petsAllowed: false },
@@ -146,7 +146,7 @@ export default function ListPG() {
                     <Section title="📍 Location">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                             <Field label="Full Address" required>
-                                <input required className="input" placeholder="e.g. 45, Aundh, Pune" value={form.location.address} onChange={e => setLoc('address', e.target.value)} />
+                                <input required className="input" placeholder="e.g. 45, Andheri West, Mumbai" value={form.location.address} onChange={e => setLoc('address', e.target.value)} />
                             </Field>
                             <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                                 <Field label="City">

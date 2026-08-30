@@ -5,7 +5,7 @@ import { TrendingUp, Zap, X, ChevronDown, Info } from 'lucide-react';
 import api from '../utils/api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
 
-const PUNE_ZONES = [
+const METRO_ZONES = [
     'Koregaon Park','Wakad','Baner','Hadapsar','Kothrud','Aundh',
     'Hinjewadi','Kharadi','Viman Nagar','Undri','Pisoli','Pimpri'
 ];
@@ -101,12 +101,12 @@ export default function PricePredictionWidget({ property }) {
                         <div style={{ background: 'rgba(201, 163, 94,0.05)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 14, padding: 20, marginTop: 10 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, color: '#aaa', fontSize: 12 }}>
                                 <Info size={14} />
-                                Trained on 5,000 synthetic Pune market samples · Random Forest · R² = 0.8292
+                                Trained on 10,000 synthetic national market samples · Random Forest · R² = 0.8292
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
                                 {[
-                                    { name: 'zone', label: 'Zone', type: 'select', options: PUNE_ZONES },
+                                    { name: 'zone', label: 'Zone', type: 'select', options: METRO_ZONES },
                                     { name: 'prop_type', label: 'Property Type', type: 'select', options: PROP_TYPES },
                                     { name: 'listing_type', label: 'Listing Type', type: 'select', options: LISTING_TYPES },
                                     { name: 'furnishing', label: 'Furnishing', type: 'select', options: FURNISHING_TYPES },

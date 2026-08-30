@@ -14,7 +14,7 @@ export default function ListProperty() {
         title: '', description: '', type: 'apartment', listingType: 'rent',
         price: '', area: '', bhk: 1, bathrooms: 1, furnishing: 'unfurnished',
         facing: 'east', floor: 1, totalFloors: 1, yearBuilt: '',
-        location: { address: '', city: 'Pune', state: 'Maharashtra', pincode: '' },
+        location: { address: '', city: '', state: '', pincode: '' },
         amenities: [],
         images: []
     });

@@ -21,7 +21,7 @@ export default function PGs() {
     const [filters, setFilters] = useState({
         search: searchParams.get('search') || '',
         genderType: searchParams.get('genderType') || '',
-        city: searchParams.get('city') || 'Pune',
+        city: searchParams.get('city') || '',
         minRent: '',
         maxRent: '',
         wifi: '',
@@ -142,7 +142,7 @@ export default function PGs() {
                     <div className="glass-card" style={{ padding: 24, marginBottom: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
                         <div>
                             <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>City</label>
-                            <input type="text" placeholder="Pune" value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input" />
+                            <input type="text" placeholder="City" value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input" />
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Min Rent (₹)</label>

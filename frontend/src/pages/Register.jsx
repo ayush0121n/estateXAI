@@ -83,7 +83,7 @@ export default function Register() {
                                     <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>
                                         <User size={12} style={{ display: 'inline', marginRight: 4 }} /> College / Institution <span style={{ color: '#6b7298', fontSize: 11 }}>(for smart PG recommendations)</span>
                                     </label>
-                                    <input type="text" placeholder="e.g. SPPU University, MIT Pune" value={form.institution} onChange={e => set('institution', e.target.value)} className="input" />
+                                    <input type="text" placeholder="e.g. Delhi University, IIT Bombay" value={form.institution} onChange={e => set('institution', e.target.value)} className="input" />
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>

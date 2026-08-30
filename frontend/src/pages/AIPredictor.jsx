@@ -106,7 +106,7 @@ export default function AIPredictor() {
                         AI Price Predictor
                     </h1>
                     <p style={{ color: '#b0b7d3', fontSize: '1.1rem', maxWidth: 560, margin: '0 auto' }}>
-                        Trained on <strong style={{ color: 'var(--primary-light)' }}>100,000 Pune real estate samples</strong> across <strong style={{ color: 'var(--primary)' }}>25 localities</strong> using a Gradient Boosting model.
+                        Trained on <strong style={{ color: 'var(--primary-light)' }}>100,000 Pan-India samples</strong> across <strong style={{ color: 'var(--primary)' }}>25+ metropolitan localities</strong> using a Gradient Boosting model.
                     </p>
                     <div className="predictor-badges" style={{ display: 'inline-flex', gap: 20, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
                         {[['Model R²', '97.4%'], ['Training Samples', '100,000'], ['Zones Covered', '25']].map(([k, v]) => (
@@ -124,7 +124,7 @@ export default function AIPredictor() {
 
                         {/* Zone */}
                         <div style={{ gridColumn: '1 / -1' }}>
-                            <label style={labelStyle}>📍 Locality / Zone (Pune)</label>
+                            <label style={labelStyle}>📍 Locality / Zone</label>
                             <select name="zone" value={formData.zone} onChange={handleChange} required style={inputStyle}>
                                 <option value="" disabled>— Select Area —</option>
                                 {ZONES.map(z => <option key={z.value} value={z.value}>{z.label}</option>)}
@@ -257,7 +257,7 @@ export default function AIPredictor() {
                                 <div className="predictor-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                                     {[
                                         { label: 'Model R² Score', value: `${(r2Score * 100).toFixed(1)}%`, sub: 'Accuracy metric', color: '#22d3a5' },
-                                        { label: 'Training Data', value: result.n_training_samples?.toLocaleString() || '100,000', sub: 'Pune samples', color: 'var(--primary)' },
+                                        { label: 'Training Data', value: result.n_training_samples?.toLocaleString() || '100,000', sub: 'National samples', color: 'var(--primary)' },
                                         { label: 'Confidence Band', value: `±12%`, sub: '80% CI interval', color: 'var(--primary-light)' },
                                     ].map(stat => (
                                         <div key={stat.label} style={{ padding: 14, background: 'rgba(10,11,30,0.55)', borderRadius: 10, textAlign: 'center' }}>
@@ -282,7 +282,7 @@ export default function AIPredictor() {
                                 <div style={{ marginTop: 14, padding: 10, background: 'rgba(223, 194, 136,0.06)', borderRadius: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
                                     <Info size={15} color="var(--primary-light)" />
                                     <span style={{ color: '#b0b7d3', fontSize: 12 }}>
-                                        Engine: <strong style={{ color: 'var(--primary-light)' }}>{result.engine || 'GradientBoosting v2.0'}</strong>. Prices based on Pune 2024 market data. For informational purposes only.
+                                        Engine: <strong style={{ color: 'var(--primary-light)' }}>{result.engine || 'GradientBoosting v2.0'}</strong>. Prices based on 2024 national market data. For informational purposes only.
                                     </span>
                                 </div>
                             </div>
