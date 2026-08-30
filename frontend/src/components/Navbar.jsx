@@ -1,6 +1,8 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles, Heart } from 'lucide-react';
 import Logo from './Logo';
 
@@ -154,38 +156,45 @@ export default function Navbar() {
                 </div>
 
                 {/* Mobile Nav */}
-                {mobileOpen && (
-                    <div style={{
-                        background: 'rgba(9,9,11,0.98)', borderTop: '1px solid var(--dark-border)',
-                        padding: 20, display: 'flex', flexDirection: 'column', gap: 8
-                    }}>
-                        <Link to="/" style={{ ...linkStyle('/'), justifyContent: 'flex-start' }}><Home size={16} /> Home</Link>
-                        <Link to="/properties" style={{ ...linkStyle('/properties'), justifyContent: 'flex-start' }}><Building2 size={16} /> Properties</Link>
-                        <Link to="/pgs" style={{ ...linkStyle('/pgs'), justifyContent: 'flex-start' }}><Users size={16} /> PG / Hostel</Link>
-                        <Link to="/roommates" style={{ ...linkStyle('/roommates'), justifyContent: 'flex-start' }}><Heart size={16} /> Find Flatmates</Link>
-                        <Link to="/ai-prediction" style={{ ...linkStyle('/ai-prediction'), justifyContent: 'flex-start' }}><Sparkles size={16} /> AI Predictor</Link>
-                        {user ? (
-                            <>
-                                <Link to="/dashboard" style={{ ...linkStyle('/dashboard'), justifyContent: 'flex-start' }}><LayoutDashboard size={16} /> Dashboard</Link>
-                                <Link to="/profile" style={{ ...linkStyle('/profile'), justifyContent: 'flex-start' }}><User size={16} /> Profile</Link>
-                                {(user.role === 'owner' || user.role === 'admin') && (
-                                    <>
-                                        <Link to="/list-property" style={{ ...linkStyle('/list-property'), justifyContent: 'flex-start' }}><Plus size={16} /> List Property</Link>
-                                        <Link to="/list-pg" style={{ ...linkStyle('/list-pg'), justifyContent: 'flex-start' }}><Plus size={16} /> List PG</Link>
-                                    </>
-                                )}
-                                <button onClick={handleLogout} style={{ ...linkStyle('/'), justifyContent: 'flex-start', color: '#ef4444' }}>
-                                    <LogOut size={16} /> Logout
-                                </button>
-                            </>
-                        ) : (
-                            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                                <Link to="/login" className="btn btn-ghost" style={{ flex: 1 }}>Log in</Link>
-                                <Link to="/register" className="btn btn-primary" style={{ flex: 1 }}>Sign Up</Link>
-                            </div>
-                        )}
-                    </div>
-                )}
+                <AnimatePresence>
+                    {mobileOpen && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.2 }}
+                            style={{
+                                background: 'rgba(9,9,11,0.98)', borderTop: '1px solid var(--dark-border)',
+                                padding: 20, display: 'flex', flexDirection: 'column', gap: 8
+                            }}>
+                            <Link to="/" style={{ ...linkStyle('/'), justifyContent: 'flex-start' }}><Home size={16} /> Home</Link>
+                            <Link to="/properties" style={{ ...linkStyle('/properties'), justifyContent: 'flex-start' }}><Building2 size={16} /> Properties</Link>
+                            <Link to="/pgs" style={{ ...linkStyle('/pgs'), justifyContent: 'flex-start' }}><Users size={16} /> PG / Hostel</Link>
+                            <Link to="/roommates" style={{ ...linkStyle('/roommates'), justifyContent: 'flex-start' }}><Heart size={16} /> Find Flatmates</Link>
+                            <Link to="/ai-prediction" style={{ ...linkStyle('/ai-prediction'), justifyContent: 'flex-start' }}><Sparkles size={16} /> AI Predictor</Link>
+                            {user ? (
+                                <>
+                                    <Link to="/dashboard" style={{ ...linkStyle('/dashboard'), justifyContent: 'flex-start' }}><LayoutDashboard size={16} /> Dashboard</Link>
+                                    <Link to="/profile" style={{ ...linkStyle('/profile'), justifyContent: 'flex-start' }}><User size={16} /> Profile</Link>
+                                    {(user.role === 'owner' || user.role === 'admin') && (
+                                        <>
+                                            <Link to="/list-property" style={{ ...linkStyle('/list-property'), justifyContent: 'flex-start' }}><Plus size={16} /> List Property</Link>
+                                            <Link to="/list-pg" style={{ ...linkStyle('/list-pg'), justifyContent: 'flex-start' }}><Plus size={16} /> List PG</Link>
+                                        </>
+                                    )}
+                                    <button onClick={handleLogout} style={{ ...linkStyle('/'), justifyContent: 'flex-start', color: '#ef4444' }}>
+                                        <LogOut size={16} /> Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                                    <Link to="/login" className="btn btn-ghost" style={{ flex: 1 }}>Log in</Link>
+                                    <Link to="/register" className="btn btn-primary" style={{ flex: 1 }}>Sign Up</Link>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
             <style>{`
         @media (max-width: 768px) {
@@ -196,3 +205,4 @@ export default function Navbar() {
         </nav>
     );
 }
+

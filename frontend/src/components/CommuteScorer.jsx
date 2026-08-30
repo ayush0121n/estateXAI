@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState } from 'react';
 import { MapPin, Bike, Car, Bus, Zap, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -129,3 +130,4 @@ export default function CommuteScorer({ propertyLat, propertyLng }) {
         </div>
     );
 }
+

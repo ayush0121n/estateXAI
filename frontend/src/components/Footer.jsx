@@ -13,7 +13,7 @@ export default function Footer() {
             marginTop: 'auto'
         }}>
             <div className="container">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, marginBottom: 48 }}>
+                <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, marginBottom: 48 }}>
                     {/* Brand */}
                     <div>
                         <Link to="/" style={{ display: 'inline-block', textDecoration: 'none', marginBottom: 16 }}>
@@ -87,10 +87,6 @@ export default function Footer() {
                     </p>
                 </div>
             </div>
-            <style>{`
-        @media (max-width: 1024px) { footer .container > div:first-child { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 640px) { footer .container > div:first-child { grid-template-columns: 1fr !important; } }
-      `}</style>
         </footer>
     );
 }

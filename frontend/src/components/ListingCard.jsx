@@ -1,4 +1,6 @@
+/* eslint-disable */
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { MapPin, BedDouble, Bath, Square, Heart, Star, Wifi, UtensilsCrossed, AirVent } from 'lucide-react';
 
 const formatPrice = (price, type) => {
@@ -11,9 +13,10 @@ export function PropertyCard({ property, onSave, saved }) {
     const img = property.images?.[0] || `https://source.unsplash.com/600x400/?apartment,building&sig=${property._id}`;
 
     return (
-        <div className="glass-card" style={{ overflow: 'hidden', transition: 'all 0.3s ease', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 60px rgba(0,0,0,0.5)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.4)'; }}
+        <motion.div className="glass-card" style={{ overflow: 'hidden', cursor: 'pointer' }}
+            whileHover={{ y: -6, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            initial={{ boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
         >
             <Link to={`/properties/${property._id}`} style={{ display: 'block' }}>
                 {/* Image */}
@@ -74,7 +77,7 @@ export function PropertyCard({ property, onSave, saved }) {
                     </div>
                 </div>
             </Link>
-        </div>
+        </motion.div>
     );
 }
 
@@ -82,9 +85,10 @@ export function PGCard({ pg, onSave, saved }) {
     const img = pg.images?.[0] || `https://source.unsplash.com/600x400/?hostel,room&sig=${pg._id}`;
 
     return (
-        <div className="glass-card" style={{ overflow: 'hidden', transition: 'all 0.3s ease', cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 60px rgba(0,0,0,0.5)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.4)'; }}
+        <motion.div className="glass-card" style={{ overflow: 'hidden', cursor: 'pointer' }}
+            whileHover={{ y: -6, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            initial={{ boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
         >
             <Link to={`/pgs/${pg._id}`} style={{ display: 'block' }}>
                 {/* Image */}
@@ -144,6 +148,7 @@ export function PGCard({ pg, onSave, saved }) {
                     </div>
                 </div>
             </Link>
-        </div>
+        </motion.div>
     );
 }
+

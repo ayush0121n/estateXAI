@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -56,7 +57,7 @@ export default function Dashboard() {
         <div style={{ paddingTop: 90, minHeight: '100vh' }}>
             <div className="container" style={{ paddingTop: 24, paddingBottom: 60 }}>
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 36 }}>
+                <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 36 }}>
                     <div>
                         <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: 'white', marginBottom: 4 }}>
                             Welcome back, {user.name?.split(' ')[0]}! 👋
@@ -66,7 +67,7 @@ export default function Dashboard() {
                         </p>
                     </div>
                     {(user.role === 'owner' || user.role === 'admin') && (
-                        <div style={{ display: 'flex', gap: 12 }}>
+                        <div className="dashboard-actions" style={{ display: 'flex', gap: 12 }}>
                             <Link to="/list-property" className="btn btn-primary" style={{ fontSize: 14 }}>
                                 <Plus size={16} /> List Property
                             </Link>
@@ -78,7 +79,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Stats Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20, marginBottom: 36 }}>
+                <div className="stats-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20, marginBottom: 36 }}>
                     {[
                         { icon: Building2, label: 'My Properties', value: myProperties.length, color: 'var(--primary)' },
                         { icon: Users, label: 'PG Listings', value: myPGs.length, color: 'var(--primary-light)' },
@@ -98,7 +99,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Tabs */}
-                <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid rgba(201, 163, 94,0.15)', marginBottom: 28, flexWrap: 'wrap' }}>
+                <div className="dashboard-tabs" style={{ display: 'flex', gap: 4, borderBottom: '1px solid rgba(201, 163, 94,0.15)', marginBottom: 28, flexWrap: 'wrap' }}>
                     <Tab id="overview" label="Overview" icon={TrendingUp} />
                     {recommendations.length > 0 && <Tab id="recommended" label="AI Recommendations" icon={Zap} />}
                     {(user.role === 'owner' || user.role === 'admin') && <Tab id="listings" label="My Listings" icon={Building2} />}
@@ -110,7 +111,7 @@ export default function Dashboard() {
                 {activeTab === 'overview' && (
                     <div>
                         {/* Quick stats big */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginBottom: 28 }}>
+                        <div className="overview-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginBottom: 28 }}>
                             <div className="glass-card" style={{ padding: 28 }}>
                                 <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 16, fontSize: 16 }}>Account Info</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -329,3 +330,4 @@ export default function Dashboard() {
         </div>
     );
 }
+

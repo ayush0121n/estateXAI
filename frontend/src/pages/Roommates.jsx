@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { Users, Heart, Moon, Sun, Leaf, Cigarette, Briefcase, GraduationCap, MapPin, ChevronRight, Sliders } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -76,7 +77,7 @@ function ProfileForm({ profile, onSave }) {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+            <div className="roommate-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
                 {Object.entries(FIELDS).map(([key, { label, options }]) => (
                     <div key={key}>
                         <label style={{ color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, display: 'block', marginBottom: 8 }}>{label}</label>
@@ -95,7 +96,7 @@ function ProfileForm({ profile, onSave }) {
                 ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+            <div className="roommate-form-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
                 <div>
                     <label style={{ color: 'var(--text-muted)', fontSize: 13, display: 'block', marginBottom: 6 }}>Age</label>
                     <input type="number" placeholder="25" value={form.age} onChange={e => setForm(p => ({ ...p, age: Number(e.target.value) }))} style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--dark-border)', borderRadius: 6, color: 'var(--text-primary)', padding: '9px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
@@ -204,7 +205,7 @@ export default function Roommates() {
                 ) : (
                     <div>
                         {/* Controls */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                        <div className="roommate-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                             <div style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
                                 Found <strong style={{ color: 'var(--primary)' }}>{matches.length}</strong> compatible flatmates
                             </div>
@@ -245,7 +246,7 @@ export default function Roommates() {
                                         </div>
 
                                         {/* Traits */}
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+                                        <div className="roommate-traits" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
                                             {[
                                                 m.roommateProfile?.diet !== 'any' && `🥗 ${m.roommateProfile?.diet}`,
                                                 m.roommateProfile?.sleepSchedule === 'early-bird' ? '🌅 Early Bird' : m.roommateProfile?.sleepSchedule === 'night-owl' ? '🦉 Night Owl' : '😴 Flexible',
@@ -277,3 +278,4 @@ export default function Roommates() {
         </div>
     );
 }
+

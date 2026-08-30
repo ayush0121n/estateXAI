@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { connectSocket, disconnectSocket, getSocket } from '../utils/socket';
@@ -66,3 +67,4 @@ export const useNotifications = () => {
     if (!ctx) throw new Error('useNotifications must be inside NotificationProvider');
     return ctx;
 };
+

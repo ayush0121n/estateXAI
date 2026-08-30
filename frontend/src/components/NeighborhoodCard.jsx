@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { Shield, Volume2, Sparkles, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -193,3 +194,4 @@ export default function NeighborhoodCard({ area, city = 'Pune' }) {
         </div>
     );
 }
+

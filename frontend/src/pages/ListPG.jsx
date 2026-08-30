@@ -97,7 +97,7 @@ export default function ListPG() {
                             <Field label="Description" required>
                                 <textarea required className="input" placeholder="Describe your PG..." value={form.description} onChange={e => set('description', e.target.value)} style={{ resize: 'vertical', minHeight: 90 }} />
                             </Field>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 <Field label="Type">
                                     <select className="input" value={form.type} onChange={e => set('type', e.target.value)}>
                                         <option value="pg">PG</option>
@@ -117,7 +117,7 @@ export default function ListPG() {
                     </Section>
 
                     <Section title="💰 Rent & Capacity">
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                        <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                             <Field label="Rent per Month (₹)" required>
                                 <input required type="number" className="input" placeholder="8500" value={form.rentPerMonth} onChange={e => set('rentPerMonth', e.target.value)} />
                             </Field>
@@ -148,7 +148,7 @@ export default function ListPG() {
                             <Field label="Full Address" required>
                                 <input required className="input" placeholder="e.g. 45, Aundh, Pune" value={form.location.address} onChange={e => setLoc('address', e.target.value)} />
                             </Field>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                                 <Field label="City">
                                     <input className="input" value={form.location.city} onChange={e => setLoc('city', e.target.value)} />
                                 </Field>
@@ -205,7 +205,7 @@ export default function ListPG() {
                     </Section>
 
                     <Section title="🖼️ Images (Optional)">
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+                        <div className="image-add-row" style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
                             <input className="input" placeholder="Paste image URL..." value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
                             <button type="button" onClick={addImage} className="btn btn-secondary"><Plus size={16} /></button>
                         </div>
@@ -224,7 +224,7 @@ export default function ListPG() {
                         )}
                     </Section>
 
-                    <div style={{ display: 'flex', gap: 14 }}>
+                    <div className="form-actions" style={{ display: 'flex', gap: 14 }}>
                         <button type="button" onClick={() => navigate(-1)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
                         <button type="submit" disabled={loading} className="btn btn-primary" style={{ flex: 2, padding: '14px', fontSize: 16, borderRadius: 12 }}>
                             {loading ? 'Listing...' : '🚀 List PG / Hostel'}

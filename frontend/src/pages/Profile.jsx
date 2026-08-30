@@ -65,7 +65,7 @@ export default function Profile() {
                 <p style={{ color: '#6b7298', marginBottom: 28 }}>Manage your preferences, saved items, and search history</p>
 
                 {/* Top Profile Card */}
-                <div className="glass-card" style={{ padding: 28, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+                <div className="glass-card profile-card" style={{ padding: 28, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                     <div style={{ width: 72, height: 72, borderRadius: '50%', background: `linear-gradient(135deg, ${roleColor}, ${roleColor}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: 'white', boxShadow: `0 8px 30px ${roleColor}50` }}>
                         {user?.name?.[0]?.toUpperCase() || 'U'}
                     </div>
@@ -79,7 +79,7 @@ export default function Profile() {
                 </div>
 
                 {/* Tabs */}
-                <div style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 24, paddingBottom: 4 }}>
+                <div className="profile-tabs" style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 24, paddingBottom: 4 }}>
                     {[
                         { id: 'info', label: 'Edit Info', icon: <User size={15} /> },
                         { id: 'preferences', label: 'Preferences', icon: <SlidersHorizontal size={15} /> },
@@ -137,7 +137,7 @@ export default function Profile() {
                     <div className="glass-card" style={{ padding: 28 }}>
                         <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid rgba(201, 163, 94,0.2)' }}>Property Search Preferences</h3>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                            <div className="pref-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                                 <div>
                                     <label style={{ fontSize: 13, color: '#b0b7d3', display: 'block', marginBottom: 6 }}>Min Budget (₹)</label>
                                     <input type="number" className="input" value={form.preferences.budgetMin} onChange={e => setPref('budgetMin', Number(e.target.value))} />

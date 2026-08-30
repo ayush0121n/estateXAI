@@ -25,6 +25,20 @@
   --border-radius-sm: 4px;
   --border-radius-lg: 12px;
   --transition: all 0.25s ease-out;
+
+  /* Fluid Typography */
+  --fs-sm: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --fs-base: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --fs-lg: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --fs-xl: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+  --fs-2xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --fs-3xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --fs-4xl: clamp(1.75rem, 1.4rem + 1.75vw, 2.5rem);
+  
+  /* Fluid Spacing */
+  --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
 }
 
 *, *::before, *::after {
@@ -42,6 +56,7 @@ body {
   background: var(--dark);
   color: var(--text-primary);
   line-height: 1.6;
+  font-size: var(--fs-base);
   overflow-x: hidden;
   min-height: 100vh;
 }
@@ -276,3 +291,6 @@ select.input {
               radial-gradient(ellipse at 80% 20%, rgba(67, 229, 247, 0.15) 0%, transparent 50%),
               radial-gradient(ellipse at 60% 80%, rgba(255, 101, 132, 0.1) 0%, transparent 50%);
 }
+
+/* Mobile helper defaults */
+.show-mobile, .show-mobile-flex { display: none; }

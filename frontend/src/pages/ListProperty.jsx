@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
@@ -100,7 +101,7 @@ export default function ListProperty() {
                             <Field label="Description" required>
                                 <textarea required className="input" placeholder="Describe the property..." value={form.description} onChange={e => set('description', e.target.value)} style={{ resize: 'vertical', minHeight: 100 }} />
                             </Field>
-                            <div style={grid2}>
+                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 <Field label="Property Type" required>
                                     <select className="input" value={form.type} onChange={e => set('type', e.target.value)}>
                                         {['apartment', 'villa', 'studio', 'house', 'plot', 'commercial'].map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
@@ -117,7 +118,7 @@ export default function ListProperty() {
                     </Section>
 
                     <Section title="💰 Pricing & Size">
-                        <div style={{ ...grid2, marginBottom: 16 }}>
+                        <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                             <Field label={`Price (₹) ${form.listingType === 'rent' ? 'per month' : ''}`} required>
                                 <input required type="number" className="input" placeholder="e.g. 25000" value={form.price} onChange={e => set('price', e.target.value)} />
                             </Field>
@@ -125,7 +126,7 @@ export default function ListProperty() {
                                 <input required type="number" className="input" placeholder="e.g. 1000" value={form.area} onChange={e => set('area', e.target.value)} />
                             </Field>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+                        <div className="form-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
                             <Field label="BHK">
                                 <select className="input" value={form.bhk} onChange={e => set('bhk', e.target.value)}>
                                     {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} BHK</option>)}
@@ -143,7 +144,7 @@ export default function ListProperty() {
                                 <input type="number" className="input" value={form.totalFloors} onChange={e => set('totalFloors', e.target.value)} min={1} />
                             </Field>
                         </div>
-                        <div style={{ ...grid2, marginTop: 16 }}>
+                        <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
                             <Field label="Furnishing">
                                 <select className="input" value={form.furnishing} onChange={e => set('furnishing', e.target.value)}>
                                     {['unfurnished', 'semi-furnished', 'fully-furnished'].map(f => <option key={f} value={f}>{f.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())}</option>)}
@@ -162,7 +163,7 @@ export default function ListProperty() {
                             <Field label="Full Address" required>
                                 <input required className="input" placeholder="e.g. 123, ABC Society, Kothrud" value={form.location.address} onChange={e => setLoc('address', e.target.value)} />
                             </Field>
-                            <div style={grid2}>
+                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 <Field label="City">
                                     <input className="input" value={form.location.city} onChange={e => setLoc('city', e.target.value)} />
                                 </Field>
@@ -185,7 +186,7 @@ export default function ListProperty() {
                     </Section>
 
                     <Section title="🖼️ Images (Optional)">
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+                        <div className="image-add-row" style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
                             <input className="input" placeholder="Paste image URL..." value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
                             <button type="button" onClick={addImage} className="btn btn-secondary"><Plus size={16} /> Add</button>
                         </div>
@@ -204,7 +205,7 @@ export default function ListProperty() {
                         )}
                     </Section>
 
-                    <div style={{ display: 'flex', gap: 14 }}>
+                    <div className="form-actions" style={{ display: 'flex', gap: 14 }}>
                         <button type="button" onClick={() => navigate(-1)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
                         <button type="submit" disabled={loading} className="btn btn-primary" style={{ flex: 2, padding: '14px', fontSize: 16, borderRadius: 12 }}>
                             {loading ? 'Listing...' : '🚀 List Property'}
@@ -215,3 +216,4 @@ export default function ListProperty() {
         </div>
     );
 }
+

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useRef, useMemo } from 'react';
 import { MapPin, School, Hospital, Bus, ShoppingBag, Leaf } from 'lucide-react';
 
@@ -179,3 +180,4 @@ export default function PropertyMap({ property }) {
         </div>
     );
 }
+

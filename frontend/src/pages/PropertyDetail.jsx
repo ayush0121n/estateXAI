@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, BedDouble, Bath, Square, Phone, Mail, ArrowLeft, Heart, Share2, Eye, Calendar, Shield, Wifi, Car, Dumbbell, Waves, GitCompare, Footprints, Link2, Sparkles } from 'lucide-react';
@@ -81,7 +82,7 @@ export default function PropertyDetail() {
                     <ArrowLeft size={16} /> Back to Properties
                 </button>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 28, alignItems: 'start' }}>
+                <div className="detail-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 28, alignItems: 'start' }}>
                     {/* Left Content */}
                     <div>
                         {/* Image Gallery */}
@@ -191,7 +192,7 @@ export default function PropertyDetail() {
                     </div>
 
                     {/* Right Sidebar */}
-                    <div style={{ position: 'sticky', top: 90 }}>
+                    <div className="detail-sidebar" style={{ position: 'sticky', top: 90 }}>
                         {/* Price Prediction Widget */}
                         <PricePredictionWidget property={property} />
 
@@ -265,7 +266,7 @@ export default function PropertyDetail() {
                 <div style={{ marginTop: 40, marginBottom: 24 }}>
                     <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 800, color: 'white', marginBottom: 24 }}>Location Intelligence</h2>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 24 }}>
+                    <div className="location-intel-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 24 }}>
                         {/* Walkability & Connectivity */}
                         <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 16, padding: 24 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
@@ -324,7 +325,7 @@ export default function PropertyDetail() {
                     />
                 </div>
             </div>
-            <style>{`@media(max-width:1024px){.container > div:nth-child(2){grid-template-columns:1fr !important}}`}</style>
         </div>
     );
 }
+

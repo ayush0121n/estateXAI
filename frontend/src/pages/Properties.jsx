@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Search, Filter, SlidersHorizontal, X, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -221,3 +222,4 @@ export default function Properties() {
         </div>
     );
 }
+

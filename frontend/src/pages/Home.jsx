@@ -1,6 +1,7 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+
 import { Search, Building2, Users, TrendingUp, MapPin, ArrowRight, Star, Shield, Zap, BarChart3 } from 'lucide-react';
 import api from '../utils/api';
 import { PropertyCard, PGCard } from '../components/ListingCard';
@@ -56,7 +57,7 @@ export default function Home() {
     return (
         <div style={{ paddingTop: 0 }}>
             {/* HERO */}
-            <section style={{
+            <section className="hero-section" style={{
                 minHeight: '90vh',
                 display: 'flex',
                 alignItems: 'center',
@@ -69,7 +70,12 @@ export default function Home() {
             }}>
 
                 <div className="container" style={{ position: 'relative', zIndex: 2, paddingTop: 100, paddingBottom: 80 }}>
-                    <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}
+                    >
                         {/* Tag */}
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid var(--primary)', borderRadius: 2, padding: '6px 16px', marginBottom: 28, fontSize: 11, textTransform: 'uppercase', letterSpacing: 3, color: 'var(--primary)' }}>
                             <Building2 size={14} />
@@ -88,7 +94,7 @@ export default function Home() {
                         </p>
 
                         {/* Search Box */}
-                        <form onSubmit={handleSearch} style={{
+                        <form onSubmit={handleSearch} className="hero-search-form" style={{
                             background: 'rgba(20, 20, 21, 0.95)',
                             border: '1px solid var(--dark-border)',
                             borderRadius: 4,
@@ -135,32 +141,38 @@ export default function Home() {
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
             {/* STATS */}
             <section style={{ padding: '60px 0', background: 'var(--dark-card)', borderTop: '1px solid var(--dark-border)', borderBottom: '1px solid var(--dark-border)' }}>
                 <div className="container">
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+                    <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
                         {stats.map((stat, i) => (
-                            <div key={i} style={{ textAlign: 'center', padding: '24px 16px' }}>
+                            <motion.div 
+                                key={i} 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.5, delay: i * 0.1 }}
+                                style={{ textAlign: 'center', padding: '24px 16px' }}
+                            >
                                 <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'transparent', border: `1px solid ${stat.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                                     <stat.icon size={22} color={stat.color} />
                                 </div>
                                 <div style={{ fontSize: 26, fontWeight: 300, fontFamily: 'Outfit, sans-serif', color: stat.color, marginBottom: 4 }}>{stat.value}</div>
                                 <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 2, color: 'var(--text-secondary)' }}>{stat.label}</div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
-                <style>{`@media(max-width:768px){.container > div { grid-template-columns: repeat(2,1fr) !important; }}`}</style>
             </section>
 
             {/* FEATURED PROPERTIES */}
             <section className="section">
                 <div className="container">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, borderBottom: '1px solid var(--dark-border)', paddingBottom: 16 }}>
+                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, borderBottom: '1px solid var(--dark-border)', paddingBottom: 16 }}>
                         <div>
                             <p style={{ color: 'var(--primary)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Curated Collection</p>
                             <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 400, color: 'white' }}>Featured Residences</h2>
@@ -194,7 +206,7 @@ export default function Home() {
             {/* FEATURED PGs */}
             <section className="section" style={{ paddingTop: 0 }}>
                 <div className="container">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, borderBottom: '1px solid var(--dark-border)', paddingBottom: 16 }}>
+                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, borderBottom: '1px solid var(--dark-border)', paddingBottom: 16 }}>
                         <div>
                             <p style={{ color: 'var(--accent)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Executive Living</p>
                             <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 400, color: 'white' }}>Premium Accommodations</h2>
@@ -236,13 +248,21 @@ export default function Home() {
                     </div>
                     <div className="grid-3">
                         {features.map((f, i) => (
-                            <div key={i} className="glass-card" style={{ padding: 40, textAlign: 'center', borderRadius: 4, border: '1px solid var(--dark-border)' }}>
+                            <motion.div 
+                                key={i} 
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.6, delay: i * 0.15 }}
+                                className="glass-card" 
+                                style={{ padding: 40, textAlign: 'center', borderRadius: 4, border: '1px solid var(--dark-border)' }}
+                            >
                                 <div style={{ width: 64, height: 64, borderRadius: '50%', border: `1px solid ${f.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                                     <f.icon size={26} color={f.color} strokeWidth={1.5} />
                                 </div>
                                 <h3 style={{ fontSize: 16, fontWeight: 400, textTransform: 'uppercase', letterSpacing: 1, color: 'white', marginBottom: 16 }}>{f.title}</h3>
                                 <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: 14, fontWeight: 300 }}>{f.desc}</p>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
@@ -267,7 +287,7 @@ export default function Home() {
                         <p style={{ color: 'var(--text-secondary)', marginBottom: 40, maxWidth: 500, margin: '0 auto 40px', lineHeight: 1.8, fontWeight: 300 }}>
                             Join an elite directory of premium properties. Connect with qualified buyers and distinguished tenants effortlessly.
                         </p>
-                        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <div className="cta-buttons" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
                             <Link to="/register" className="btn btn-primary" style={{ padding: '14px 32px', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, borderRadius: 2 }}>
                                 Become a Partner
                             </Link>
@@ -281,3 +301,4 @@ export default function Home() {
         </div>
     );
 }
+

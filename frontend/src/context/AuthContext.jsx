@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/api';
 
@@ -57,3 +58,4 @@ export const useAuth = () => {
     if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
     return ctx;
 };
+

@@ -1,0 +1,154 @@
+/* ============================================================
+   EstateXAi — Full Mobile Responsiveness
+   Breakpoints: 1024px (tablet), 768px (mobile), 480px (small)
+   ============================================================ */
+
+html { -webkit-text-size-adjust: 100%; }
+
+button, a, select, input, textarea { touch-action: manipulation; }
+
+/* Prevent horizontal overflow globally */
+* { box-sizing: border-box; }
+img, video, iframe, embed, object { max-width: 100%; height: auto; object-fit: cover; }
+table { word-break: break-word; }
+
+/* ================================================================
+   TABLET — 1024px
+   ================================================================ */
+@media (max-width: 1024px) {
+  /* Property / PG Detail two-col → single */
+  .detail-layout { grid-template-columns: 1fr !important; }
+  .detail-sidebar { position: static !important; }
+  .pg-bottom-grid { grid-template-columns: 1fr !important; }
+  .location-intel-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ================================================================
+   MOBILE — 768px
+   ================================================================ */
+@media (max-width: 768px) {
+
+  /* Container */
+  .container { padding: 0 14px !important; }
+  .section { padding: 48px 0 !important; }
+
+  /* Touch Targets */
+  button, input, select, .btn, a.btn { min-height: 44px; }
+
+  /* Grids */
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; }
+
+  /* Navbar */
+  .desktop-nav { display: none !important; }
+  .mobile-menu-btn { display: flex !important; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+
+  /* HOME — hero search */
+  .hero-search-form { flex-direction: column !important; gap: 10px !important; }
+  .hero-search-form select,
+  .hero-search-form button { width: 100% !important; }
+  .hero-section { background-attachment: scroll !important; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .section-header { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+
+  /* CTA */
+  .cta-buttons { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+  .cta-buttons a, .cta-buttons button { text-align: center !important; }
+
+  /* Filter bars */
+  .filter-bar { flex-direction: column !important; align-items: stretch !important; }
+  .filter-bar > * { width: 100% !important; min-width: unset !important; }
+  .gender-filter-group { flex-wrap: wrap !important; gap: 6px !important; }
+  .gender-filter-group button { flex: 1 !important; min-width: 70px !important; }
+
+  /* Detail pages */
+  .gallery-hero { height: 240px !important; }
+  .quick-stats { gap: 12px !important; }
+
+  /* Dashboard */
+  .dashboard-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+  .dashboard-actions { width: 100% !important; gap: 10px !important; }
+  .dashboard-actions a { flex: 1 !important; font-size: 13px !important; }
+  .dashboard-tabs { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; flex-wrap: nowrap !important; padding-bottom: 4px !important; }
+  .dashboard-tabs button { white-space: nowrap !important; flex-shrink: 0 !important; padding: 8px 14px !important; font-size: 13px !important; }
+  .overview-grid { grid-template-columns: 1fr !important; }
+  .listing-row { grid-template-columns: 64px 1fr !important; gap: 10px !important; }
+  .listing-row-price { display: none !important; }
+
+  /* Profile */
+  .profile-card { flex-direction: column !important; text-align: center !important; }
+  .profile-tabs { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; flex-wrap: nowrap !important; padding-bottom: 4px !important; }
+  .profile-tabs button { white-space: nowrap !important; flex-shrink: 0 !important; padding: 8px 12px !important; font-size: 12px !important; }
+  .pref-grid { grid-template-columns: 1fr !important; }
+
+  /* AI Predictor */
+  .predictor-form { grid-template-columns: 1fr !important; }
+  .predictor-stats { grid-template-columns: 1fr !important; }
+  .predictor-badges { flex-direction: column !important; align-items: center !important; }
+
+  /* Compare */
+  .compare-search-form { flex-direction: column !important; gap: 10px !important; }
+  .compare-search-form button, .compare-search-form input { width: 100% !important; }
+  .compare-table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+
+  /* Roommates */
+  .roommate-form-grid { grid-template-columns: 1fr !important; }
+  .roommate-form-grid-3 { grid-template-columns: 1fr !important; }
+  .roommate-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+  .roommate-header button { width: 100% !important; }
+
+  /* List Property / List PG */
+  .form-grid-2 { grid-template-columns: 1fr !important; }
+  .form-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .form-actions { flex-direction: column !important; }
+  .form-actions button { flex: unset !important; width: 100% !important; }
+  .image-add-row { flex-direction: column !important; gap: 10px !important; }
+  .image-add-row button { width: 100% !important; }
+
+  /* Auth */
+  .auth-card { padding: 24px 18px !important; }
+
+  /* Misc */
+  .pagination { flex-wrap: wrap !important; gap: 6px !important; }
+  .empty-state { padding: 48px 16px !important; }
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: block !important; }
+  .show-mobile-flex { display: flex !important; }
+}
+
+/* ================================================================
+   SMALL MOBILE — 480px
+   ================================================================ */
+@media (max-width: 480px) {
+  body { font-size: 14px; }
+
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+
+  /* Quick-stats horizontal scroll on tiny screens */
+  .quick-stats {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+  }
+  .quick-stats > div { flex-shrink: 0 !important; }
+
+  /* Thumbnail strip horizontal scroll */
+  .thumb-strip { flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+
+  /* Dashboard stat cards 2-col */
+  .stats-cards-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+
+  /* Predictor price large text */
+  .predictor-price { font-size: 34px !important; }
+
+  /* Form-grid-4 → 1 col */
+  .form-grid-4 { grid-template-columns: 1fr !important; }
+
+  /* Roommate traits wrap */
+  .roommate-traits { flex-wrap: wrap !important; }
+
+  /* Profile avatar center */
+  .profile-avatar { margin: 0 auto 12px !important; }
+}
