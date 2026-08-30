@@ -4,7 +4,7 @@ import { MapPin, Bike, Car, Bus, Zap, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://estatexai.onrender.com');
 
 export default function CommuteScorer({ propertyLat, propertyLng }) {
     const [workplace, setWorkplace] = useState('');

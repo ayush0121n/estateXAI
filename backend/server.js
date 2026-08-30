@@ -46,8 +46,8 @@ app.emitNotification = (userId, event, data) => {
 
 // CORS
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
+  process.env.NODE_ENV !== 'production' && 'http://localhost:5173',
+  process.env.NODE_ENV !== 'production' && 'http://localhost:3000',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 

@@ -6,7 +6,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Building2, Users, TrendingUp, MapPin, ArrowRight, Star, Shield, Zap, BarChart3 } from 'lucide-react';
 import api from '../utils/api';
 import { PropertyCard, PGCard } from '../components/ListingCard';
+import DepthCarousel from '../components/DepthCarousel';
+import HeroParallaxDemo from '../components/HeroParallaxDemo';
 
+const carouselItems = [
+  { image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800', alt: 'Luxury Home 1' },
+  { image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800', alt: 'Luxury Home 2' },
+  { image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=800', alt: 'Luxury Home 3' },
+  { image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800', alt: 'Luxury Home 4' },
+  { image: 'https://images.unsplash.com/photo-1600566753086-00f18efc2294?auto=format&fit=crop&q=80&w=800', alt: 'Luxury Home 5' }
+];
 const stats = [
     { icon: Building2, label: 'Exclusive Properties', value: '2,400+', color: 'var(--primary)' },
     { icon: Users, label: 'Premium Clients', value: '8,500+', color: '#94a3b8' },
@@ -57,6 +66,8 @@ export default function Home() {
 
     return (
         <div style={{ paddingTop: 0 }}>
+            <HeroParallaxDemo />
+            
             {/* HERO */}
             <section className="hero-section" style={{
                 minHeight: '90vh',
@@ -147,9 +158,9 @@ export default function Home() {
             </section>
 
             {/* STATS */}
-            <section style={{ padding: '60px 0', background: 'var(--dark-card)', borderTop: '1px solid var(--dark-border)', borderBottom: '1px solid var(--dark-border)' }}>
+            <section style={{ padding: 'clamp(40px, 5vw, 60px) 0', background: 'var(--dark-card)', borderTop: '1px solid var(--dark-border)', borderBottom: '1px solid var(--dark-border)' }}>
                 <div className="container">
-                    <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+                    <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24 }}>
                         {stats.map((stat, i) => (
                             <motion.div 
                                 key={i} 
@@ -162,11 +173,43 @@ export default function Home() {
                                 <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'transparent', border: `1px solid ${stat.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                                     <stat.icon size={22} color={stat.color} />
                                 </div>
-                                <div style={{ fontSize: 26, fontWeight: 300, fontFamily: 'Outfit, sans-serif', color: stat.color, marginBottom: 4 }}>{stat.value}</div>
+                                <div style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 300, fontFamily: 'Outfit, sans-serif', color: stat.color, marginBottom: 4 }}>{stat.value}</div>
                                 <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 2, color: 'var(--text-secondary)' }}>{stat.label}</div>
                             </motion.div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* GALLERY CAROUSEL */}
+            <section className="section" style={{ padding: 'clamp(40px, 8vw, 80px) 0', background: 'var(--dark-card)', borderBottom: '1px solid var(--dark-border)' }}>
+                <div className="container" style={{ textAlign: 'center', marginBottom: 'clamp(20px, 5vw, 40px)', padding: '0 20px' }}>
+                    <p style={{ color: 'var(--primary)', fontSize: 'clamp(10px, 2vw, 11px)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Visual Tour</p>
+                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 400, color: 'white', lineHeight: 1.2 }}>Exceptional Architecture</h2>
+                </div>
+                <div style={{ height: 'clamp(380px, 60vh, 500px)', position: 'relative', width: '100%', overflow: 'hidden' }}>
+                  <DepthCarousel
+                    items={carouselItems}
+                    depth={220}
+                    spread={90}
+                    tilt={22}
+                    tiltDirection="right"
+                    perspective={1400}
+                    visibleCards={typeof window !== 'undefined' && window.innerWidth < 768 ? 2 : 4}
+                    falloff={0.2}
+                    blur={6}
+                    autoplay={true}
+                    loop
+                    cardWidth={typeof window !== 'undefined' && window.innerWidth < 768 ? 260 : 300}
+                    cardHeight={typeof window !== 'undefined' && window.innerWidth < 768 ? 340 : 380}
+                    radius={18}
+                    tint="#05060a"
+                    duration={700}
+                    ease="power3.out"
+                    autoplayDelay={3200}
+                    showControls={typeof window !== 'undefined' && window.innerWidth > 768}
+                    showIndicators
+                  />
                 </div>
             </section>
 

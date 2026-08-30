@@ -1,0 +1,121 @@
+.hero-parallax-container {
+  height: 300vh;
+  padding-top: 10rem;
+  padding-bottom: 10rem;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.hero-parallax-header {
+  max-width: 80rem;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5rem 1rem;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+
+@media (min-width: 768px) {
+  .hero-parallax-header {
+    padding-top: 10rem;
+    padding-bottom: 10rem;
+  }
+}
+
+.hero-parallax-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+@media (min-width: 768px) {
+  .hero-parallax-title {
+    font-size: 4.5rem;
+  }
+}
+
+.hero-parallax-desc {
+  max-width: 42rem;
+  font-size: 1rem;
+  margin-top: 2rem;
+  color: #e5e5e5;
+}
+
+@media (min-width: 768px) {
+  .hero-parallax-desc {
+    font-size: 1.25rem;
+  }
+}
+
+.hero-parallax-row {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5rem;
+  gap: 5rem;
+}
+
+.hero-parallax-row.reverse {
+  flex-direction: row-reverse;
+}
+
+.hero-parallax-product {
+  height: 24rem;
+  width: 30rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.hero-parallax-product-link {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.hero-parallax-product:hover .hero-parallax-product-link {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.hero-parallax-product-img {
+  object-fit: cover;
+  object-position: left top;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  inset: 0;
+}
+
+.hero-parallax-product-overlay {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  background-color: black;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.hero-parallax-product:hover .hero-parallax-product-overlay {
+  opacity: 0.8;
+}
+
+.hero-parallax-product-title {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  opacity: 0;
+  color: white;
+  transition: opacity 0.3s ease;
+}
+
+.hero-parallax-product:hover .hero-parallax-product-title {
+  opacity: 1;
+}
