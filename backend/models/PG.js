@@ -84,6 +84,10 @@ const pgSchema = new mongoose.Schema({
     rating: { type: Number, default: 0, min: 0, max: 5 },
     reviewCount: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
+    // Location intelligence
+    walkabilityScore: { type: Number, default: 0, min: 0, max: 100 },
+    connectivityScore: { type: Number, default: 0, min: 0, max: 100 },
+    futureDevelopment: { type: String, default: '' },
     reviews: [{
         user: { type: String, required: true },
         userType: { type: String, enum: ['owner', 'user', 'agent'], default: 'user' },

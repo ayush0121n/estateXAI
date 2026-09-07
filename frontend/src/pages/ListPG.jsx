@@ -41,6 +41,7 @@ export default function ListPG() {
         amenities: { wifi: false, food: false, ac: false, laundry: false, parking: false, housekeeping: false, gym: false, studyRoom: false, cctv: false, powerBackup: false, hotWater: true, refrigerator: false, tv: false },
         meals: { breakfast: false, lunch: false, dinner: false },
         rules: { curfewTime: '', guestsAllowed: false, smokingAllowed: false, petsAllowed: false },
+        walkabilityScore: 0, connectivityScore: 0, futureDevelopment: '',
         totalRooms: 10, availableRooms: 5,
         images: []
     });
@@ -171,6 +172,22 @@ export default function ListPG() {
                                         ))}
                                     </div>
                                 )}
+                            </Field>
+                        </div>
+                    </Section>
+
+                    <Section title="🧠 Location Intelligence (Optional)">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                                <Field label="Walkability Score (0-100)">
+                                    <input type="number" className="input" value={form.walkabilityScore} onChange={e => set('walkabilityScore', Number(e.target.value))} min={0} max={100} />
+                                </Field>
+                                <Field label="Connectivity Score (0-100)">
+                                    <input type="number" className="input" value={form.connectivityScore} onChange={e => set('connectivityScore', Number(e.target.value))} min={0} max={100} />
+                                </Field>
+                            </div>
+                            <Field label="Future Development Notes">
+                                <textarea className="input" placeholder="e.g. Upcoming metro station in 500m..." value={form.futureDevelopment} onChange={e => set('futureDevelopment', e.target.value)} style={{ resize: 'vertical', minHeight: 60 }} />
                             </Field>
                         </div>
                     </Section>
