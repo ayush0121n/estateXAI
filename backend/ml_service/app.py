@@ -1,14 +1,13 @@
 """
-app.py  —  EstateXAi Price Prediction FastAPI Microservice v2.0
-================================================================
-Uses a Gradient Boosting primary model + Random Forest for confidence intervals.
-Dataset: 15,000 synthetic Pune samples across 25 localities.
+app.py  —  EstateXAi Price Prediction FastAPI Microservice v3.0 (Pan-India)
+===========================================================================
+Serves two Gradient Boosting models:
+1. Property Price Model
+2. PG Rent Model
 
-Endpoint: POST /predict
-  Body: { zone, prop_type, listing_type, furnishing, bhk, area, bathrooms, age, amenities_count, floor?, total_floors? }
-  Returns: { success, predicted_price, confidence_low, confidence_high, predicted_label, range_label, model_r2, engine }
-
-Run: uvicorn app:app --host 0.0.0.0 --port 8001 --reload
+Endpoints:
+- POST /predict (routes to property or pg based on 'category')
+- GET /health
 """
 
 from fastapi import FastAPI, HTTPException
@@ -20,7 +19,7 @@ import numpy as np
 import os
 import json
 
-app = FastAPI(title="EstateXAi Price Prediction API v2.0", version="2.0.0")
+app = FastAPI(title="EstateXAi Price Prediction API v3.0", version="3.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,103 +29,131 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── Load Model Bundle ────────────────────────────────────────────────────────
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.pkl')
-if not os.path.exists(MODEL_PATH):
-    raise RuntimeError("model.pkl not found. Run `python train_model.py` first!")
+# ─── Load Model Bundles ───────────────────────────────────────────────────────
+BASE_DIR = os.path.dirname(__file__)
+PROP_MODEL_PATH = os.path.join(BASE_DIR, 'model.pkl')
+PG_MODEL_PATH = os.path.join(BASE_DIR, 'pg_model.pkl')
+META_PATH = os.path.join(BASE_DIR, 'metadata.json')
 
-bundle = joblib.load(MODEL_PATH)
-model = bundle['model']                         # GradientBoosting (primary)
-rf_model = bundle.get('rf_model')              # RandomForest (confidence intervals)
-le_zone = bundle['le_zone']
-le_type = bundle['le_type']
-le_listing = bundle['le_listing']
-le_furn = bundle['le_furn']
-FEATURES = bundle['features']
-METRICS = bundle.get('metrics', {})
+prop_bundle = None
+pg_bundle = None
+METADATA = {}
 
-META_PATH = os.path.join(os.path.dirname(__file__), 'metadata.json')
-with open(META_PATH) as f:
-    METADATA = json.load(f)
+def load_models():
+    global prop_bundle, pg_bundle, METADATA
+    if os.path.exists(PROP_MODEL_PATH):
+        prop_bundle = joblib.load(PROP_MODEL_PATH)
+        print(f"[OK] Property Model loaded (R2: {prop_bundle['metrics']['r2']:.4f})")
+    else:
+        print("[WARN] Property Model not found.")
 
+    if os.path.exists(PG_MODEL_PATH):
+        pg_bundle = joblib.load(PG_MODEL_PATH)
+        print(f"[OK] PG Model loaded (R2: {pg_bundle['metrics']['r2']:.4f})")
+    else:
+        print("[WARN] PG Model not found.")
+
+    if os.path.exists(META_PATH):
+        with open(META_PATH) as f:
+            METADATA = json.load(f)
+
+load_models()
 METRO_ZONES = set(METADATA.get('metro_zones', []))
-print(f"[OK] Model v2.0 loaded. R2 = {METRICS.get('r2', 'N/A'):.4f} | {METRICS.get('n_samples', 0):,} training samples")
 
 # ─── Request Schema ───────────────────────────────────────────────────────────
 class PredictRequest(BaseModel):
-    # Accept both old format (zone) and new format (location)
-    zone: Optional[str] = Field(default=None, example="Baner")
-    location: Optional[str] = Field(default=None, example="Baner")
-    prop_type: Optional[str] = Field(default=None, example="apartment")
-    propertyType: Optional[str] = Field(default=None, example="apartment")
-    listing_type: Optional[str] = Field(default=None, example="rent")
-    listingType: Optional[str] = Field(default=None, example="rent")
+    category: str = Field(default="property", description="property or pg")
+    
+    # Common / Property features
+    city: str = Field(default="Pune", example="Mumbai")
+    zone: Optional[str] = Field(default=None, example="Bandra")
+    location: Optional[str] = Field(default=None, example="Bandra")
+    prop_type: Optional[str] = Field(default="apartment", example="apartment")
+    propertyType: Optional[str] = Field(default="apartment", example="apartment")
+    listing_type: Optional[str] = Field(default="sale", example="sale")
+    listingType: Optional[str] = Field(default="sale", example="sale")
     furnishing: str = Field(default="semi-furnished", example="semi-furnished")
     bhk: int = Field(default=2, ge=0, le=10, example=2)
     area: int = Field(default=1000, ge=100, le=20000, example=1200)
     bathrooms: int = Field(default=2, ge=1, le=10, example=2)
     age: int = Field(default=5, ge=0, le=100, example=5)
-    amenities_count: int = Field(default=5, ge=0, le=10, example=5)
-    floor: int = Field(default=3, ge=0, le=60, example=3)
-    total_floors: int = Field(default=10, ge=1, le=60, example=10)
+    amenities_count: int = Field(default=5, ge=0, le=20, example=5)
+    floor: int = Field(default=3, ge=0, le=100, example=3)
+    total_floors: int = Field(default=10, ge=1, le=150, example=10)
+
+    # PG specific features
+    sharing_type: int = Field(default=2, ge=1, le=10, example=2)
+    gender_type: str = Field(default="unisex", example="male")
+    has_food: int = Field(default=0, example=1)
+    has_ac: int = Field(default=0, example=1)
 
 # ─── Predict Endpoint ─────────────────────────────────────────────────────────
 @app.post("/predict")
 def predict_price(req: PredictRequest):
+    if req.category == "pg":
+        return predict_pg(req)
+    else:
+        return predict_property(req)
+
+def predict_property(req: PredictRequest):
+    if not prop_bundle:
+        raise HTTPException(status_code=503, detail="Property model not loaded")
+
     try:
-        # Handle field aliases (frontend sends location/propertyType/listingType)
-        zone_val = req.zone or req.location or 'Baner'
+        model = prop_bundle['model']
+        rf_model = prop_bundle.get('rf_model')
+        le_city = prop_bundle['le_city']
+        le_zone = prop_bundle['le_zone']
+        le_type = prop_bundle['le_type']
+        le_listing = prop_bundle['le_listing']
+        le_furn = prop_bundle['le_furn']
+
+        city_val = req.city
+        zone_val = req.zone or req.location or 'Baner' # fallback
         prop_type_val = req.prop_type or req.propertyType or 'apartment'
         listing_type_val = req.listing_type or req.listingType or 'sale'
-
-        # Normalize known aliases
-        if zone_val == 'Hadapsar':
-            zone_val = 'Magarpatta'
-        if prop_type_val in ('studio',):
-            pass  # already fine
-        if listing_type_val not in ['sale', 'rent']:
-            listing_type_val = 'sale'
-
-        # Encode zone (fallback to Baner if unknown)
+        
+        # Validations and fallbacks
+        if city_val not in le_city.classes_:
+            city_val = 'Pune'
+        
+        # If zone is not found, fallback to a known zone in that city
         if zone_val not in le_zone.classes_:
-            zone_enc = le_zone.transform(['Baner'])[0]
-        else:
-            zone_enc = le_zone.transform([zone_val])[0]
-
+            # naive fallback
+            zone_val = prop_bundle['zones'][0] if prop_bundle.get('zones') else 'Baner'
+            
         if prop_type_val not in le_type.classes_:
-            raise HTTPException(status_code=422, detail=f"Unknown prop_type: {prop_type_val}. Valid: {list(le_type.classes_)}")
+            prop_type_val = 'apartment'
         if listing_type_val not in le_listing.classes_:
-            raise HTTPException(status_code=422, detail=f"Unknown listing_type: {listing_type_val}. Valid: {list(le_listing.classes_)}")
-        if req.furnishing not in le_furn.classes_:
-            raise HTTPException(status_code=422, detail=f"Unknown furnishing: {req.furnishing}. Valid: {list(le_furn.classes_)}")
+            listing_type_val = 'sale'
+        furn_val = req.furnishing if req.furnishing in le_furn.classes_ else 'semi-furnished'
 
+        # Encodings
+        city_enc = le_city.transform([city_val])[0]
+        zone_enc = le_zone.transform([zone_val])[0]
         type_enc = le_type.transform([prop_type_val])[0]
         listing_enc = le_listing.transform([listing_type_val])[0]
-        furn_enc = le_furn.transform([req.furnishing])[0]
+        furn_enc = le_furn.transform([furn_val])[0]
         has_metro = int(zone_val in METRO_ZONES)
 
         X = np.array([[
-            zone_enc, type_enc, listing_enc, furn_enc,
+            city_enc, zone_enc, type_enc, listing_enc, furn_enc,
             req.bhk, req.area, req.bathrooms, req.age,
             req.amenities_count, req.floor, req.total_floors, has_metro
         ]])
 
-        # ── Primary prediction (Gradient Boosting) ────────────────────────
         predicted_price = model.predict(X)[0]
 
-        # ── Confidence interval via Random Forest tree variance ───────────
+        # Confidence interval
         if rf_model is not None:
-            # Check if RF was trained with same features
             try:
                 tree_preds = np.array([tree.predict(X)[0] for tree in rf_model.estimators_])
                 std_dev = np.std(tree_preds)
             except Exception:
-                std_dev = predicted_price * 0.10
+                std_dev = predicted_price * 0.12
         else:
-            # Fallback: use 10% as std_dev
-            std_dev = predicted_price * 0.10
+            std_dev = predicted_price * 0.12
 
-        # 80% confidence interval (±1.28σ)
         confidence_low = max(0, predicted_price - 1.28 * std_dev)
         confidence_high = predicted_price + 1.28 * std_dev
 
@@ -140,44 +167,98 @@ def predict_price(req: PredictRequest):
 
         return {
             "success": True,
+            "category": "property",
             "predicted_price": round(predicted_price, -2),
             "confidence_low": round(confidence_low, -2),
             "confidence_high": round(confidence_high, -2),
             "predicted_label": fmt(predicted_price),
             "range_label": f"{fmt(confidence_low)} – {fmt(confidence_high)}",
             "listing_type": listing_type_val,
-            "model_r2": round(METRICS.get('r2', 0), 4),
-            "n_training_samples": METRICS.get('n_samples', 100000),
-            "engine": "GradientBoosting v2.0 (100k samples, 25 zones)",
-            "dataset_note": "Trained on 100,000 synthetic Pune market samples across 25 localities"
+            "model_r2": round(prop_bundle['metrics']['r2'], 4),
+            "engine": "Property GradientBoosting v3.0 (Pan-India)"
         }
 
-    except HTTPException:
-        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Property prediction error: {str(e)}")
 
+def predict_pg(req: PredictRequest):
+    if not pg_bundle:
+        raise HTTPException(status_code=503, detail="PG model not loaded")
+        
+    try:
+        model = pg_bundle['model']
+        rf_model = pg_bundle.get('rf_model')
+        le_city = pg_bundle['le_city']
+        le_zone = pg_bundle['le_zone']
+        le_gender = pg_bundle['le_gender']
+        
+        city_val = req.city
+        zone_val = req.zone or req.location or 'Baner'
+        gender_val = req.gender_type.lower()
+        
+        if city_val not in le_city.classes_:
+            city_val = 'Pune'
+            
+        if zone_val not in le_zone.classes_:
+            zone_val = le_zone.classes_[0]
+            
+        if gender_val not in le_gender.classes_:
+            gender_val = 'unisex'
+            
+        city_enc = le_city.transform([city_val])[0]
+        zone_enc = le_zone.transform([zone_val])[0]
+        gender_enc = le_gender.transform([gender_val])[0]
+        
+        X = np.array([[
+            city_enc, zone_enc, req.sharing_type, gender_enc,
+            req.amenities_count, req.has_food, req.has_ac
+        ]])
+        
+        predicted_price = model.predict(X)[0]
+        
+        # Confidence interval
+        if rf_model is not None:
+            try:
+                tree_preds = np.array([tree.predict(X)[0] for tree in rf_model.estimators_])
+                std_dev = np.std(tree_preds)
+            except Exception:
+                std_dev = predicted_price * 0.12
+        else:
+            std_dev = predicted_price * 0.12
+
+        confidence_low = max(0, predicted_price - 1.28 * std_dev)
+        confidence_high = predicted_price + 1.28 * std_dev
+        
+        def fmt(val):
+            return f"₹{val:,.0f}/month"
+            
+        return {
+            "success": True,
+            "category": "pg",
+            "predicted_price": round(predicted_price, -2),
+            "confidence_low": round(confidence_low, -2),
+            "confidence_high": round(confidence_high, -2),
+            "predicted_label": fmt(predicted_price),
+            "range_label": f"{fmt(confidence_low)} – {fmt(confidence_high)}",
+            "listing_type": "rent",
+            "model_r2": round(pg_bundle['metrics']['r2'], 4),
+            "engine": "PG GradientBoosting v3.0 (Pan-India)"
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PG prediction error: {str(e)}")
 
 @app.get("/health")
 def health():
     return {
         "status": "ok",
-        "model_version": "2.0",
-        "engine": "GradientBoosting",
-        "model_r2": round(METRICS.get('r2', 0), 4),
-        "model_rmse": round(METRICS.get('rmse', 0), 2),
-        "n_training_samples": METRICS.get('n_samples', 15000),
-        "available_zones": METADATA.get('zones', []),
-        "available_prop_types": METADATA.get('prop_types', []),
+        "model_version": METADATA.get('model_version', '3.0'),
+        "property_model_loaded": prop_bundle is not None,
+        "pg_model_loaded": pg_bundle is not None,
+        "available_cities": METADATA.get('cities', [])
     }
 
-
-@app.get("/")
-def root():
-    return {
-        "message": "EstateXAi Price Prediction Microservice v2.0",
-        "endpoints": {
-            "POST /predict": "Predict property price",
-            "GET /health": "Service health and model metadata"
-        }
-    }
+@app.post("/reload")
+def reload():
+    load_models()
+    return {"status": "Models reloaded"}

@@ -82,7 +82,12 @@ const userSchema = new mongoose.Schema({
         budgetMin: { type: Number, default: 3000 },
         budgetMax: { type: Number, default: 20000 },
         bio: { type: String, maxlength: 300, default: '' },
-        age: { type: Number, default: 0 }
+        age: { type: Number, default: 0 },
+        timeline: { type: String, enum: ['immediate', '15-days', 'next-month', 'flexible'], default: 'flexible' },
+        cleanliness: { type: String, enum: ['super-clean', 'moderate', 'relaxed'], default: 'moderate' },
+        cooking: { type: String, enum: ['daily', 'occasional', 'outside-food'], default: 'occasional' },
+        pets: { type: String, enum: ['has-pets', 'open-to-pets', 'no-pets'], default: 'open-to-pets' },
+        contactNumber: { type: String, default: '' }
     }
 }, { timestamps: true });
 

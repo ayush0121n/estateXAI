@@ -148,7 +148,15 @@ export default function Properties() {
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>City</label>
-                            <input type="text" placeholder="e.g. Mumbai" value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input" />
+                            <select value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input">
+                                <option value="">All Cities</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Pune">Pune</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Delhi NCR">Delhi NCR</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                                <option value="Chennai">Chennai</option>
+                            </select>
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>BHK</label>

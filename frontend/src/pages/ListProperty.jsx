@@ -7,6 +7,20 @@ import { Building2, Plus, X } from 'lucide-react';
 
 const amenityOptions = ['parking', 'gym', 'pool', 'security', 'elevator', 'power_backup', 'garden', 'clubhouse', 'wifi', 'ac'];
 
+const Section = ({ title, children }) => (
+    <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
+        <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(201, 163, 94,0.2)', paddingBottom: 12 }}>{title}</h3>
+        {children}
+    </div>
+);
+
+const Field = ({ label, required, children }) => (
+    <div>
+        <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>{label} {required && <span style={{ color: '#ef4444' }}>*</span>}</label>
+        {children}
+    </div>
+);
+
 export default function ListProperty() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -62,20 +76,6 @@ export default function ListProperty() {
             setLoading(false);
         }
     };
-
-    const Section = ({ title, children }) => (
-        <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
-            <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(201, 163, 94,0.2)', paddingBottom: 12 }}>{title}</h3>
-            {children}
-        </div>
-    );
-
-    const Field = ({ label, required, children }) => (
-        <div>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>{label} {required && <span style={{ color: '#ef4444' }}>*</span>}</label>
-            {children}
-        </div>
-    );
 
     const grid2 = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 };
 

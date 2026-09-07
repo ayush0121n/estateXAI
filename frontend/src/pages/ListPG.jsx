@@ -4,6 +4,30 @@ import api from '../utils/api';
 import toast from 'react-hot-toast';
 import { Users, Plus, X } from 'lucide-react';
 
+const Section = ({ title, children }) => (
+    <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
+        <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(201, 163, 94,0.2)', paddingBottom: 12 }}>{title}</h3>
+        {children}
+    </div>
+);
+
+const Field = ({ label, required, children }) => (
+    <div>
+        <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>{label} {required && <span style={{ color: '#ef4444' }}>*</span>}</label>
+        {children}
+    </div>
+);
+
+const Toggle = ({ label, checked, onChange }) => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <span style={{ color: '#b0b7d3', fontSize: 14 }}>{label}</span>
+        <button type="button" onClick={() => onChange(!checked)}
+            style={{ width: 44, height: 24, borderRadius: 12, background: checked ? 'var(--primary)' : 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'all 0.3s' }}>
+            <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: checked ? 23 : 3, transition: 'left 0.3s' }} />
+        </button>
+    </div>
+);
+
 export default function ListPG() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -51,29 +75,7 @@ export default function ListPG() {
         } finally { setLoading(false); }
     };
 
-    const Section = ({ title, children }) => (
-        <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
-            <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(201, 163, 94,0.2)', paddingBottom: 12 }}>{title}</h3>
-            {children}
-        </div>
-    );
-
-    const Field = ({ label, required, children }) => (
-        <div>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>{label} {required && <span style={{ color: '#ef4444' }}>*</span>}</label>
-            {children}
-        </div>
-    );
-
-    const Toggle = ({ label, checked, onChange }) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <span style={{ color: '#b0b7d3', fontSize: 14 }}>{label}</span>
-            <button type="button" onClick={() => onChange(!checked)}
-                style={{ width: 44, height: 24, borderRadius: 12, background: checked ? 'var(--primary)' : 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'all 0.3s' }}>
-                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: checked ? 23 : 3, transition: 'left 0.3s' }} />
-            </button>
-        </div>
-    );
+    };
 
     return (
         <div style={{ paddingTop: 90, minHeight: '100vh' }}>

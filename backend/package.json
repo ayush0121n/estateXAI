@@ -36,7 +36,9 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.17.0",
     "cross-env": "^10.1.0",
+    "docx": "^9.7.1",
     "jest": "^30.4.2",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
