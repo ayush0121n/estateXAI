@@ -1,0 +1,13 @@
+{
+  "theme": "dark",
+  "themeVariables": {
+    "primaryColor": "#1a1a2e",
+    "primaryTextColor": "#ffffff",
+    "primaryBorderColor": "#c9a35e",
+    "lineColor": "#94a3b8",
+    "secondaryColor": "#1b2838",
+    "tertiaryColor": "#0d1b2a",
+    "fontSize": "14px",
+    "fontFamily": "Segoe UI, Arial, sans-serif"
+  }
+}

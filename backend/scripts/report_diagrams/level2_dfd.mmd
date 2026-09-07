@@ -1,0 +1,45 @@
+graph TB
+    subgraph "2.0 Property Management - Expanded"
+        P2_1["2.1<br/>Validate<br/>Input Fields"]
+        P2_2["2.2<br/>Upload &<br/>Store Images"]
+        P2_3["2.3<br/>Auto-Geocode<br/>Address"]
+        P2_4["2.4<br/>Save Property<br/>to Database"]
+        P2_5["2.5<br/>Admin Approval<br/>Workflow"]
+        P2_6["2.6<br/>Inquiry<br/>Management"]
+    end
+
+    U["👤 Owner / User"]
+    A["👨‍💼 Admin"]
+    DB[("MongoDB")]
+    CLOUD["Cloudinary"]
+    OSM["Nominatim API"]
+
+    U -- "Title, Price, BHK,<br/>Area, Address" --> P2_1
+    P2_1 -- "Validated Data" --> P2_4
+    P2_1 -- "Image Files" --> P2_2
+
+    P2_2 -- "Upload" --> CLOUD
+    CLOUD -- "CDN URLs" --> P2_2
+    P2_2 -- "Image URLs" --> P2_4
+
+    P2_1 -- "Address String" --> P2_3
+    P2_3 -- "Geocode Request" --> OSM
+    OSM -- "Lat/Lng" --> P2_3
+    P2_3 -- "Coordinates" --> P2_4
+
+    P2_4 -- "Property Document<br/>status: pending" --> DB
+
+    A -- "Approve / Reject" --> P2_5
+    P2_5 -- "Update Status" --> DB
+    P2_5 -- "Notification" --> U
+
+    U -- "Send Inquiry" --> P2_6
+    P2_6 -- "Inquiry Record" --> DB
+    P2_6 -- "Socket.IO Alert" --> U
+
+    style P2_1 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P2_2 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P2_3 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P2_4 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P2_5 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P2_6 fill:#1a1a2e,stroke:#c9a35e,color:#fff

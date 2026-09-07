@@ -1,0 +1,127 @@
+erDiagram
+    USER {
+        ObjectId _id PK
+        string name
+        string email UK
+        string password
+        string phone
+        string role "user | owner | admin"
+        string avatar
+        string institution
+        string workplace
+        boolean isVerified
+        boolean isActive
+        json preferences
+        json savedSearches
+        json roommateProfile
+        Date createdAt
+        Date updatedAt
+    }
+
+    PROPERTY {
+        ObjectId _id PK
+        string title
+        string description
+        string type "apartment | villa | studio | house | plot | commercial"
+        string listingType "sale | rent"
+        number price
+        number area
+        number bhk
+        number bathrooms
+        json location "address, city, state, pincode, coordinates"
+        array amenities
+        array images
+        ObjectId owner FK
+        boolean isAvailable
+        boolean isFeatured
+        string furnishing
+        string facing
+        number floor
+        number totalFloors
+        number yearBuilt
+        number views
+        number inquiryCount
+        number favoriteCount
+        string status "draft | pending | approved | rejected"
+        string adminNote
+        json nearbyPOIs
+        number walkabilityScore
+        number connectivityScore
+        array priceTrend
+        array reviews
+        Date createdAt
+    }
+
+    PG {
+        ObjectId _id PK
+        string name
+        string description
+        string type "pg | hostel | coliving"
+        string genderType "male | female | unisex"
+        number rentPerMonth
+        number securityDeposit
+        array sharingType
+        json location
+        json amenities "wifi, food, ac, laundry, etc."
+        json meals "breakfast, lunch, dinner"
+        json rules "curfew, guests, smoking, pets"
+        number totalRooms
+        number availableRooms
+        array images
+        ObjectId owner FK
+        boolean isAvailable
+        boolean isFeatured
+        number rating
+        number reviewCount
+        number views
+        array reviews
+        Date createdAt
+    }
+
+    INQUIRY {
+        ObjectId _id PK
+        ObjectId user FK
+        string propertyType "property | pg"
+        ObjectId property FK
+        ObjectId pg FK
+        ObjectId owner FK
+        string message
+        string phone
+        string status "pending | responded | closed"
+        string ownerResponse
+        Date createdAt
+    }
+
+    INTERACTION {
+        ObjectId _id PK
+        ObjectId user FK
+        ObjectId itemId FK
+        string itemType "Property | PG"
+        string interactionType "view | favorite | inquiry"
+        number weight
+        Date createdAt
+    }
+
+    NEIGHBORHOOD_RATING {
+        ObjectId _id PK
+        string area
+        string city
+        ObjectId user FK
+        number safetyScore "1-5"
+        number noiseLevel "1-5"
+        number cleanlinessScore "1-5"
+        string review
+        Date createdAt
+    }
+
+    USER ||--o{ PROPERTY : "owns"
+    USER ||--o{ PG : "owns"
+    USER ||--o{ INQUIRY : "sends"
+    USER ||--o{ INTERACTION : "performs"
+    USER ||--o{ NEIGHBORHOOD_RATING : "rates"
+    PROPERTY ||--o{ INQUIRY : "receives"
+    PG ||--o{ INQUIRY : "receives"
+    PROPERTY ||--o{ INTERACTION : "tracked_by"
+    PG ||--o{ INTERACTION : "tracked_by"
+    USER }o--o{ PROPERTY : "saves/favorites"
+    USER }o--o{ PG : "saves/favorites"

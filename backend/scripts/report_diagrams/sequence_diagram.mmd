@@ -1,0 +1,66 @@
+sequenceDiagram
+    actor User as 👤 User
+    participant FE as React Frontend
+    participant BE as Express Backend
+    participant ML as FastAPI ML Service
+    participant DB as MongoDB Atlas
+    participant OSM as OpenStreetMap API
+    participant CLD as Cloudinary
+    participant WS as Socket.IO
+
+    Note over User, WS: === User Registration & Login ===
+    User->>FE: Fill Registration Form
+    FE->>BE: POST /api/auth/register
+    BE->>DB: Create User Document
+    DB-->>BE: User Created
+    BE-->>FE: JWT Token + User Data
+    FE-->>User: Redirect to Dashboard
+
+    Note over User, WS: === Property Search & View ===
+    User->>FE: Enter Search Query + Filters
+    FE->>BE: GET /api/properties?city=Baner&bhk=2
+    BE->>DB: Query with Compound Index
+    DB-->>BE: Filtered Properties Array
+    BE-->>FE: Paginated Results
+    FE-->>User: Display Property Cards + Map
+
+    User->>FE: Click on Property Card
+    FE->>BE: GET /api/properties/:id
+    BE->>DB: Log Interaction (view) + Fetch Property
+    DB-->>BE: Property Details + Owner Info
+    BE-->>FE: Property Detail Data
+    FE-->>User: Property Detail Page with Map
+
+    Note over User, WS: === AI Price Prediction ===
+    User->>FE: Enter BHK, Area, Zone, etc.
+    FE->>BE: POST /api/predict-price
+    BE->>ML: POST /predict (Proxy)
+    ML->>ML: GradientBoosting Model Inference
+    ML->>ML: RandomForest Confidence Interval
+    ML-->>BE: Predicted Price + CI Range
+    BE-->>FE: Prediction Response
+    FE-->>User: Display Price + Chart
+
+    Note over User, WS: === Owner Lists Property ===
+    User->>FE: Fill Property Form + Upload Images
+    FE->>BE: POST /api/properties (multipart/form-data)
+    BE->>CLD: Upload Images via Multer
+    CLD-->>BE: CDN Image URLs
+    BE->>OSM: Geocode Address
+    OSM-->>BE: Lat/Lng Coordinates
+    BE->>DB: Save Property (status: pending)
+    DB-->>BE: Property Created
+    BE->>WS: Emit "new_listing" to Admin Room
+    WS-->>User: Real-time Notification
+    BE-->>FE: Success Response
+    FE-->>User: Redirect to Dashboard
+
+    Note over User, WS: === Send Inquiry ===
+    User->>FE: Type Inquiry Message
+    FE->>BE: POST /api/inquiries
+    BE->>DB: Create Inquiry Document
+    BE->>DB: Increment Property inquiryCount
+    BE->>WS: Emit "new_inquiry" to Owner
+    WS-->>User: Owner Receives Alert
+    BE-->>FE: Inquiry Sent Confirmation
+    FE-->>User: Success Toast

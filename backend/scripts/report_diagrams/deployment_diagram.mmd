@@ -1,0 +1,55 @@
+graph TB
+    subgraph "Client Layer"
+        BROWSER["🌐 Browser<br/>React 19 SPA<br/>Vite 7 Dev Server<br/>Port 5173"]
+    end
+
+    subgraph "CDN & Static Assets"
+        VERCEL["▲ Vercel<br/>Frontend Hosting<br/>React Build Output"]
+        CDN["☁️ Cloudinary CDN<br/>Property Images<br/>Auto-optimized"]
+    end
+
+    subgraph "Application Server Layer"
+        RENDER["🚀 Render.com<br/>Node.js Runtime"]
+        subgraph "Express.js Application"
+            MIDDLEWARE["Middleware Stack<br/>CORS, Helmet, HPP,<br/>Rate Limiter,<br/>Compression, Auth"]
+            ROUTES["API Routes<br/>Auth, Properties, PGs,<br/>Search, Admin, User,<br/>Commute, Neighborhood"]
+            SOCKET["Socket.IO<br/>WebSocket Server<br/>Real-time Notifications"]
+            SWAGGER["Swagger UI<br/>/api/docs<br/>OpenAPI 3.0"]
+        end
+    end
+
+    subgraph "ML Microservice Layer"
+        FASTAPI["🐍 FastAPI<br/>Uvicorn ASGI<br/>Port 8001"]
+        MODEL["📦 model.pkl<br/>GradientBoosting<br/>+ RandomForest"]
+    end
+
+    subgraph "Database Layer"
+        MONGO[("🍃 MongoDB Atlas<br/>Cloud Cluster<br/>Mongoose 9 ODM")]
+    end
+
+    subgraph "External APIs"
+        NOMINATIM["🗺️ OpenStreetMap<br/>Nominatim API<br/>Geocoding Service"]
+    end
+
+    BROWSER -- "HTTPS Requests" --> VERCEL
+    BROWSER -- "WebSocket" --> SOCKET
+    VERCEL -- "API Proxy" --> RENDER
+    RENDER --> MIDDLEWARE --> ROUTES
+    ROUTES -- "POST /predict" --> FASTAPI
+    FASTAPI --> MODEL
+    ROUTES --> MONGO
+    ROUTES -- "Geocode" --> NOMINATIM
+    ROUTES -- "Image Upload" --> CDN
+
+    style BROWSER fill:#1e293b,stroke:#60a5fa,color:#fff
+    style VERCEL fill:#0d1117,stroke:#fff,color:#fff
+    style CDN fill:#1b2838,stroke:#a78bfa,color:#fff
+    style RENDER fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style MIDDLEWARE fill:#1e1e3f,stroke:#94a3b8,color:#fff
+    style ROUTES fill:#1e1e3f,stroke:#c9a35e,color:#fff
+    style SOCKET fill:#1e1e3f,stroke:#22d3a5,color:#fff
+    style SWAGGER fill:#1e1e3f,stroke:#85ea2d,color:#fff
+    style FASTAPI fill:#1b2838,stroke:#22d3a5,color:#fff
+    style MODEL fill:#1b2838,stroke:#f59e0b,color:#fff
+    style MONGO fill:#1b2838,stroke:#4ade80,color:#fff
+    style NOMINATIM fill:#1b2838,stroke:#fb923c,color:#fff

@@ -1,0 +1,150 @@
+classDiagram
+    class User {
+        +ObjectId _id
+        +String name
+        +String email
+        -String password
+        +String phone
+        +String role
+        +String avatar
+        +String institution
+        +String workplace
+        +ObjectId[] savedProperties
+        +ObjectId[] savedPGs
+        +Object preferences
+        +Object[] savedSearches
+        +Boolean isVerified
+        +Boolean isActive
+        +Object roommateProfile
+        +comparePassword(candidate) Boolean
+    }
+
+    class Property {
+        +ObjectId _id
+        +String title
+        +String description
+        +String type
+        +String listingType
+        +Number price
+        +Number area
+        +Number bhk
+        +Number bathrooms
+        +Object location
+        +String[] amenities
+        +String[] images
+        +ObjectId owner
+        +Boolean isAvailable
+        +Boolean isFeatured
+        +String furnishing
+        +String facing
+        +Number floor
+        +Number totalFloors
+        +Number yearBuilt
+        +Number views
+        +Number inquiryCount
+        +Number favoriteCount
+        +String status
+        +String adminNote
+        +Object[] nearbyPOIs
+        +Number walkabilityScore
+        +Number connectivityScore
+        +Object[] priceTrend
+        +Object[] reviews
+    }
+
+    class PG {
+        +ObjectId _id
+        +String name
+        +String description
+        +String type
+        +String genderType
+        +Number rentPerMonth
+        +Number securityDeposit
+        +String[] sharingType
+        +Object location
+        +Object amenities
+        +Object meals
+        +Object rules
+        +Number totalRooms
+        +Number availableRooms
+        +String[] images
+        +ObjectId owner
+        +Boolean isAvailable
+        +Boolean isFeatured
+        +Number rating
+        +Number reviewCount
+        +Number views
+        +Object[] reviews
+    }
+
+    class Inquiry {
+        +ObjectId _id
+        +ObjectId user
+        +String propertyType
+        +ObjectId property
+        +ObjectId pg
+        +ObjectId owner
+        +String message
+        +String phone
+        +String status
+        +String ownerResponse
+    }
+
+    class Interaction {
+        +ObjectId _id
+        +ObjectId user
+        +ObjectId itemId
+        +String itemType
+        +String interactionType
+        +Number weight
+    }
+
+    class NeighborhoodRating {
+        +ObjectId _id
+        +String area
+        +String city
+        +ObjectId user
+        +Number safetyScore
+        +Number noiseLevel
+        +Number cleanlinessScore
+        +String review
+    }
+
+    class RecommendationEngine {
+        +getContentBasedScore(item, type, user) Number
+        +getCollaborativeScores(userId, type) Object
+        +getHybridRecommendations(user, type, limit) Array
+    }
+
+    class PricePredictionService {
+        +GradientBoostingRegressor model
+        +RandomForestRegressor rfModel
+        +LabelEncoder leZone
+        +LabelEncoder leType
+        +predictPrice(request) PredictionResult
+    }
+
+    class AuthMiddleware {
+        +protect(req, res, next) void
+        +optionalAuth(req, res, next) void
+        +authorize(roles) Function
+        +signToken(id) String
+    }
+
+    class UploadMiddleware {
+        +upload Multer
+        +getImageUrls(req) String[]
+        +useCloudinary Boolean
+    }
+
+    User "1" --> "*" Property : owns
+    User "1" --> "*" PG : owns
+    User "1" --> "*" Inquiry : sends
+    User "1" --> "*" Interaction : performs
+    User "1" --> "*" NeighborhoodRating : submits
+    Property "1" --> "*" Inquiry : receives
+    PG "1" --> "*" Inquiry : receives
+    RecommendationEngine --> Interaction : analyzes
+    RecommendationEngine --> Property : recommends
+    RecommendationEngine --> PG : recommends
+    PricePredictionService --> Property : predicts_for

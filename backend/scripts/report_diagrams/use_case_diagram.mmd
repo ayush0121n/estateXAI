@@ -1,0 +1,89 @@
+graph LR
+    subgraph Actors
+        GUEST["👁️ Guest"]
+        USER["👤 Registered User"]
+        OWNER["🏠 Property Owner"]
+        ADMIN["👨‍💼 Administrator"]
+    end
+
+    subgraph "Authentication"
+        UC1["Register Account"]
+        UC2["Login / Logout"]
+    end
+
+    subgraph "Property & PG Browsing"
+        UC3["Search Properties"]
+        UC4["Filter by Price, BHK, City"]
+        UC5["View Property Details"]
+        UC6["View on Interactive Map"]
+        UC7["Browse PGs & Hostels"]
+    end
+
+    subgraph "AI-Powered Features"
+        UC8["Get AI Price Prediction"]
+        UC9["View Recommendations"]
+        UC10["Find Roommate Matches"]
+        UC11["Calculate Commute Score"]
+        UC12["View Neighborhood Ratings"]
+    end
+
+    subgraph "User Actions"
+        UC13["Save / Favorite Property"]
+        UC14["Compare Properties"]
+        UC15["Send Inquiry to Owner"]
+        UC16["Edit Profile & Preferences"]
+        UC17["Rate Neighborhood"]
+    end
+
+    subgraph "Owner Actions"
+        UC18["List New Property"]
+        UC19["List New PG"]
+        UC20["Upload Property Images"]
+        UC21["Respond to Inquiries"]
+        UC22["View Listing Analytics"]
+    end
+
+    subgraph "Admin Actions"
+        UC23["Approve / Reject Listings"]
+        UC24["View Platform Analytics"]
+        UC25["Manage System Config"]
+        UC26["Moderate Content"]
+    end
+
+    GUEST --> UC1
+    GUEST --> UC3
+    GUEST --> UC7
+    GUEST --> UC8
+
+    USER --> UC2
+    USER --> UC3
+    USER --> UC4
+    USER --> UC5
+    USER --> UC6
+    USER --> UC7
+    USER --> UC8
+    USER --> UC9
+    USER --> UC10
+    USER --> UC11
+    USER --> UC12
+    USER --> UC13
+    USER --> UC14
+    USER --> UC15
+    USER --> UC16
+    USER --> UC17
+
+    OWNER --> UC18
+    OWNER --> UC19
+    OWNER --> UC20
+    OWNER --> UC21
+    OWNER --> UC22
+
+    ADMIN --> UC23
+    ADMIN --> UC24
+    ADMIN --> UC25
+    ADMIN --> UC26
+
+    style GUEST fill:#374151,stroke:#94a3b8,color:#fff
+    style USER fill:#1e293b,stroke:#60a5fa,color:#fff
+    style OWNER fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style ADMIN fill:#1b2838,stroke:#f59e0b,color:#fff

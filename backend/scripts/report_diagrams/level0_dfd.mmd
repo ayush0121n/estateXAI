@@ -1,0 +1,34 @@
+graph LR
+    U["👤 User<br/>(Buyer / Tenant / Owner)"]
+    A["👨‍💼 Admin"]
+    ML["🤖 ML Microservice<br/>(FastAPI)"]
+
+    SYS(["🏠 EstateXAi<br/>System"])
+
+    U -- "Search, Browse,<br/>Inquire, Favorite" --> SYS
+    SYS -- "Listings, Recommendations,<br/>Notifications" --> U
+
+    A -- "Approve/Reject Listings,<br/>View Analytics" --> SYS
+    SYS -- "Moderation Queue,<br/>Dashboard Data" --> A
+
+    SYS -- "Property Features" --> ML
+    ML -- "Predicted Price,<br/>Confidence Interval" --> SYS
+
+    DB[("🗄️ MongoDB Atlas")]
+    SYS <--> DB
+
+    CLOUD["☁️ Cloudinary<br/>Image Storage"]
+    SYS -- "Upload Images" --> CLOUD
+    CLOUD -- "Image URLs" --> SYS
+
+    OSM["🗺️ OpenStreetMap<br/>Nominatim API"]
+    SYS -- "Address Query" --> OSM
+    OSM -- "Geocoded Coordinates" --> SYS
+
+    style SYS fill:#1a1a2e,stroke:#c9a35e,stroke-width:3px,color:#fff
+    style U fill:#0d1b2a,stroke:#94a3b8,color:#fff
+    style A fill:#0d1b2a,stroke:#f59e0b,color:#fff
+    style ML fill:#1b2838,stroke:#22d3a5,color:#fff
+    style DB fill:#1b2838,stroke:#60a5fa,color:#fff
+    style CLOUD fill:#1b2838,stroke:#a78bfa,color:#fff
+    style OSM fill:#1b2838,stroke:#fb923c,color:#fff

@@ -1,0 +1,71 @@
+graph TB
+    U["👤 User / Owner"]
+    A["👨‍💼 Admin"]
+
+    subgraph EstateXAi System
+        P1["1.0<br/>Authentication<br/>Module"]
+        P2["2.0<br/>Property<br/>Management"]
+        P3["3.0<br/>PG & Hostel<br/>Management"]
+        P4["4.0<br/>Search &<br/>Filter Engine"]
+        P5["5.0<br/>Recommendation<br/>Engine"]
+        P6["6.0<br/>Price Prediction<br/>Module"]
+        P7["7.0<br/>Roommate<br/>Matching"]
+        P8["8.0<br/>Admin<br/>Dashboard"]
+        P9["9.0<br/>Commute &<br/>Location Intel"]
+        P10["10.0<br/>Notification<br/>Service"]
+    end
+
+    DB[("MongoDB Atlas")]
+    ML["ML Microservice"]
+    OSM["OpenStreetMap API"]
+
+    U -- "Register / Login" --> P1
+    P1 -- "JWT Token" --> U
+    P1 --> DB
+
+    U -- "Create / Edit Listing" --> P2
+    P2 -- "Listing Data" --> DB
+    P2 -- "Geocode Address" --> OSM
+
+    U -- "Create / Edit PG" --> P3
+    P3 -- "PG Data" --> DB
+    P3 -- "Geocode Address" --> OSM
+
+    U -- "Search Query + Filters" --> P4
+    P4 -- "Filtered Results" --> U
+    P4 --> DB
+
+    U -- "View Listing" --> P5
+    P5 -- "Recommendations" --> U
+    P5 --> DB
+
+    U -- "Property Features" --> P6
+    P6 -- "Price Request" --> ML
+    ML -- "Prediction" --> P6
+    P6 -- "Predicted Price" --> U
+
+    U -- "Profile Questionnaire" --> P7
+    P7 -- "Compatible Matches" --> U
+    P7 --> DB
+
+    A -- "Moderation, Analytics" --> P8
+    P8 --> DB
+    P8 -- "Reports, Queue" --> A
+
+    U -- "Workplace Address" --> P9
+    P9 -- "Commute Score" --> U
+    P9 --> OSM
+
+    P2 -- "New Inquiry Event" --> P10
+    P10 -- "Real-time Alert" --> U
+
+    style P1 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P2 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P3 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P4 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P5 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P6 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P7 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P8 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P9 fill:#1a1a2e,stroke:#c9a35e,color:#fff
+    style P10 fill:#1a1a2e,stroke:#c9a35e,color:#fff
