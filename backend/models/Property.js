@@ -103,6 +103,18 @@ const propertySchema = new mongoose.Schema({
         month: { type: String }, // e.g. "Jan 2025"
         avgPrice: { type: Number }
     }],
+    // Pan-India lifestyle & trust filters
+    bachelorFriendly: { type: Boolean, default: false },
+    zeroBrokerage: { type: Boolean, default: false },
+    petFriendly: { type: Boolean, default: false },
+    deposit: { type: Number, default: 0 },
+    availableFrom: { type: Date, default: Date.now },
+    verified: { type: Boolean, default: false },
+    societyRules: {
+        bachelorsAllowed: { type: Boolean, default: true },
+        petsAllowed: { type: Boolean, default: false },
+        nonVegAllowed: { type: Boolean, default: true }
+    },
     reviews: [{
         user: { type: String, required: true },
         userType: { type: String, enum: ['owner', 'user', 'agent'], default: 'user' },

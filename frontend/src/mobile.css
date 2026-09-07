@@ -62,6 +62,10 @@ table { word-break: break-word; }
   .filter-bar > * { width: 100% !important; min-width: unset !important; }
   .gender-filter-group { flex-wrap: wrap !important; gap: 6px !important; }
   .gender-filter-group button { flex: 1 !important; min-width: 70px !important; }
+  
+  /* Indian Filters Overflow */
+  .indian-filters-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; flex-wrap: nowrap !important; padding-bottom: 4px !important; }
+  .indian-filters-wrap button { white-space: nowrap !important; flex-shrink: 0 !important; }
 
   /* Detail pages */
   .gallery-hero { height: 240px !important; }

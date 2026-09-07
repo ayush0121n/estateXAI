@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MapPin, BedDouble, Bath, Square, Heart, Star, Wifi, UtensilsCrossed, AirVent } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Square, Heart, Star, Wifi, UtensilsCrossed, AirVent, ShieldCheck, Tag } from 'lucide-react';
 
 const formatPrice = (price, type) => {
     if (price >= 10000000) return `₹${(price / 10000000).toFixed(1)} Cr`;
@@ -27,11 +27,13 @@ export function PropertyCard({ property, onSave, saved }) {
                         onError={e => { e.target.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80'; }}
                     />
                     {/* Badges */}
-                    <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 8 }}>
+                    <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         <span className={`badge ${property.listingType === 'sale' ? 'badge-primary' : 'badge-success'}`}>
                             {property.listingType === 'sale' ? 'For Sale' : 'For Rent'}
                         </span>
                         {property.isFeatured && <span className="badge badge-warning">⭐ Featured</span>}
+                        {property.verified && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(34,197,94,0.9)', color: '#fff', borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 600, backdropFilter: 'blur(4px)' }}><ShieldCheck size={11} /> Verified</span>}
+                        {property.zeroBrokerage && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(201,163,94,0.9)', color: '#000', borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}><Tag size={11} /> Zero Brokerage</span>}
                     </div>
                     {/* Save */}
                     {onSave && (
@@ -71,6 +73,14 @@ export function PropertyCard({ property, onSave, saved }) {
                         </span>
                     </div>
 
+                    {/* India-specific trust tags */}
+                    {(property.bachelorFriendly || property.petFriendly) && (
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
+                            {property.bachelorFriendly && <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 4, background: 'rgba(96,165,250,0.15)', color: '#60a5fa', border: '1px solid rgba(96,165,250,0.3)', fontWeight: 500 }}>👨‍🎓 Bachelor Friendly</span>}
+                            {property.petFriendly && <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 4, background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)', fontWeight: 500 }}>🐾 Pet Friendly</span>}
+                        </div>
+                    )}
+
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(201, 163, 94,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#6b7298' }}>
                         <span style={{ textTransform: 'capitalize', color: '#b0b7d3' }}>{property.type}</span>
                         <span style={{ textTransform: 'capitalize' }}>{property.furnishing?.replace('-', ' ')}</span>
@@ -98,11 +108,12 @@ export function PGCard({ pg, onSave, saved }) {
                         onMouseLeave={e => e.target.style.transform = 'scale(1)'}
                         onError={e => { e.target.src = 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80'; }}
                     />
-                    <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         <span className={`badge ${pg.genderType === 'male' ? 'badge-primary' : pg.genderType === 'female' ? 'badge-danger' : 'badge-success'}`}>
                             {pg.genderType === 'male' ? '♂ Boys' : pg.genderType === 'female' ? '♀ Girls' : '⚥ Unisex'}
                         </span>
                         {pg.isFeatured && <span className="badge badge-warning">⭐ Featured</span>}
+                        {pg.verified && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(34,197,94,0.9)', color: '#fff', borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 600 }}><ShieldCheck size={11} /> Verified</span>}
                     </div>
                     {onSave && (
                         <button onClick={e => { e.preventDefault(); e.stopPropagation(); onSave(pg._id); }}
@@ -151,5 +162,3 @@ export function PGCard({ pg, onSave, saved }) {
         </motion.div>
     );
 }
-
-

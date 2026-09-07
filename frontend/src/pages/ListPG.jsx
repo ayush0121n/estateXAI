@@ -75,8 +75,6 @@ export default function ListPG() {
         } finally { setLoading(false); }
     };
 
-    };
-
     return (
         <div style={{ paddingTop: 90, minHeight: '100vh' }}>
             <div className="container" style={{ paddingTop: 24, paddingBottom: 60, maxWidth: 800 }}>

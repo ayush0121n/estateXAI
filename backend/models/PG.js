@@ -79,6 +79,8 @@ const pgSchema = new mongoose.Schema({
     },
     isAvailable: { type: Boolean, default: true },
     isFeatured: { type: Boolean, default: false },
+    foodType: { type: String, enum: ['veg', 'non-veg', 'both'], default: 'both' },
+    verified: { type: Boolean, default: false },
     rating: { type: Number, default: 0, min: 0, max: 5 },
     reviewCount: { type: Number, default: 0 },
     views: { type: Number, default: 0 },

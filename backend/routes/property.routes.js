@@ -10,7 +10,7 @@ const cache = apicache.middleware;
 // @GET /api/properties - Get all properties with filters
 router.get('/', async (req, res) => {
     try {
-        const { type, listingType, city, minPrice, maxPrice, bhk, amenities, furnishing, search, page = 1, limit = 12, sort = '-createdAt' } = req.query;
+        const { type, listingType, city, minPrice, maxPrice, bhk, amenities, furnishing, search, bachelorFriendly, zeroBrokerage, petFriendly, availableImmediately, depositMax, verified, page = 1, limit = 12, sort = '-createdAt' } = req.query;
         const query = { isAvailable: true };
 
         if (type) query.type = type;
@@ -18,6 +18,12 @@ router.get('/', async (req, res) => {
         if (city) query['location.city'] = { $regex: city, $options: 'i' };
         if (bhk) query.bhk = Number(bhk);
         if (furnishing) query.furnishing = furnishing;
+        if (bachelorFriendly === 'true') query.bachelorFriendly = true;
+        if (zeroBrokerage === 'true') query.zeroBrokerage = true;
+        if (petFriendly === 'true') query.petFriendly = true;
+        if (verified === 'true') query.verified = true;
+        if (availableImmediately === 'true') query.availableFrom = { $lte: new Date() };
+        if (depositMax) query.deposit = { $lte: Number(depositMax) };
         if (minPrice || maxPrice) {
             query.price = {};
             if (minPrice) query.price.$gte = Number(minPrice);

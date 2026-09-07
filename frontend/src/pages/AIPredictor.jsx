@@ -3,33 +3,40 @@ import React, { useState } from 'react';
 import { BrainCircuit, TrendingUp, AlertTriangle, Zap, Info } from 'lucide-react';
 import api from '../utils/api';
 
-const ZONES = [
-    { value: 'Boat Club Road',  label: '🏆 Boat Club Road (Ultra Premium)' },
-    { value: 'Koregaon Park',   label: '🏆 Koregaon Park (Ultra Premium)' },
-    { value: 'Kalyani Nagar',   label: '⭐ Kalyani Nagar (Premium)' },
-    { value: 'Shivajinagar',    label: '⭐ Shivajinagar (Prime Commercial)' },
-    { value: 'Viman Nagar',     label: '⭐ Viman Nagar (Premium)' },
-    { value: 'Camp',            label: '⭐ Camp / Cantonment (Premium)' },
-    { value: 'Baner',           label: '🔥 Baner (High Demand IT)' },
-    { value: 'Aundh',           label: '🔥 Aundh (High Demand)' },
-    { value: 'Kothrud',         label: '🔥 Kothrud (High Demand)' },
-    { value: 'Balewadi',        label: '🔥 Balewadi (High Demand)' },
-    { value: 'Magarpatta',      label: '🔥 Magarpatta / Hadapsar (Premium)' },
-    { value: 'Wakad',           label: '🔥 Wakad (IT Corridor)' },
-    { value: 'Pashan',          label: '🔥 Pashan (Mid-Premium)' },
-    { value: 'Kharadi',         label: '🔥 Kharadi (IT Corridor)' },
-    { value: 'Hinjewadi',       label: '💼 Hinjewadi (IT Hub)' },
-    { value: 'Pimple Saudagar', label: '💼 Pimple Saudagar (IT Suburb)' },
-    { value: 'Bavdhan',         label: '💼 Bavdhan (Mid-Range)' },
-    { value: 'Wanowrie',        label: '🏠 Wanowrie (Mid-Range)' },
-    { value: 'Kondhwa',         label: '🏠 Kondhwa (Mid-Range)' },
-    { value: 'Hadapsar',        label: '🏠 Hadapsar (Affordable)' },
-    { value: 'Pimpri',          label: '🏠 Pimpri (Affordable)' },
-    { value: 'Chinchwad',       label: '🏠 Chinchwad (Affordable)' },
-    { value: 'Undri',           label: '💰 Undri (Budget)' },
-    { value: 'Wagholi',         label: '💰 Wagholi (Budget)' },
-    { value: 'Pisoli',          label: '💰 Pisoli (Budget)' },
-];
+const CITY_ZONES = {
+    'Pune': [
+        { value: 'Boat Club Road',  label: '🏆 Boat Club Road (Ultra Premium)' },
+        { value: 'Koregaon Park',   label: '🏆 Koregaon Park (Ultra Premium)' },
+        { value: 'Kalyani Nagar',   label: '⭐ Kalyani Nagar (Premium)' },
+        { value: 'Baner',           label: '🔥 Baner (High Demand IT)' },
+        { value: 'Hinjewadi',       label: '💼 Hinjewadi (IT Hub)' },
+        { value: 'Wakad',           label: '🔥 Wakad (IT Corridor)' },
+        { value: 'Kothrud',         label: '🔥 Kothrud (High Demand)' }
+    ],
+    'Bangalore': [
+        { value: 'Koramangala',     label: '🏆 Koramangala (Premium)' },
+        { value: 'Indiranagar',     label: '🏆 Indiranagar (Premium)' },
+        { value: 'Whitefield',      label: '🔥 Whitefield (IT Hub)' },
+        { value: 'HSR Layout',      label: '⭐ HSR Layout (Prime)' },
+        { value: 'Electronic City', label: '💼 Electronic City (IT Hub)' },
+        { value: 'Bellandur',       label: '🔥 Bellandur (High Demand)' }
+    ],
+    'Mumbai': [
+        { value: 'Bandra West',     label: '🏆 Bandra West (Ultra Premium)' },
+        { value: 'Juhu',            label: '🏆 Juhu (Ultra Premium)' },
+        { value: 'Andheri West',    label: '⭐ Andheri West (Premium)' },
+        { value: 'Powai',           label: '🔥 Powai (Corporate Hub)' },
+        { value: 'Malad',           label: '🏠 Malad (Mid-Range)' },
+        { value: 'Borivali',        label: '🏠 Borivali (Mid-Range)' }
+    ],
+    'Delhi NCR': [
+        { value: 'Vasant Vihar',    label: '🏆 Vasant Vihar (Ultra Premium)' },
+        { value: 'Defence Colony',  label: '🏆 Defence Colony (Premium)' },
+        { value: 'Gurgaon Sec 42',  label: '🔥 Gurgaon Sec 42 (IT/Corporate)' },
+        { value: 'Noida Sec 15',    label: '💼 Noida Sec 15 (Commercial)' },
+        { value: 'Dwarka',          label: '🏠 Dwarka (Residential)' }
+    ]
+};
 
 const inputStyle = {
     width: '100%', padding: '12px 14px', borderRadius: 10,
@@ -42,7 +49,7 @@ const labelStyle = { display: 'block', marginBottom: 8, color: '#b0b7d3', fontSi
 
 export default function AIPredictor() {
     const [formData, setFormData] = useState({
-        zone: '', propertyType: 'apartment', listingType: 'sale',
+        city: 'Pune', zone: '', propertyType: 'apartment', listingType: 'sale',
         furnishing: 'semi-furnished', bhk: 2, area: 1000,
         age: 5, amenities_count: 5, floor: 3, total_floors: 10
     });
@@ -51,7 +58,14 @@ export default function AIPredictor() {
     const [error, setError] = useState('');
     const [relatedProperties, setRelatedProperties] = useState([]);
 
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'city') {
+            setFormData({ ...formData, city: value, zone: '' });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+    };
 
     const handlePredict = async (e) => {
         e.preventDefault();
@@ -122,13 +136,21 @@ export default function AIPredictor() {
                 <div style={{ background: '#161933', borderRadius: 20, padding: 32, border: '1px solid rgba(201, 163, 94,0.2)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}>
                     <form onSubmit={handlePredict} className="predictor-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
 
-                        {/* Zone */}
-                        <div style={{ gridColumn: '1 / -1' }}>
-                            <label style={labelStyle}>📍 Locality / Zone</label>
-                            <select name="zone" value={formData.zone} onChange={handleChange} required style={inputStyle}>
-                                <option value="" disabled>— Select Area —</option>
-                                {ZONES.map(z => <option key={z.value} value={z.value}>{z.label}</option>)}
-                            </select>
+                        {/* City & Zone */}
+                        <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22 }}>
+                            <div>
+                                <label style={labelStyle}>🏙️ City</label>
+                                <select name="city" value={formData.city} onChange={handleChange} required style={inputStyle}>
+                                    {Object.keys(CITY_ZONES).map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label style={labelStyle}>📍 Locality / Zone</label>
+                                <select name="zone" value={formData.zone} onChange={handleChange} required style={inputStyle} disabled={!formData.city}>
+                                    <option value="" disabled>— Select Area —</option>
+                                    {(CITY_ZONES[formData.city] || []).map(z => <option key={z.value} value={z.value}>{z.label}</option>)}
+                                </select>
+                            </div>
                         </div>
 
                         {/* Listing Type */}

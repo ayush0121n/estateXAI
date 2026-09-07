@@ -32,6 +32,10 @@ export default function Properties() {
         minPrice: '',
         maxPrice: '',
         furnishing: '',
+        bachelorFriendly: '',
+        zeroBrokerage: '',
+        petFriendly: '',
+        verified: '',
         sort: '-createdAt'
     });
 
@@ -67,7 +71,7 @@ export default function Properties() {
     };
 
     const clearFilters = () => {
-        setFilters({ search: '', type: '', listingType: '', city: '', bhk: '', minPrice: '', maxPrice: '', furnishing: '', sort: '-createdAt' });
+        setFilters({ search: '', type: '', listingType: '', city: '', bhk: '', minPrice: '', maxPrice: '', furnishing: '', bachelorFriendly: '', zeroBrokerage: '', petFriendly: '', verified: '', sort: '-createdAt' });
     };
 
     const handleSave = async (id) => {
@@ -150,12 +154,7 @@ export default function Properties() {
                             <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>City</label>
                             <select value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input">
                                 <option value="">All Cities</option>
-                                <option value="Mumbai">Mumbai</option>
-                                <option value="Pune">Pune</option>
-                                <option value="Bangalore">Bangalore</option>
-                                <option value="Delhi NCR">Delhi NCR</option>
-                                <option value="Hyderabad">Hyderabad</option>
-                                <option value="Chennai">Chennai</option>
+                                {['Bangalore', 'Pune', 'Hyderabad', 'Mumbai', 'Delhi NCR', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Indore', 'Lucknow', 'Chandigarh', 'Kochi', 'Goa'].map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
                         <div>
@@ -179,6 +178,26 @@ export default function Properties() {
                                 <option value="">Any</option>
                                 {furnishingOptions.map(f => <option key={f} value={f}>{f.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())}</option>)}
                             </select>
+                        </div>
+                        {/* Indian-specific quick filters */}
+                        <div className="indian-filters-wrap" style={{ gridColumn: '1 / -1', display: 'flex', gap: 10, flexWrap: 'wrap', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                            {[
+                                { key: 'bachelorFriendly', label: '👨‍🎓 Bachelor Friendly', color: '#60a5fa' },
+                                { key: 'zeroBrokerage', label: '🏷️ Zero Brokerage', color: 'var(--primary)' },
+                                { key: 'petFriendly', label: '🐾 Pet Friendly', color: '#fbbf24' },
+                                { key: 'verified', label: '✅ Verified Only', color: '#22c55e' },
+                            ].map(f => (
+                                <button key={f.key} onClick={() => handleFilterChange(f.key, filters[f.key] === 'true' ? '' : 'true')}
+                                    style={{
+                                        padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+                                        border: `1px solid ${filters[f.key] === 'true' ? f.color : 'rgba(255,255,255,0.1)'}`,
+                                        background: filters[f.key] === 'true' ? `${f.color}15` : 'transparent',
+                                        color: filters[f.key] === 'true' ? f.color : '#b0b7d3',
+                                        cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit'
+                                    }}>
+                                    {f.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
                 )}

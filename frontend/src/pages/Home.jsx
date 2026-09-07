@@ -181,7 +181,49 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* GALLERY CAROUSEL */}
+            {/* PAN-INDIA CITY SELECTOR */}
+            <section style={{ padding: 'clamp(40px, 5vw, 70px) 0', background: 'var(--dark)' }}>
+                <div className="container" style={{ textAlign: 'center' }}>
+                    <p style={{ color: 'var(--primary)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Pan-India Coverage</p>
+                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 5vw, 38px)', fontWeight: 400, color: 'white', lineHeight: 1.2, marginBottom: 12 }}>Explore Properties Across <span style={{ color: 'var(--primary)', fontWeight: 600 }}>India</span></h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 15, maxWidth: 500, margin: '0 auto 36px' }}>Select your city to find properties, PGs, and flatmates near you.</p>
+                    
+                    <div className="city-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 14, maxWidth: 900, margin: '0 auto' }}>
+                        {[
+                            { name: 'Bangalore', emoji: '🏙️' },
+                            { name: 'Pune', emoji: '🏔️' },
+                            { name: 'Hyderabad', emoji: '🕌' },
+                            { name: 'Mumbai', emoji: '🌊' },
+                            { name: 'Delhi NCR', emoji: '🏛️' },
+                            { name: 'Chennai', emoji: '🛕' },
+                            { name: 'Kolkata', emoji: '🌉' },
+                            { name: 'Ahmedabad', emoji: '🏗️' },
+                            { name: 'Jaipur', emoji: '🏰' },
+                            { name: 'Indore', emoji: '🍜' },
+                        ].map(city => (
+                            <motion.button
+                                key={city.name}
+                                onClick={() => navigate(`/properties?city=${encodeURIComponent(city.name)}`)}
+                                whileHover={{ y: -4, borderColor: 'var(--primary)' }}
+                                whileTap={{ scale: 0.97 }}
+                                style={{
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid var(--dark-border)',
+                                    borderRadius: 12,
+                                    padding: '20px 12px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    fontFamily: 'inherit',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                <div style={{ fontSize: 28, marginBottom: 8 }}>{city.emoji}</div>
+                                <div style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600 }}>{city.name}</div>
+                            </motion.button>
+                        ))}
+                    </div>
+                </div>
+            </section>
             <section className="section" style={{ padding: 'clamp(40px, 8vw, 80px) 0', background: 'var(--dark-card)', borderBottom: '1px solid var(--dark-border)' }}>
                 <div className="container" style={{ textAlign: 'center', marginBottom: 'clamp(20px, 5vw, 40px)', padding: '0 20px' }}>
                     <p style={{ color: 'var(--primary)', fontSize: 'clamp(10px, 2vw, 11px)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Visual Tour</p>

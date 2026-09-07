@@ -70,6 +70,16 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    isPhoneVerified: {
+        type: Boolean,
+        default: false
+    },
+    trustScore: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
     // Roommate Matching Profile
     roommateProfile: {
         isLookingForRoommate: { type: Boolean, default: false },
