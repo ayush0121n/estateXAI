@@ -1,0 +1,29 @@
+.pill-nav-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background-color: var(--base-color);
+  border-radius: 9999px;
+  padding: 4px;
+}
+
+.pill-nav-item {
+  position: relative;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 9999px;
+  color: var(--text-color, #ffffff);
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+
+.pill-nav-background {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  background-color: var(--pill-color);
+  border-radius: 9999px;
+  z-index: 1;
+}

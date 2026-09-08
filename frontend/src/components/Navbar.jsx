@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles, Heart, FileText } from 'lucide-react';
 import Logo from './Logo';
+import PillNav from './PillNav';
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -72,25 +73,22 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop Nav Links */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} className="desktop-nav">
-                        <Link to="/" style={linkStyle('/')}>
-                            <Home size={16} /> Home
-                        </Link>
-                        <Link to="/properties" style={linkStyle('/properties')}>
-                            <Building2 size={16} /> Properties
-                        </Link>
-                        <Link to="/pgs" style={linkStyle('/pgs')}>
-                            <Users size={16} /> PG / Hostel
-                        </Link>
-                        <Link to="/roommates" style={linkStyle('/roommates')}>
-                            <Heart size={16} /> Find Flatmates
-                        </Link>
-                        <Link to="/ai-prediction" style={{...linkStyle('/ai-prediction'), color: isActive('/ai-prediction') ? 'var(--primary)' : 'var(--text-secondary)', background: isActive('/ai-prediction') ? 'rgba(255, 255, 255, 0.05)' : 'transparent'}}>
-                            <Sparkles size={16} color={isActive('/ai-prediction') ? 'var(--primary)' : 'var(--text-secondary)'} /> AI Predictor
-                        </Link>
-                        <Link to="/rental-toolkit" style={linkStyle('/rental-toolkit')}>
-                            <FileText size={16} /> Toolkit
-                        </Link>
+                    <div className="desktop-nav">
+                        <PillNav 
+                            items={[
+                                { label: 'Home', href: '/' },
+                                { label: 'Properties', href: '/properties' },
+                                { label: 'PG / Hostel', href: '/pgs' },
+                                { label: 'Find Flatmates', href: '/roommates' },
+                                { label: 'AI Predictor', href: '/ai-prediction' },
+                                { label: 'Toolkit', href: '/rental-toolkit' }
+                            ]}
+                            activeHref={location.pathname}
+                            baseColor="#0a0a0a"
+                            pillColor="#f5c518"
+                            pillTextColor="#0a0a0a"
+                            hoveredPillTextColor="#ffffff"
+                        />
                     </div>
 
                     {/* Desktop Auth */}
