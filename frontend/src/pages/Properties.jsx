@@ -36,6 +36,7 @@ export default function Properties() {
         zeroBrokerage: '',
         petFriendly: '',
         verified: '',
+        lowDeposit: '',
         sort: '-createdAt'
     });
 
@@ -71,7 +72,7 @@ export default function Properties() {
     };
 
     const clearFilters = () => {
-        setFilters({ search: '', type: '', listingType: '', city: '', bhk: '', minPrice: '', maxPrice: '', furnishing: '', bachelorFriendly: '', zeroBrokerage: '', petFriendly: '', verified: '', sort: '-createdAt' });
+        setFilters({ search: '', type: '', listingType: '', city: '', bhk: '', minPrice: '', maxPrice: '', furnishing: '', bachelorFriendly: '', zeroBrokerage: '', petFriendly: '', verified: '', lowDeposit: '', sort: '-createdAt' });
     };
 
     const handleSave = async (id) => {
@@ -186,6 +187,7 @@ export default function Properties() {
                                 { key: 'zeroBrokerage', label: '🏷️ Zero Brokerage', color: 'var(--primary)' },
                                 { key: 'petFriendly', label: '🐾 Pet Friendly', color: '#fbbf24' },
                                 { key: 'verified', label: '✅ Verified Only', color: '#22c55e' },
+                                { key: 'lowDeposit', label: '💰 Low Deposit', color: '#a855f7' },
                             ].map(f => (
                                 <button key={f.key} onClick={() => handleFilterChange(f.key, filters[f.key] === 'true' ? '' : 'true')}
                                     style={{

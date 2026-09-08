@@ -43,7 +43,7 @@ export function PropertyCard({ property, onSave, saved }) {
                         </span>
                         {property.isFeatured && <span className="badge badge-warning">⭐ Featured</span>}
                         {property.verified && <span className="trust-badge trust-badge-verified"><ShieldCheck size={11} /> Verified</span>}
-                        {property.zeroBrokerage && <span className="trust-badge trust-badge-zero-brokerage"><Tag size={11} /> Zero Brokerage</span>}
+                        {property.zeroBrokerage && <span className="trust-badge trust-badge-zero-brokerage" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', fontWeight: 700 }}><Tag size={11} /> ZERO BROKERAGE</span>}
                     </div>
                     {/* Save */}
                     {onSave && (
@@ -97,10 +97,16 @@ export function PropertyCard({ property, onSave, saved }) {
                         </span>
                     </div>
 
-                    {/* India-specific trust tags */}
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
-                        {property.bachelorFriendly && <span className="trust-badge trust-badge-bachelor">👨‍🎓 Bachelor Friendly</span>}
-                        {property.petFriendly && <span className="trust-badge trust-badge-pet">🐾 Pet Friendly</span>}
+                        {property.owner?.role === 'owner' && <span className="trust-badge" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', borderColor: 'rgba(245,158,11,0.3)' }}>👤 Direct Owner</span>}
+                        {property.bachelorFriendly && property.petFriendly && property.societyRules?.nonVegAllowed !== false ? (
+                            <span className="trust-badge" style={{ background: 'rgba(168,85,247,0.1)', color: '#a855f7', borderColor: 'rgba(168,85,247,0.3)' }}>🌈 All Welcome</span>
+                        ) : (
+                            <>
+                                {property.bachelorFriendly && <span className="trust-badge trust-badge-bachelor">👨‍🎓 Bachelor Friendly</span>}
+                                {property.petFriendly && <span className="trust-badge trust-badge-pet">🐾 Pet Friendly</span>}
+                            </>
+                        )}
                         {property.deposit > 0 && property.price > 0 && property.deposit / property.price <= 2 && (
                             <span className="trust-badge trust-badge-low-deposit">💰 Low Deposit</span>
                         )}

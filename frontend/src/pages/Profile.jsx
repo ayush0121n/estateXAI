@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { User, Mail, Phone, Building2, Briefcase, Save, Heart, Bookmark, History, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { User, Mail, Phone, Building2, Briefcase, Save, Heart, Bookmark, History, SlidersHorizontal, Trash2, ShieldCheck } from 'lucide-react';
 import api from '../utils/api';
 import { PropertyCard, PGCard } from '../components/ListingCard';
 
@@ -70,11 +70,20 @@ export default function Profile() {
                         {user?.name?.[0]?.toUpperCase() || 'U'}
                     </div>
                     <div style={{ flex: 1 }}>
-                        <h2 style={{ color: 'white', fontWeight: 700, fontSize: 20, margin: 0 }}>{user?.name}</h2>
+                        <h2 style={{ color: 'white', fontWeight: 700, fontSize: 20, margin: 0 }}>
+                            {user?.name} {profileData?.isPhoneVerified && <span className="trust-badge trust-badge-verified" style={{ marginLeft: 8, fontSize: 12 }}><ShieldCheck size={12} /> Verified</span>}
+                        </h2>
                         <p style={{ color: '#6b7298', fontSize: 14, margin: '4px 0 8px' }}>{user?.email}</p>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: `${roleColor}20`, border: `1px solid ${roleColor}40`, fontSize: 12, color: roleColor, fontWeight: 600, textTransform: 'capitalize' }}>
-                            {user?.role === 'admin' ? '🛡️' : user?.role === 'owner' ? '🏠' : '🔍'} {user?.role}
-                        </span>
+                        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: `${roleColor}20`, border: `1px solid ${roleColor}40`, fontSize: 12, color: roleColor, fontWeight: 600, textTransform: 'capitalize' }}>
+                                {user?.role === 'admin' ? '🛡️' : user?.role === 'owner' ? '🏠' : '🔍'} {user?.role}
+                            </span>
+                            {profileData?.trustScore !== undefined && (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: 'rgba(34,211,165,0.1)', border: '1px solid rgba(34,211,165,0.3)', fontSize: 12, color: '#22d3a5', fontWeight: 700 }}>
+                                    🏆 Trust Score: {profileData.trustScore}/100
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -124,6 +133,19 @@ export default function Profile() {
                             <div>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}><Briefcase size={13} /> Workplace</label>
                                 <input className="input" placeholder="e.g. Infosys, TCS" value={form.workplace} onChange={e => set('workplace', e.target.value)} />
+                            </div>
+                            <div>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}><ShieldCheck size={13} /> ID Verification</label>
+                                {profileData?.isPhoneVerified ? (
+                                    <div style={{ padding: '12px 16px', background: 'rgba(34,211,165,0.1)', border: '1px solid rgba(34,211,165,0.3)', borderRadius: 10, color: '#22d3a5', fontSize: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <ShieldCheck size={18} /> Your account is fully verified.
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                                        <input type="file" className="input" style={{ flex: 1, padding: 8 }} accept="image/*,.pdf" />
+                                        <button type="button" className="btn btn-primary" onClick={(e) => { e.preventDefault(); toast.success('ID uploaded for verification! Approval pending.'); }}>Upload ID</button>
+                                    </div>
+                                )}
                             </div>
 
                             <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '14px', borderRadius: 12, fontSize: 15, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>

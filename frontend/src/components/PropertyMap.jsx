@@ -39,17 +39,26 @@ export default function PropertyMap({ property }) {
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
 
-    const lat = property?.location?.coordinates?.lat;
-    const lng = property?.location?.coordinates?.lng;
+    const CITY_COORDS = {
+        'Pune': { lat: 18.5204, lng: 73.8567 },
+        'Bangalore': { lat: 12.9716, lng: 77.5946 },
+        'Mumbai': { lat: 19.0760, lng: 72.8777 },
+        'Delhi NCR': { lat: 28.7041, lng: 77.1025 },
+        'Hyderabad': { lat: 17.3850, lng: 78.4867 },
+        'Chennai': { lat: 13.0827, lng: 80.2707 },
+    };
+
+    const fallback = CITY_COORDS[property?.location?.city] || { lat: 20.5937, lng: 78.9629 }; // Default India
+    const effectiveLat = property?.location?.coordinates?.lat || fallback.lat;
+    const effectiveLng = property?.location?.coordinates?.lng || fallback.lng;
+    const isExactLocation = !!(property?.location?.coordinates?.lat && property?.location?.coordinates?.lng);
     const pois = property?.nearbyPOIs || [];
     
     const walkabilityScore = useMemo(() => property?.walkabilityScore || calculateWalkabilityScore(pois), [property, pois]);
     const connectivityScore = property?.connectivityScore || Math.round(walkabilityScore * 0.85);
 
-    const hasCoordinates = lat && lng;
-
     useEffect(() => {
-        if (!hasCoordinates || !mapRef.current || mapInstance.current) return;
+        if (!mapRef.current || mapInstance.current) return;
 
         // Dynamically import Leaflet to avoid SSR issues
         import('leaflet').then(L => {
@@ -61,23 +70,34 @@ export default function PropertyMap({ property }) {
                 shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
             });
 
-            const map = L.map(mapRef.current).setView([lat, lng], 15);
+            const map = L.map(mapRef.current).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
             mapInstance.current = map;
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            // Main property marker
+            // Main property marker (or area marker)
             const mainIcon = L.divIcon({
                 className: '',
-                html: `<div style="background:var(--primary);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
+                html: `<div style="background:var(--primary);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;">${isExactLocation ? '' : '<span style="transform:rotate(45deg);font-size:12px">approx</span>'}</div>`,
                 iconSize: [36, 36],
                 iconAnchor: [18, 36],
             });
-            L.marker([lat, lng], { icon: mainIcon })
+            
+            // Add a circle if approximate
+            if (!isExactLocation) {
+                L.circle([effectiveLat, effectiveLng], {
+                    color: 'var(--primary)',
+                    fillColor: 'var(--primary)',
+                    fillOpacity: 0.2,
+                    radius: 3000
+                }).addTo(map);
+            }
+
+            L.marker([effectiveLat, effectiveLng], { icon: mainIcon })
                 .addTo(map)
-                .bindPopup(`<b>${property.title}</b><br/>${property.location.address}`, { maxWidth: 200 })
+                .bindPopup(`<b>${property.title}</b><br/>${isExactLocation ? property.location.address : `Approximate location in ${property.location.city}`}`, { maxWidth: 200 })
                 .openPopup();
 
             // POI markers
@@ -103,7 +123,7 @@ export default function PropertyMap({ property }) {
                 mapInstance.current = null;
             }
         };
-    }, [lat, lng, hasCoordinates]);
+    }, [effectiveLat, effectiveLng, isExactLocation]);
 
     const scoreColor = (s) => s >= 70 ? '#22d3a5' : s >= 40 ? '#f59e0b' : '#ef4444';
 
@@ -114,21 +134,15 @@ export default function PropertyMap({ property }) {
             </h3>
 
             {/* Map */}
-            {hasCoordinates ? (
-                <>
-                    {/* Add Leaflet CSS dynamically */}
-                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-                    <div ref={mapRef} style={{ height: 320, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(201, 163, 94,0.2)', marginBottom: 16 }} />
-                </>
-            ) : (
-                <div style={{ height: 200, borderRadius: 16, background: 'rgba(201, 163, 94,0.05)', border: '1px dashed rgba(201, 163, 94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', marginBottom: 16 }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <MapPin size={32} color="var(--primary)" style={{ opacity: 0.5, marginBottom: 8 }} />
-                        <p style={{ margin: 0, fontSize: 14 }}>Map coordinates not available for this property.</p>
-                        <p style={{ margin: '4px 0 0', fontSize: 12 }}>{property?.location?.address}</p>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+            <div style={{ position: 'relative' }}>
+                <div ref={mapRef} style={{ height: 320, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(201, 163, 94,0.2)', marginBottom: 16 }} />
+                {!isExactLocation && (
+                    <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 400, background: 'rgba(0,0,0,0.7)', color: 'white', padding: '4px 10px', borderRadius: 20, fontSize: 12, backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        Approximate Location
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
             {/* Scores */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>

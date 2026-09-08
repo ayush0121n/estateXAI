@@ -232,6 +232,30 @@ export default function PropertyDetail() {
                         {/* Price Prediction Widget */}
                         <PricePredictionWidget property={property} />
 
+                        {/* Deposit Calculator */}
+                        {property.listingType === 'rent' && property.deposit > 0 && (
+                            <div className="glass-card" style={{ padding: 24, marginBottom: 20, marginTop: 20, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.3)' }}>
+                                <h3 style={{ fontWeight: 600, color: '#10b981', marginBottom: 12, fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <Shield size={16} /> Move-in Costs
+                                </h3>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14 }}>
+                                    <span style={{ color: '#b0b7d3' }}>First Month Rent</span>
+                                    <span style={{ color: 'white', fontWeight: 600 }}>₹{property.price.toLocaleString()}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, fontSize: 14 }}>
+                                    <span style={{ color: '#b0b7d3' }}>Security Deposit</span>
+                                    <span style={{ color: 'white', fontWeight: 600 }}>₹{property.deposit.toLocaleString()}</span>
+                                </div>
+                                <div style={{ borderTop: '1px solid rgba(16,185,129,0.2)', paddingTop: 12, display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700 }}>
+                                    <span style={{ color: 'white' }}>Total Upfront</span>
+                                    <span style={{ color: '#10b981' }}>₹{(property.price + property.deposit).toLocaleString()}</span>
+                                </div>
+                                <div style={{ fontSize: 12, color: '#6b7298', marginTop: 12, textAlign: 'center' }}>
+                                    Deposit is {(property.deposit / property.price).toFixed(1)}x monthly rent. {property.deposit / property.price <= 2 ? 'This is considered low!' : ''}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Owner Card */}
                         <div className="glass-card" style={{ padding: 24, marginBottom: 20, marginTop: 20 }}>
                             <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 16 }}>Posted By</h3>

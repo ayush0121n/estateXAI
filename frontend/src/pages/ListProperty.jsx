@@ -178,6 +178,14 @@ export default function ListProperty() {
                     <Section title="🧠 Location Intelligence (Optional)">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                             <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                                <Field label="Latitude (Map Coordinates)">
+                                    <input type="number" step="any" className="input" placeholder="e.g. 18.5204" value={form.location.coordinates?.lat || ''} onChange={e => setForm(p => ({...p, location: {...p.location, coordinates: {...p.location.coordinates, lat: Number(e.target.value)}}}))} />
+                                </Field>
+                                <Field label="Longitude (Map Coordinates)">
+                                    <input type="number" step="any" className="input" placeholder="e.g. 73.8567" value={form.location.coordinates?.lng || ''} onChange={e => setForm(p => ({...p, location: {...p.location, coordinates: {...p.location.coordinates, lng: Number(e.target.value)}}}))} />
+                                </Field>
+                            </div>
+                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 <Field label="Walkability Score (0-100)">
                                     <input type="number" className="input" value={form.walkabilityScore} onChange={e => set('walkabilityScore', Number(e.target.value))} min={0} max={100} />
                                 </Field>

@@ -370,12 +370,17 @@ export default function Roommates() {
                                         return (
                                         <motion.div key={m._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--dark-border)', borderRadius: 16, padding: 28, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                                             
-                                            {/* Verified badge */}
-                                            {m.isPhoneVerified && (
-                                                <div style={{ position: 'absolute', top: 12, right: 12 }}>
+                                            {/* Top badges */}
+                                            <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 6, flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                {m.isPhoneVerified && (
                                                     <span className="trust-badge trust-badge-verified" style={{ fontSize: 10 }}><ShieldCheck size={10} /> Verified</span>
-                                                </div>
-                                            )}
+                                                )}
+                                                {m.trustScore > 0 && (
+                                                    <span style={{ background: 'rgba(34,211,165,0.1)', color: '#22d3a5', border: '1px solid rgba(34,211,165,0.3)', padding: '2px 8px', borderRadius: 12, fontSize: 10, fontWeight: 700 }}>
+                                                        🏆 Trust: {m.trustScore}
+                                                    </span>
+                                                )}
+                                            </div>
 
                                             {/* Top Section */}
                                             <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
