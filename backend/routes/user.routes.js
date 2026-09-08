@@ -178,19 +178,16 @@ router.get('/history', protect, async (req, res) => {
 // @PUT /api/user/roommate-profile - Create or update roommate profile
 router.put('/roommate-profile', protect, async (req, res) => {
     try {
-        const { isLookingForRoommate, gender, diet, smoking, sleepSchedule, profession, preferredArea, budgetMin, budgetMax, bio, age } = req.body;
+        const fields = ['isLookingForRoommate', 'gender', 'diet', 'smoking', 'sleepSchedule', 'profession',
+            'preferredArea', 'city', 'budgetMin', 'budgetMax', 'bio', 'age', 'timeline', 'cleanliness',
+            'cooking', 'pets', 'contactNumber', 'guestsPolicy', 'wfhPreference', 'noiseTolerance'];
         const profileUpdate = {};
-        if (isLookingForRoommate !== undefined) profileUpdate['roommateProfile.isLookingForRoommate'] = isLookingForRoommate;
-        if (gender) profileUpdate['roommateProfile.gender'] = gender;
-        if (diet) profileUpdate['roommateProfile.diet'] = diet;
-        if (smoking) profileUpdate['roommateProfile.smoking'] = smoking;
-        if (sleepSchedule) profileUpdate['roommateProfile.sleepSchedule'] = sleepSchedule;
-        if (profession) profileUpdate['roommateProfile.profession'] = profession;
-        if (preferredArea !== undefined) profileUpdate['roommateProfile.preferredArea'] = preferredArea;
-        if (budgetMin !== undefined) profileUpdate['roommateProfile.budgetMin'] = Number(budgetMin) || 0;
-        if (budgetMax !== undefined) profileUpdate['roommateProfile.budgetMax'] = Number(budgetMax) || 0;
-        if (bio !== undefined) profileUpdate['roommateProfile.bio'] = bio;
-        if (age !== undefined) profileUpdate['roommateProfile.age'] = Number(age) || 0;
+        fields.forEach(f => {
+            if (req.body[f] !== undefined) {
+                const val = ['budgetMin', 'budgetMax', 'age'].includes(f) ? Number(req.body[f]) || 0 : req.body[f];
+                profileUpdate[`roommateProfile.${f}`] = val;
+            }
+        });
 
         const user = await User.findByIdAndUpdate(req.user._id, profileUpdate, { new: true, runValidators: true });
         res.json({ success: true, roommateProfile: user.roommateProfile });
@@ -207,50 +204,69 @@ router.get('/roommates/match', protect, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Please enable your roommate profile first.' });
         }
 
-        // Fetch all active seekers except self
-        const candidates = await User.find({
+        // Build filter - prioritize same city if set
+        const filter = {
             _id: { $ne: req.user._id },
             'roommateProfile.isLookingForRoommate': true
-        }).select('name avatar roommateProfile createdAt');
+        };
+        // Don't hard-filter by city; we'll boost city matches in scoring
 
-        // Compatibility scoring algorithm
+        const candidates = await User.find(filter)
+            .select('name avatar roommateProfile createdAt isPhoneVerified')
+            .limit(200);
+
+        // Enhanced compatibility scoring algorithm
         const scored = candidates.map(c => {
             let score = 0;
             const p = me.roommateProfile;
             const cp = c.roommateProfile;
 
-            // Diet (25%)
-            if (p.diet === 'any' || cp.diet === 'any' || p.diet === cp.diet) score += 25;
-            else score += 5;
+            // City match bonus (15 pts)
+            if (p.city && cp.city && p.city.toLowerCase() === cp.city.toLowerCase()) score += 15;
+            else if (!p.city || !cp.city) score += 5; // no penalty if city not set
 
-            // Sleep schedule (20%)
-            if (p.sleepSchedule === 'flexible' || cp.sleepSchedule === 'flexible' || p.sleepSchedule === cp.sleepSchedule) score += 20;
+            // Diet (20%)
+            if (p.diet === 'any' || cp.diet === 'any' || p.diet === cp.diet) score += 20;
+            else score += 3;
 
-            // Smoking (20%)
-            if (p.smoking === cp.smoking) score += 20;
-            else if ((p.smoking === 'outside-only' && cp.smoking === 'no') || (p.smoking === 'no' && cp.smoking === 'outside-only')) score += 8;
+            // Sleep schedule (15%)
+            if (p.sleepSchedule === 'flexible' || cp.sleepSchedule === 'flexible' || p.sleepSchedule === cp.sleepSchedule) score += 15;
 
-            // Profession (15%)
-            if (p.profession === 'any' || cp.profession === 'any' || p.profession === cp.profession) score += 15;
+            // Smoking (15%)
+            if (p.smoking === cp.smoking) score += 15;
+            else if ((p.smoking === 'outside-only' && cp.smoking === 'no') || (p.smoking === 'no' && cp.smoking === 'outside-only')) score += 6;
 
-            // Gender preference (10%)
-            if (p.gender === 'any' || cp.gender === 'any' || p.gender === cp.gender) score += 10;
+            // Cleanliness (10%)
+            if (p.cleanliness === cp.cleanliness) score += 10;
+            else if ((p.cleanliness === 'moderate') || (cp.cleanliness === 'moderate')) score += 5;
+
+            // Profession (5%)
+            if (p.profession === 'any' || cp.profession === 'any' || p.profession === cp.profession) score += 5;
+
+            // Gender preference (5%)
+            if (p.gender === 'any' || cp.gender === 'any' || p.gender === cp.gender) score += 5;
 
             // Budget overlap (10%)
             const budgetOverlap = Math.min(p.budgetMax, cp.budgetMax) - Math.max(p.budgetMin, cp.budgetMin);
             if (budgetOverlap >= 0) score += 10;
             else if (budgetOverlap > -3000) score += 4;
 
-            return { user: c, compatibilityScore: Math.min(score, 100) };
+            // Guests policy (3%)
+            if (p.guestsPolicy === 'flexible' || cp.guestsPolicy === 'flexible' || p.guestsPolicy === cp.guestsPolicy) score += 3;
+
+            // Noise tolerance (2%)
+            if (p.noiseTolerance === cp.noiseTolerance) score += 2;
+            else if (p.noiseTolerance === 'moderate' || cp.noiseTolerance === 'moderate') score += 1;
+
+            return { user: c, compatibilityScore: Math.min(Math.round(score), 100) };
         });
 
-        // Sort by score descending, return top 20
+        // Sort by score descending, return top 30
         scored.sort((a, b) => b.compatibilityScore - a.compatibilityScore);
-        res.json({ success: true, matches: scored.slice(0, 20) });
+        res.json({ success: true, matches: scored.slice(0, 30) });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
 module.exports = router;
-

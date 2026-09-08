@@ -93,8 +93,21 @@ const pgSchema = new mongoose.Schema({
         userType: { type: String, enum: ['owner', 'user', 'agent'], default: 'user' },
         rating: { type: Number, required: true, min: 1, max: 5 },
         comment: { type: String, required: true },
+        // Per-category quality ratings
+        foodQualityRating: { type: Number, min: 1, max: 5 },
+        cleanlinessRating: { type: Number, min: 1, max: 5 },
+        safetyRating: { type: Number, min: 1, max: 5 },
+        waterRating: { type: Number, min: 1, max: 5 },
+        powerRating: { type: Number, min: 1, max: 5 },
         createdAt: { type: Date, default: Date.now }
-    }]
+    }],
+    // Aggregate Quality Index scores (computed from reviews)
+    foodQuality: { type: Number, default: 0, min: 0, max: 5 },
+    cleanlinessRating: { type: Number, default: 0, min: 0, max: 5 },
+    safetyRating: { type: Number, default: 0, min: 0, max: 5 },
+    waterSupply: { type: Number, default: 0, min: 0, max: 5 },
+    powerBackupRating: { type: Number, default: 0, min: 0, max: 5 },
+    hygieneRating: { type: Number, default: 0, min: 0, max: 5 }
 }, { timestamps: true });
 
 pgSchema.index({ 'location.city': 1, genderType: 1, rentPerMonth: 1 });

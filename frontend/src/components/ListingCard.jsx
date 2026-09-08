@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MapPin, BedDouble, Bath, Square, Heart, Star, Wifi, UtensilsCrossed, AirVent, ShieldCheck, Tag } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Square, Heart, Star, Wifi, UtensilsCrossed, AirVent, ShieldCheck, Tag, Calendar, IndianRupee } from 'lucide-react';
 
 const formatPrice = (price, type) => {
     if (price >= 10000000) return `₹${(price / 10000000).toFixed(1)} Cr`;
@@ -9,8 +9,18 @@ const formatPrice = (price, type) => {
     return `₹${price.toLocaleString()}${type === 'rent' ? '/mo' : ''}`;
 };
 
+const getDepositInfo = (deposit, rent) => {
+    if (!deposit || !rent || rent === 0) return null;
+    const ratio = deposit / rent;
+    const cls = ratio <= 2 ? 'deposit-low' : ratio <= 4 ? 'deposit-medium' : 'deposit-high';
+    const label = ratio <= 2 ? 'Low Deposit' : ratio <= 4 ? '' : 'High Deposit';
+    return { ratio: ratio.toFixed(1), cls, label };
+};
+
 export function PropertyCard({ property, onSave, saved }) {
     const img = property.images?.[0] || `https://source.unsplash.com/600x400/?apartment,building&sig=${property._id}`;
+    const depositInfo = property.listingType === 'rent' ? getDepositInfo(property.deposit, property.price) : null;
+    const isAvailableNow = property.availableFrom && new Date(property.availableFrom) <= new Date();
 
     return (
         <motion.div className="glass-card" style={{ overflow: 'hidden', cursor: 'pointer' }}
@@ -26,14 +36,14 @@ export function PropertyCard({ property, onSave, saved }) {
                         onMouseLeave={e => e.target.style.transform = 'scale(1)'}
                         onError={e => { e.target.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80'; }}
                     />
-                    {/* Badges */}
-                    <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {/* Top badges */}
+                    <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6, flexWrap: 'wrap', maxWidth: 'calc(100% - 60px)' }}>
                         <span className={`badge ${property.listingType === 'sale' ? 'badge-primary' : 'badge-success'}`}>
                             {property.listingType === 'sale' ? 'For Sale' : 'For Rent'}
                         </span>
                         {property.isFeatured && <span className="badge badge-warning">⭐ Featured</span>}
-                        {property.verified && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(34,197,94,0.9)', color: '#fff', borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 600, backdropFilter: 'blur(4px)' }}><ShieldCheck size={11} /> Verified</span>}
-                        {property.zeroBrokerage && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(201,163,94,0.9)', color: '#000', borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}><Tag size={11} /> Zero Brokerage</span>}
+                        {property.verified && <span className="trust-badge trust-badge-verified"><ShieldCheck size={11} /> Verified</span>}
+                        {property.zeroBrokerage && <span className="trust-badge trust-badge-zero-brokerage"><Tag size={11} /> Zero Brokerage</span>}
                     </div>
                     {/* Save */}
                     {onSave && (
@@ -42,12 +52,26 @@ export function PropertyCard({ property, onSave, saved }) {
                             <Heart size={16} color="white" fill={saved ? 'white' : 'transparent'} />
                         </button>
                     )}
+                    {/* Available Now badge */}
+                    {isAvailableNow && (
+                        <span className="trust-badge trust-badge-available" style={{ position: 'absolute', bottom: 12, right: 12 }}>
+                            <Calendar size={11} /> Available Now
+                        </span>
+                    )}
                 </div>
 
                 {/* Content */}
                 <div style={{ padding: '16px' }}>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif', marginBottom: 4 }}>
-                        {formatPrice(property.price, property.listingType)}
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif' }}>
+                            {formatPrice(property.price, property.listingType)}
+                        </div>
+                        {/* Deposit indicator */}
+                        {depositInfo && (
+                            <span className={`deposit-indicator ${depositInfo.cls}`}>
+                                <IndianRupee size={10} /> Deposit {depositInfo.ratio}× rent
+                            </span>
+                        )}
                     </div>
                     <h3 style={{ fontSize: 16, fontWeight: 600, color: 'white', marginBottom: 8, lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {property.title}
@@ -74,12 +98,13 @@ export function PropertyCard({ property, onSave, saved }) {
                     </div>
 
                     {/* India-specific trust tags */}
-                    {(property.bachelorFriendly || property.petFriendly) && (
-                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
-                            {property.bachelorFriendly && <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 4, background: 'rgba(96,165,250,0.15)', color: '#60a5fa', border: '1px solid rgba(96,165,250,0.3)', fontWeight: 500 }}>👨‍🎓 Bachelor Friendly</span>}
-                            {property.petFriendly && <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 4, background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)', fontWeight: 500 }}>🐾 Pet Friendly</span>}
-                        </div>
-                    )}
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
+                        {property.bachelorFriendly && <span className="trust-badge trust-badge-bachelor">👨‍🎓 Bachelor Friendly</span>}
+                        {property.petFriendly && <span className="trust-badge trust-badge-pet">🐾 Pet Friendly</span>}
+                        {property.deposit > 0 && property.price > 0 && property.deposit / property.price <= 2 && (
+                            <span className="trust-badge trust-badge-low-deposit">💰 Low Deposit</span>
+                        )}
+                    </div>
 
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(201, 163, 94,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, color: '#6b7298' }}>
                         <span style={{ textTransform: 'capitalize', color: '#b0b7d3' }}>{property.type}</span>
@@ -93,6 +118,9 @@ export function PropertyCard({ property, onSave, saved }) {
 
 export function PGCard({ pg, onSave, saved }) {
     const img = pg.images?.[0] || `https://source.unsplash.com/600x400/?hostel,room&sig=${pg._id}`;
+    // Quality score (average of available quality ratings)
+    const qualityScores = [pg.foodQuality, pg.cleanlinessRating, pg.safetyRating, pg.waterSupply, pg.powerBackup, pg.hygieneRating].filter(Boolean);
+    const avgQuality = qualityScores.length > 0 ? (qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length) : null;
 
     return (
         <motion.div className="glass-card" style={{ overflow: 'hidden', cursor: 'pointer' }}
@@ -113,7 +141,7 @@ export function PGCard({ pg, onSave, saved }) {
                             {pg.genderType === 'male' ? '♂ Boys' : pg.genderType === 'female' ? '♀ Girls' : '⚥ Unisex'}
                         </span>
                         {pg.isFeatured && <span className="badge badge-warning">⭐ Featured</span>}
-                        {pg.verified && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(34,197,94,0.9)', color: '#fff', borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 600 }}><ShieldCheck size={11} /> Verified</span>}
+                        {pg.verified && <span className="trust-badge trust-badge-verified"><ShieldCheck size={11} /> Verified</span>}
                     </div>
                     {onSave && (
                         <button onClick={e => { e.preventDefault(); e.stopPropagation(); onSave(pg._id); }}
@@ -132,8 +160,21 @@ export function PGCard({ pg, onSave, saved }) {
 
                 {/* Content */}
                 <div style={{ padding: 16 }}>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif', marginBottom: 4 }}>
-                        ₹{pg.rentPerMonth?.toLocaleString()}<span style={{ fontSize: 13, fontWeight: 400, color: '#6b7298' }}>/month</span>
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', fontFamily: 'Outfit, sans-serif' }}>
+                            ₹{pg.rentPerMonth?.toLocaleString()}<span style={{ fontSize: 13, fontWeight: 400, color: '#6b7298' }}>/month</span>
+                        </div>
+                        {/* Quality Index badge */}
+                        {avgQuality && (
+                            <span style={{
+                                fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
+                                background: avgQuality >= 4 ? 'rgba(34,197,94,0.12)' : avgQuality >= 3 ? 'rgba(251,191,36,0.12)' : 'rgba(239,68,68,0.12)',
+                                color: avgQuality >= 4 ? '#4ade80' : avgQuality >= 3 ? '#fbbf24' : '#f87171',
+                                border: `1px solid ${avgQuality >= 4 ? 'rgba(34,197,94,0.3)' : avgQuality >= 3 ? 'rgba(251,191,36,0.3)' : 'rgba(239,68,68,0.3)'}`
+                            }}>
+                                QI {avgQuality.toFixed(1)}/5
+                            </span>
+                        )}
                     </div>
                     <h3 style={{ fontSize: 16, fontWeight: 600, color: 'white', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {pg.name}
@@ -160,5 +201,20 @@ export function PGCard({ pg, onSave, saved }) {
                 </div>
             </Link>
         </motion.div>
+    );
+}
+
+// Skeleton loading component for cards
+export function SkeletonCard() {
+    return (
+        <div className="skeleton-card">
+            <div className="skeleton-image" />
+            <div className="skeleton-content">
+                <div className="skeleton-line short" />
+                <div className="skeleton-line medium" />
+                <div className="skeleton-line" />
+                <div className="skeleton-line short" />
+            </div>
+        </div>
     );
 }

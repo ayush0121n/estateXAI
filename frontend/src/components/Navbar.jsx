@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles, Heart } from 'lucide-react';
+import { Building2, Home, Users, LogOut, Menu, X, User, Plus, LayoutDashboard, ChevronDown, Sparkles, Heart, FileText } from 'lucide-react';
 import Logo from './Logo';
 
 export default function Navbar() {
@@ -87,6 +87,9 @@ export default function Navbar() {
                         </Link>
                         <Link to="/ai-prediction" style={{...linkStyle('/ai-prediction'), color: isActive('/ai-prediction') ? 'var(--primary)' : 'var(--text-secondary)', background: isActive('/ai-prediction') ? 'rgba(255, 255, 255, 0.05)' : 'transparent'}}>
                             <Sparkles size={16} color={isActive('/ai-prediction') ? 'var(--primary)' : 'var(--text-secondary)'} /> AI Predictor
+                        </Link>
+                        <Link to="/rental-toolkit" style={linkStyle('/rental-toolkit')}>
+                            <FileText size={16} /> Toolkit
                         </Link>
                     </div>
 
@@ -172,6 +175,7 @@ export default function Navbar() {
                             <Link to="/pgs" style={{ ...linkStyle('/pgs'), justifyContent: 'flex-start' }}><Users size={16} /> PG / Hostel</Link>
                             <Link to="/roommates" style={{ ...linkStyle('/roommates'), justifyContent: 'flex-start' }}><Heart size={16} /> Find Flatmates</Link>
                             <Link to="/ai-prediction" style={{ ...linkStyle('/ai-prediction'), justifyContent: 'flex-start' }}><Sparkles size={16} /> AI Predictor</Link>
+                            <Link to="/rental-toolkit" style={{ ...linkStyle('/rental-toolkit'), justifyContent: 'flex-start' }}><FileText size={16} /> Rental Toolkit</Link>
                             {user ? (
                                 <>
                                     <Link to="/dashboard" style={{ ...linkStyle('/dashboard'), justifyContent: 'flex-start' }}><LayoutDashboard size={16} /> Dashboard</Link>

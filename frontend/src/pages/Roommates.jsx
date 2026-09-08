@@ -1,11 +1,13 @@
 /* eslint-disable */
 import { useState, useEffect } from 'react';
-import { Users, Heart, Moon, Sun, Leaf, Cigarette, Briefcase, GraduationCap, MapPin, ChevronRight, Sliders, MessageCircle } from 'lucide-react';
+import { Users, Heart, Moon, Sun, Leaf, Cigarette, Briefcase, GraduationCap, MapPin, ChevronRight, Sliders, MessageCircle, ShieldCheck, Filter, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const CITIES = ['Bangalore', 'Pune', 'Hyderabad', 'Mumbai', 'Delhi NCR', 'Chennai', 'Kolkata', 'Ahmedabad'];
 
 const FIELDS = {
     diet: { label: 'Diet', options: [{ v: 'veg', l: '🥦 Vegetarian' }, { v: 'non-veg', l: '🍗 Non-Veg' }, { v: 'vegan', l: '🌱 Vegan' }, { v: 'any', l: '🤷 Any' }] },
@@ -16,7 +18,10 @@ const FIELDS = {
     timeline: { label: 'Move-In Timeline', options: [{ v: 'immediate', l: '⚡ Immediate' }, { v: '15-days', l: '⏳ 15 Days' }, { v: 'next-month', l: '📅 Next Month' }, { v: 'flexible', l: '🧘 Flexible' }] },
     cleanliness: { label: 'Cleanliness', options: [{ v: 'super-clean', l: '✨ Super Clean' }, { v: 'moderate', l: '🧹 Moderate' }, { v: 'relaxed', l: '🛋️ Relaxed' }] },
     cooking: { label: 'Cooking Habits', options: [{ v: 'daily', l: '🍳 Daily' }, { v: 'occasional', l: '🍲 Occasional' }, { v: 'outside-food', l: '🥡 Outside Food' }] },
-    pets: { label: 'Pet Policy', options: [{ v: 'has-pets', l: '🐶 Has Pets' }, { v: 'open-to-pets', l: '🐱 Open to Pets' }, { v: 'no-pets', l: '🚫 No Pets' }] }
+    pets: { label: 'Pet Policy', options: [{ v: 'has-pets', l: '🐶 Has Pets' }, { v: 'open-to-pets', l: '🐱 Open to Pets' }, { v: 'no-pets', l: '🚫 No Pets' }] },
+    guestsPolicy: { label: 'Guests Policy', options: [{ v: 'no-guests', l: '🚫 No Guests' }, { v: 'occasional', l: '🤝 Occasional' }, { v: 'frequent', l: '🎉 Frequent' }, { v: 'flexible', l: '🧘 Flexible' }] },
+    wfhPreference: { label: 'Work Style', options: [{ v: 'full-wfh', l: '🏠 Full WFH' }, { v: 'hybrid', l: '🔄 Hybrid' }, { v: 'office', l: '🏢 Office' }, { v: 'any', l: '🤷 Any' }] },
+    noiseTolerance: { label: 'Noise Level', options: [{ v: 'silent', l: '🤫 Silent' }, { v: 'moderate', l: '🔊 Moderate' }, { v: 'lively', l: '🎵 Lively' }] }
 };
 
 function CompatibilityRing({ score }) {
@@ -52,6 +57,7 @@ function ProfileForm({ profile, onSave }) {
         sleepSchedule: profile?.sleepSchedule || 'flexible',
         profession: profile?.profession || 'any',
         preferredArea: profile?.preferredArea || '',
+        city: profile?.city || '',
         budgetMin: profile?.budgetMin || 5000,
         budgetMax: profile?.budgetMax || 15000,
         bio: profile?.bio || '',
@@ -60,7 +66,10 @@ function ProfileForm({ profile, onSave }) {
         cleanliness: profile?.cleanliness || 'moderate',
         cooking: profile?.cooking || 'occasional',
         pets: profile?.pets || 'open-to-pets',
-        contactNumber: profile?.contactNumber || ''
+        contactNumber: profile?.contactNumber || '',
+        guestsPolicy: profile?.guestsPolicy || 'flexible',
+        wfhPreference: profile?.wfhPreference || 'any',
+        noiseTolerance: profile?.noiseTolerance || 'moderate'
     });
 
     return (
@@ -84,6 +93,23 @@ function ProfileForm({ profile, onSave }) {
                 <div>
                     <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: 15, marginBottom: 4 }}>Looking for a Roommate</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{form.isLookingForRoommate ? 'You are visible in the matching pool and can find flatmates.' : 'Enable this to start finding your perfect flatmate.'}</div>
+                </div>
+            </div>
+
+            {/* City selector */}
+            <div style={{ marginBottom: 28 }}>
+                <label style={{ color: 'var(--text-secondary)', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>City</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {CITIES.map(c => (
+                        <button key={c} onClick={() => setForm(p => ({ ...p, city: c }))} style={{
+                            padding: '8px 16px', borderRadius: 8, fontSize: 13, border: '1px solid',
+                            borderColor: form.city === c ? 'var(--primary)' : 'var(--dark-border)',
+                            background: form.city === c ? 'rgba(201,163,94,0.1)' : 'rgba(255,255,255,0.02)',
+                            color: form.city === c ? 'var(--primary)' : 'var(--text-muted)',
+                            cursor: 'pointer', transition: 'all 0.2s ease',
+                            fontWeight: form.city === c ? 600 : 400
+                        }}>{c}</button>
+                    ))}
                 </div>
             </div>
 
@@ -153,15 +179,19 @@ export default function Roommates() {
     const navigate = useNavigate();
     const [myProfile, setMyProfile] = useState(null);
     const [matches, setMatches] = useState([]);
+    const [filteredMatches, setFilteredMatches] = useState([]);
     const [loadingMatches, setLoadingMatches] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
     const [profileLoaded, setProfileLoaded] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    const [filters, setFilters] = useState({ diet: '', gender: '', city: '', verifiedOnly: false });
+    const [connectedUsers, setConnectedUsers] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('flatmate_connects') || '[]'); } catch { return []; }
+    });
 
     useEffect(() => {
         document.title = 'Find Flatmates | EstateXAi';
         if (!user) return;
-        
-        // Use `api` from utils which automatically handles the token
         api.get(`/user/profile`)
             .then(({ data }) => {
                 setMyProfile(data.user?.roommateProfile);
@@ -171,11 +201,21 @@ export default function Roommates() {
             .catch(() => setProfileLoaded(true));
     }, [user]);
 
+    useEffect(() => {
+        let result = matches;
+        if (filters.diet) result = result.filter(m => m.user.roommateProfile?.diet === filters.diet || m.user.roommateProfile?.diet === 'any');
+        if (filters.gender) result = result.filter(m => m.user.roommateProfile?.gender === filters.gender || m.user.roommateProfile?.gender === 'any');
+        if (filters.city) result = result.filter(m => m.user.roommateProfile?.city?.toLowerCase().includes(filters.city.toLowerCase()));
+        if (filters.verifiedOnly) result = result.filter(m => m.user.isPhoneVerified);
+        setFilteredMatches(result);
+    }, [matches, filters]);
+
     const fetchMatches = async () => {
         setLoadingMatches(true);
         try {
             const { data } = await api.get(`/user/roommates/match`);
             setMatches(data.matches || []);
+            setFilteredMatches(data.matches || []);
         } catch (err) {
             toast.error(err.response?.data?.message || 'Could not fetch matches.');
         } finally {
@@ -196,27 +236,39 @@ export default function Roommates() {
     };
 
     const handleConnect = (match) => {
-        if (!match.roommateProfile?.contactNumber) {
+        // Request to Connect flow (frontend-only mutual interest)
+        const isConnected = connectedUsers.includes(match.user?._id || match._id);
+        if (!isConnected) {
+            const newConnects = [...connectedUsers, match.user?._id || match._id];
+            setConnectedUsers(newConnects);
+            localStorage.setItem('flatmate_connects', JSON.stringify(newConnects));
+            toast.success(`Connection request sent to ${match.name || match.user?.name}! They'll see your interest.`);
+            return;
+        }
+        // Already connected — open WhatsApp
+        const contact = match.roommateProfile?.contactNumber || match.user?.roommateProfile?.contactNumber;
+        if (!contact) {
             toast.error("This user hasn't provided a contact number.");
             return;
         }
-        // Format the number by stripping non-digit characters (optional logic)
-        let phone = match.roommateProfile.contactNumber.replace(/\D/g, '');
-        // Default to India +91 if no country code provided, just as a fallback
+        let phone = contact.replace(/\D/g, '');
         if (phone.length === 10) phone = `91${phone}`;
-        
-        const message = `Hi ${match.name}! I found your profile on EstateXAi and we have a ${match.compatibilityScore}% compatibility score. Let's connect!`;
+        const score = match.compatibilityScore || '';
+        const message = `Hi ${match.name || match.user?.name}! I found your profile on EstateXAi${score ? ` and we have a ${score}% compatibility score` : ''}. Let's connect!`;
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
     };
 
     if (!user) return (
-        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 20 }}>
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 20, paddingTop: 100 }}>
             <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(201,163,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Users size={40} color="var(--primary)" />
             </div>
             <h2 style={{ color: 'var(--text-primary)', fontSize: 28, margin: 0 }}>Find Your Perfect Flatmate</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: 16 }}>Log in to use our smart roommate matching system.</p>
-            <Link to="/login" className="btn btn-primary" style={{ padding: '12px 32px', borderRadius: 8 }}>Log In to Continue</Link>
+            <p style={{ color: 'var(--text-muted)', fontSize: 16, maxWidth: 500, textAlign: 'center' }}>AI-powered lifestyle matching on diet, sleep, cleanliness, budget & more. Say goodbye to random WhatsApp groups.</p>
+            <div style={{ display: 'flex', gap: 12 }}>
+                <Link to="/login" className="btn btn-primary" style={{ padding: '12px 32px', borderRadius: 8 }}>Log In to Continue</Link>
+                <Link to="/register" className="btn btn-ghost" style={{ padding: '12px 32px', borderRadius: 8 }}>Create Account</Link>
+            </div>
         </div>
     );
 
@@ -229,26 +281,69 @@ export default function Roommates() {
                         <Heart size={14} color="var(--primary)" />
                         <span style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 600, letterSpacing: '0.5px' }}>FLATMATE FINDER</span>
                     </div>
-                    <h1 style={{ fontSize: 46, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 16px', letterSpacing: '-0.5px' }}>Find Your <span style={{ color: 'var(--primary)' }}>Perfect</span> Flatmate</h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: 18, maxWidth: 540, margin: '0 auto', lineHeight: 1.6 }}>
-                        Our AI matches you based on lifestyle, diet, cleanliness, and budget — say goodbye to random WhatsApp group searches.
+                    <h1 style={{ fontSize: 'clamp(32px, 5vw, 46px)', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 16px', letterSpacing: '-0.5px', fontFamily: 'Outfit, sans-serif' }}>Find Your <span style={{ color: 'var(--primary)' }}>Perfect</span> Flatmate</h1>
+                    <p style={{ color: 'var(--text-muted)', fontSize: 17, maxWidth: 580, margin: '0 auto', lineHeight: 1.6 }}>
+                        Our AI matches you based on lifestyle, diet, cleanliness, work style, and budget — say goodbye to random WhatsApp group searches.
                     </p>
                 </motion.div>
 
                 {(!myProfile?.isLookingForRoommate || showSetup) ? (
-                    <div style={{ maxWidth: 760, margin: '0 auto' }}>
+                    <div style={{ maxWidth: 800, margin: '0 auto' }}>
                         <ProfileForm profile={myProfile} onSave={handleSaveProfile} />
                     </div>
                 ) : (
                     <div>
-                        {/* Controls */}
-                        <div className="roommate-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32, background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: 12, border: '1px solid var(--dark-border)' }}>
-                            <div style={{ color: 'var(--text-primary)', fontSize: 16, fontWeight: 500 }}>
-                                Found <strong style={{ color: 'var(--primary)', fontSize: 20 }}>{matches.length}</strong> compatible flatmates
+                        {/* Controls + Filter Bar */}
+                        <div style={{ marginBottom: 24 }}>
+                            <div className="roommate-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: 12, border: '1px solid var(--dark-border)' }}>
+                                <div style={{ color: 'var(--text-primary)', fontSize: 16, fontWeight: 500 }}>
+                                    Found <strong style={{ color: 'var(--primary)', fontSize: 20 }}>{filteredMatches.length}</strong> compatible flatmates
+                                    {filters.city && <span style={{ color: 'var(--text-muted)', fontSize: 13 }}> in {filters.city}</span>}
+                                </div>
+                                <div style={{ display: 'flex', gap: 10 }}>
+                                    <button onClick={() => setShowFilters(!showFilters)} className={`filter-chip ${showFilters ? 'active' : ''}`}>
+                                        <Filter size={14} /> Filters
+                                    </button>
+                                    <button onClick={() => setShowSetup(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '10px 20px', fontSize: 14, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>
+                                        Edit Profile
+                                    </button>
+                                </div>
                             </div>
-                            <button onClick={() => setShowSetup(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '10px 20px', fontSize: 14, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => e.target.style.background='rgba(255,255,255,0.1)'} onMouseLeave={e => e.target.style.background='rgba(255,255,255,0.05)'}>
-                                Edit Profile
-                            </button>
+
+                            {/* Filter panel */}
+                            <AnimatePresence>
+                                {showFilters && (
+                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
+                                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', padding: '16px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid var(--dark-border)', marginBottom: 16 }}>
+                                            <select value={filters.city} onChange={e => setFilters(p => ({ ...p, city: e.target.value }))} className="input" style={{ width: 'auto', minWidth: 140, padding: '8px 12px', fontSize: 13 }}>
+                                                <option value="">All Cities</option>
+                                                {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                            </select>
+                                            <select value={filters.diet} onChange={e => setFilters(p => ({ ...p, diet: e.target.value }))} className="input" style={{ width: 'auto', minWidth: 120, padding: '8px 12px', fontSize: 13 }}>
+                                                <option value="">Any Diet</option>
+                                                <option value="veg">Vegetarian</option>
+                                                <option value="non-veg">Non-Veg</option>
+                                                <option value="vegan">Vegan</option>
+                                            </select>
+                                            <select value={filters.gender} onChange={e => setFilters(p => ({ ...p, gender: e.target.value }))} className="input" style={{ width: 'auto', minWidth: 120, padding: '8px 12px', fontSize: 13 }}>
+                                                <option value="">Any Gender</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                            </select>
+                                            <button onClick={() => setFilters(p => ({ ...p, verifiedOnly: !p.verifiedOnly }))}
+                                                className={`filter-chip ${filters.verifiedOnly ? 'active' : ''}`} style={{ fontSize: 13 }}>
+                                                <ShieldCheck size={14} /> Verified Only
+                                            </button>
+                                            {(filters.diet || filters.gender || filters.city || filters.verifiedOnly) && (
+                                                <button onClick={() => setFilters({ diet: '', gender: '', city: '', verifiedOnly: false })}
+                                                    className="filter-chip" style={{ color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)', fontSize: 13 }}>
+                                                    <X size={14} /> Clear
+                                                </button>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {loadingMatches ? (
@@ -256,31 +351,46 @@ export default function Roommates() {
                                 <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} style={{ width: 40, height: 40, border: '3px solid rgba(201,163,94,0.2)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto 20px' }} />
                                 Finding your best matches...
                             </div>
-                        ) : matches.length === 0 ? (
+                        ) : filteredMatches.length === 0 ? (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '80px 0', background: 'var(--dark-card)', borderRadius: 16, border: '1px dashed var(--dark-border)' }}>
                                 <Users size={56} color="var(--text-muted)" style={{ marginBottom: 20, opacity: 0.5 }} />
-                                <h3 style={{ color: 'var(--text-primary)', fontSize: 20, marginBottom: 8 }}>No perfect matches yet</h3>
-                                <p style={{ color: 'var(--text-muted)', maxWidth: 400, margin: '0 auto' }}>We couldn't find anyone with your exact preferences. Check back later as more people join every day!</p>
+                                <h3 style={{ color: 'var(--text-primary)', fontSize: 20, marginBottom: 8 }}>No matches found</h3>
+                                <p style={{ color: 'var(--text-muted)', maxWidth: 400, margin: '0 auto' }}>
+                                    {filters.city || filters.diet || filters.gender ? 'Try adjusting your filters to see more results.' : 'Check back later as more people join every day!'}
+                                </p>
                             </motion.div>
                         ) : (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 24 }}>
                                 <AnimatePresence>
-                                    {matches.map(({ user: m, compatibilityScore }, idx) => (
+                                    {filteredMatches.map(({ user: m, compatibilityScore }, idx) => {
+                                        const isConnected = connectedUsers.includes(m._id);
+                                        return (
                                         <motion.div key={m._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--dark-border)', borderRadius: 16, padding: 28, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                                             
+                                            {/* Verified badge */}
+                                            {m.isPhoneVerified && (
+                                                <div style={{ position: 'absolute', top: 12, right: 12 }}>
+                                                    <span className="trust-badge trust-badge-verified" style={{ fontSize: 10 }}><ShieldCheck size={10} /> Verified</span>
+                                                </div>
+                                            )}
+
                                             {/* Top Section */}
                                             <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
-                                                {/* Avatar */}
                                                 <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(201,163,94,0.4), rgba(201,163,94,0.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, color: 'var(--primary)', flexShrink: 0, border: '2px solid rgba(201,163,94,0.3)', overflow: 'hidden' }}>
                                                     {m.avatar ? <img src={m.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : m.name?.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div style={{ flex: 1, paddingTop: 4 }}>
                                                     <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 18, marginBottom: 4 }}>{m.name}</div>
-                                                    <div style={{ display: 'flex', gap: 12, color: 'var(--text-muted)', fontSize: 13 }}>
+                                                    <div style={{ display: 'flex', gap: 12, color: 'var(--text-muted)', fontSize: 13, flexWrap: 'wrap' }}>
                                                         {m.roommateProfile?.age > 0 && <span>{m.roommateProfile.age} yrs</span>}
-                                                        {m.roommateProfile?.preferredArea && (
+                                                        {m.roommateProfile?.city && (
                                                             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                                <MapPin size={12} color="var(--primary)" /> {m.roommateProfile.preferredArea}
+                                                                <MapPin size={12} color="var(--primary)" /> {m.roommateProfile.city}
+                                                            </span>
+                                                        )}
+                                                        {m.roommateProfile?.preferredArea && (
+                                                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-secondary)' }}>
+                                                                {m.roommateProfile.preferredArea}
                                                             </span>
                                                         )}
                                                     </div>
@@ -299,6 +409,8 @@ export default function Roommates() {
                                                     m.roommateProfile?.sleepSchedule === 'early-bird' ? '🌅 Early Bird' : m.roommateProfile?.sleepSchedule === 'night-owl' ? '🦉 Night Owl' : '😴 Flexible',
                                                     m.roommateProfile?.smoking === 'no' ? '🚭 Non-Smoker' : m.roommateProfile?.smoking === 'outside-only' ? '🚪 Outside Only' : '🚬 Smoker',
                                                     m.roommateProfile?.profession !== 'any' && (m.roommateProfile?.profession === 'student' ? '📚 Student' : '💼 Professional'),
+                                                    m.roommateProfile?.wfhPreference && m.roommateProfile?.wfhPreference !== 'any' && `${m.roommateProfile.wfhPreference === 'full-wfh' ? '🏠 WFH' : m.roommateProfile.wfhPreference === 'hybrid' ? '🔄 Hybrid' : '🏢 Office'}`,
+                                                    m.roommateProfile?.noiseTolerance && m.roommateProfile?.noiseTolerance !== 'moderate' && `${m.roommateProfile.noiseTolerance === 'silent' ? '🤫 Silent' : '🎵 Lively'}`,
                                                     m.roommateProfile?.pets !== 'open-to-pets' && `🐾 ${FIELDS.pets.options.find(o=>o.v===m.roommateProfile.pets)?.l.slice(3) || 'Pets'}`
                                                 ].filter(Boolean).map(trait => (
                                                     <span key={trait} style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>{trait}</span>
@@ -319,19 +431,23 @@ export default function Roommates() {
 
                                             {/* Connect Button */}
                                             <motion.button 
-                                                whileHover={{ scale: 1.02, background: 'var(--primary)' }} 
+                                                whileHover={{ scale: 1.02 }} 
                                                 whileTap={{ scale: 0.98 }} 
-                                                onClick={() => handleConnect({user: m, name: m.name, compatibilityScore, roommateProfile: m.roommateProfile})}
-                                                style={{ width: '100%', background: 'rgba(201,163,94,0.1)', color: 'var(--primary)', border: '1px solid rgba(201,163,94,0.3)', borderRadius: 8, padding: '12px', fontWeight: 600, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'color 0.2s' }}
-                                                onMouseEnter={e => e.currentTarget.style.color = '#000'}
-                                                onMouseLeave={e => e.currentTarget.style.color = 'var(--primary)'}
+                                                onClick={() => handleConnect({user: m, name: m.name, compatibilityScore, roommateProfile: m.roommateProfile, _id: m._id})}
+                                                style={{
+                                                    width: '100%',
+                                                    background: isConnected ? 'var(--primary)' : 'rgba(201,163,94,0.1)',
+                                                    color: isConnected ? '#000' : 'var(--primary)',
+                                                    border: `1px solid ${isConnected ? 'var(--primary)' : 'rgba(201,163,94,0.3)'}`,
+                                                    borderRadius: 8, padding: '12px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.2s'
+                                                }}
                                             >
-                                                <MessageCircle size={16} />
-                                                Connect via WhatsApp
+                                                {isConnected ? <><MessageCircle size={16} /> Chat on WhatsApp</> : <><Heart size={16} /> Request to Connect</>}
                                             </motion.button>
                                             
                                         </motion.div>
-                                    ))}
+                                    )})}
                                 </AnimatePresence>
                             </div>
                         )}

@@ -27,7 +27,7 @@ export default function Properties() {
         search: searchParams.get('search') || '',
         type: searchParams.get('type') || '',
         listingType: searchParams.get('listingType') || '',
-        city: searchParams.get('city') || '',
+        city: searchParams.get('city') || localStorage.getItem('userCity') || '',
         bhk: searchParams.get('bhk') || '',
         minPrice: '',
         maxPrice: '',

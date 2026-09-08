@@ -21,7 +21,7 @@ export default function PGs() {
     const [filters, setFilters] = useState({
         search: searchParams.get('search') || '',
         genderType: searchParams.get('genderType') || '',
-        city: searchParams.get('city') || '',
+        city: searchParams.get('city') || localStorage.getItem('userCity') || '',
         minRent: '',
         maxRent: '',
         wifi: '',

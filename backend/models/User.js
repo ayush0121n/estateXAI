@@ -89,6 +89,7 @@ const userSchema = new mongoose.Schema({
         sleepSchedule: { type: String, enum: ['early-bird', 'night-owl', 'flexible'], default: 'flexible' },
         profession: { type: String, enum: ['student', 'working-professional', 'any'], default: 'any' },
         preferredArea: { type: String, default: '' },
+        city: { type: String, default: '' },
         budgetMin: { type: Number, default: 3000 },
         budgetMax: { type: Number, default: 20000 },
         bio: { type: String, maxlength: 300, default: '' },
@@ -97,7 +98,10 @@ const userSchema = new mongoose.Schema({
         cleanliness: { type: String, enum: ['super-clean', 'moderate', 'relaxed'], default: 'moderate' },
         cooking: { type: String, enum: ['daily', 'occasional', 'outside-food'], default: 'occasional' },
         pets: { type: String, enum: ['has-pets', 'open-to-pets', 'no-pets'], default: 'open-to-pets' },
-        contactNumber: { type: String, default: '' }
+        contactNumber: { type: String, default: '' },
+        guestsPolicy: { type: String, enum: ['no-guests', 'occasional', 'frequent', 'flexible'], default: 'flexible' },
+        wfhPreference: { type: String, enum: ['full-wfh', 'hybrid', 'office', 'any'], default: 'any' },
+        noiseTolerance: { type: String, enum: ['silent', 'moderate', 'lively'], default: 'moderate' }
     }
 }, { timestamps: true });
 

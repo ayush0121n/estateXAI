@@ -138,7 +138,17 @@ if (require.main === module) {
   mongoose.connect(process.env.MONGO_URI)
     .then(() => {
       console.log('MongoDB Connected');
-      server.listen(PORT, () => console.log('Server running on http://localhost:' + PORT));
+      server.listen(PORT, () => {
+        console.log('Server running on http://localhost:' + PORT);
+        
+        // Render Free Tier Keep-Alive (ping self every 14 mins)
+        const serverUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+        setInterval(() => {
+          http.get(`${serverUrl}/api/health`, (res) => {
+            console.log(`Keep-alive ping sent: ${res.statusCode}`);
+          }).on('error', (err) => console.log('Keep-alive ping failed:', err.message));
+        }, 14 * 60 * 1000); // 14 mins
+      });
     })
     .catch(err => {
       console.error('MongoDB Connection Error:', err.message);

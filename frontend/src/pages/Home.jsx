@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Search, Building2, Users, TrendingUp, MapPin, ArrowRight, Star, Shield, Zap, BarChart3 } from 'lucide-react';
+import { Search, Building2, Users, TrendingUp, MapPin, ArrowRight, Star, Shield, Zap, BarChart3, Heart, FileText, Tag, ShieldCheck, UserCheck, Home as HomeIcon, BadgeCheck, Banknote } from 'lucide-react';
 import api from '../utils/api';
-import { PropertyCard, PGCard } from '../components/ListingCard';
+import { PropertyCard, PGCard, SkeletonCard } from '../components/ListingCard';
 import DepthCarousel from '../components/DepthCarousel';
 import HeroParallaxDemo from '../components/HeroParallaxDemo';
 
@@ -16,26 +16,56 @@ const carouselItems = [
   { image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800', alt: 'Luxury Home 4' },
   { image: 'https://images.unsplash.com/photo-1600566753086-00f18efc2294?auto=format&fit=crop&q=80&w=800', alt: 'Luxury Home 5' }
 ];
+
+const CITIES = [
+    { name: 'Bangalore', emoji: '🏙️', localities: ['Koramangala', 'Whitefield', 'Indiranagar', 'HSR Layout', 'Electronic City'] },
+    { name: 'Pune', emoji: '🏔️', localities: ['Hinjewadi', 'Kothrud', 'Viman Nagar', 'Baner', 'Koregaon Park'] },
+    { name: 'Hyderabad', emoji: '🕌', localities: ['Gachibowli', 'Hitech City', 'Madhapur', 'Kondapur', 'Kukatpally'] },
+    { name: 'Mumbai', emoji: '🌊', localities: ['Andheri', 'Bandra', 'Powai', 'Malad', 'Thane'] },
+    { name: 'Delhi NCR', emoji: '🏛️', localities: ['Gurgaon', 'Noida', 'Dwarka', 'Saket', 'Greater Noida'] },
+    { name: 'Chennai', emoji: '🛕', localities: ['OMR', 'Velachery', 'T Nagar', 'Anna Nagar', 'Adyar'] },
+    { name: 'Kolkata', emoji: '🌉', localities: ['Salt Lake', 'New Town', 'Park Street', 'Howrah', 'Dumdum'] },
+    { name: 'Ahmedabad', emoji: '🏗️', localities: ['SG Highway', 'Prahlad Nagar', 'Satellite', 'Vastrapur', 'Bodakdev'] },
+    { name: 'Jaipur', emoji: '🏰', localities: ['Malviya Nagar', 'Vaishali', 'C Scheme', 'Mansarovar'] },
+    { name: 'Indore', emoji: '🍜', localities: ['Vijay Nagar', 'AB Road', 'Palasia', 'Scheme 78'] },
+];
+
 const stats = [
-    { icon: Building2, label: 'Exclusive Properties', value: '2,400+', color: 'var(--primary)' },
-    { icon: Users, label: 'Premium Clients', value: '8,500+', color: '#94a3b8' },
-    { icon: MapPin, label: 'Prime Locations', value: '25+', color: 'var(--primary-light)' },
-    { icon: TrendingUp, label: 'Estates Sold', value: '1,200+', color: '#f59e0b' }
+    { icon: Building2, label: 'Verified Properties', value: '2,400+', color: 'var(--primary)' },
+    { icon: Users, label: 'Active Users', value: '8,500+', color: '#94a3b8' },
+    { icon: MapPin, label: 'Cities Covered', value: '10+', color: 'var(--primary-light)' },
+    { icon: TrendingUp, label: 'Zero Brokerage Deals', value: '1,200+', color: '#f59e0b' }
+];
+
+const problemSolutions = [
+    { icon: Banknote, problem: 'High Deposits (6-10× rent)', solution: 'Deposit Calculator + Low Deposit filter', color: '#f59e0b' },
+    { icon: Tag, problem: 'Heavy Brokerage (1 month rent)', solution: 'Strong Zero Brokerage badge + Direct Owner', color: '#4ade80' },
+    { icon: UserCheck, problem: 'Bachelor / Single Discrimination', solution: 'Bachelor Friendly & All Welcome tags', color: '#c084fc' },
+    { icon: ShieldCheck, problem: 'Fake Listings & Scams', solution: 'Verified listings + ID verification', color: '#60a5fa' },
+    { icon: Heart, problem: 'Bad Roommate Matches', solution: 'AI lifestyle matching with compatibility %', color: '#f87171' },
+    { icon: BadgeCheck, problem: 'No Rental Reputation', solution: 'Tenant Trust Score system', color: 'var(--primary)' },
 ];
 
 const features = [
-    { icon: Zap, title: 'Smart Curation', desc: 'Our algorithm precisely matches your lifestyle preferences to exclusive properties and elegant PGs.', color: 'var(--primary)' },
-    { icon: Shield, title: 'Verified Estates', desc: 'Every listed property undergoes a rigorous verification process to ensure unparalleled quality.', color: '#94a3b8' },
-    { icon: BarChart3, title: 'Market Intelligence', desc: 'Make informed decisions backed by our robust real-time market data and predictive analytics.', color: 'var(--primary)' }
+    { icon: Zap, title: 'Lifestyle Matching', desc: 'Our AI matches flatmates on diet, sleep, cleanliness, budget & more — not just location.', color: 'var(--primary)' },
+    { icon: Shield, title: 'Verified & Trusted', desc: 'Every listing can be verified. Trust badges show Zero Brokerage, Bachelor Friendly, and more.', color: '#94a3b8' },
+    { icon: BarChart3, title: 'AI Rent Predictor', desc: 'Know the fair rent for any locality. Get negotiation tips backed by real market data.', color: 'var(--primary)' }
 ];
 
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState('all');
+    const [searchCity, setSearchCity] = useState(localStorage.getItem('userCity') || '');
     const [featuredProperties, setFeaturedProperties] = useState([]);
     const [featuredPGs, setFeaturedPGs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [hoveredCity, setHoveredCity] = useState(null);
     const navigate = useNavigate();
+
+    const handleCityChange = (val) => {
+        setSearchCity(val);
+        localStorage.setItem('userCity', val);
+    };
 
     useEffect(() => {
         const fetchFeatured = async () => {
@@ -57,10 +87,13 @@ export default function Home() {
 
     const handleSearch = (e) => {
         e.preventDefault();
+        const cityParam = searchCity ? `&city=${encodeURIComponent(searchCity)}` : '';
         if (searchType === 'pg') {
-            navigate(`/pgs?search=${encodeURIComponent(searchQuery)}`);
+            navigate(`/pgs?search=${encodeURIComponent(searchQuery)}${cityParam}`);
+        } else if (searchType === 'flatmate') {
+            navigate(`/roommates`);
         } else {
-            navigate(`/properties?search=${encodeURIComponent(searchQuery)}`);
+            navigate(`/properties?search=${encodeURIComponent(searchQuery)}${cityParam}`);
         }
     };
 
@@ -91,21 +124,21 @@ export default function Home() {
                         {/* Tag */}
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid var(--primary)', borderRadius: 2, padding: '6px 16px', marginBottom: 28, fontSize: 11, textTransform: 'uppercase', letterSpacing: 3, color: 'var(--primary)' }}>
                             <Building2 size={14} />
-                            Premium Real Estate
+                            India's Most Trusted Rental Platform
                         </div>
 
                         <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(36px, 7vw, 68px)', fontWeight: 400, lineHeight: 1.1, marginBottom: 20, color: 'white' }}>
-                            Discover Your
+                            Find Your
                             <span style={{ display: 'block', color: 'var(--primary)', fontWeight: 600, fontStyle: 'italic' }}>
-                                Extraordinary Home
+                                Perfect Home
                             </span>
                         </h1>
 
                         <p style={{ fontSize: 17, color: 'var(--text-secondary)', marginBottom: 40, lineHeight: 1.8, maxWidth: 580, margin: '0 auto 40px' }}>
-                            Explore an exclusive collection of luxury properties, estates, and premium residences tailored to your distinguished lifestyle.
+                            Properties, PGs, and Flatmates across 10+ Indian cities. Zero brokerage. Verified listings. Lifestyle-matched roommates.
                         </p>
 
-                        {/* Search Box */}
+                        {/* Search Box with City Selector */}
                         <form onSubmit={handleSearch} className="hero-search-form" style={{
                             background: 'rgba(20, 20, 21, 0.95)',
                             border: '1px solid var(--dark-border)',
@@ -114,10 +147,18 @@ export default function Home() {
                             display: 'flex',
                             gap: 8,
                             alignItems: 'center',
-                            maxWidth: 660,
+                            maxWidth: 720,
                             margin: '0 auto',
-                            boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                            flexWrap: 'wrap'
                         }}>
+                            <div style={{ flex: 1, minWidth: 200, display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.05)', padding: '12px 20px', borderRadius: 12 }}>
+                                <MapPin size={20} color="#b0b7d3" />
+                                <select value={searchCity} onChange={e => handleCityChange(e.target.value)} style={{ flex: 1, background: 'transparent', border: 'none', color: searchCity ? 'white' : '#b0b7d3', outline: 'none', fontSize: 16 }}>
+                                    <option value="">All Cities</option>
+                                    {CITIES.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                                </select>
+                            </div>
                             <select
                                 value={searchType}
                                 onChange={e => setSearchType(e.target.value)}
@@ -126,12 +167,13 @@ export default function Home() {
                                 <option value="all">All</option>
                                 <option value="property">Property</option>
                                 <option value="pg">PG / Hostel</option>
+                                <option value="flatmate">Flatmate</option>
                             </select>
-                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px' }}>
+                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px', minWidth: 180 }}>
                                 <Search size={18} color="#6b7298" />
                                 <input
                                     type="text"
-                                    placeholder="Search by location, area, or college..."
+                                    placeholder="Search by locality, area, or landmark..."
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
                                     style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: 15, fontFamily: 'inherit' }}
@@ -142,10 +184,10 @@ export default function Home() {
                             </button>
                         </form>
 
-                        {/* Quick search tags */}
+                        {/* Quick search tags - city-aware */}
                         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 24 }}>
-                            {['Kothrud', 'Hinjewadi', 'Viman Nagar', 'Koregaon Park', 'Baner'].map(area => (
-                                <button key={area} onClick={() => navigate(`/properties?city=${area}`)}
+                            {(searchCity ? (CITIES.find(c => c.name === searchCity)?.localities || []).slice(0, 5) : ['Koramangala', 'Hinjewadi', 'Hitech City', 'Bandra', 'Gurgaon']).map(area => (
+                                <button key={area} onClick={() => navigate(`/properties?city=${encodeURIComponent(searchCity || area)}&search=${encodeURIComponent(area)}`)}
                                     style={{ background: 'transparent', border: '1px solid var(--dark-border)', borderRadius: 4, padding: '6px 16px', color: 'var(--text-secondary)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit' }}
                                     onMouseEnter={e => { e.target.style.borderColor = 'var(--primary)'; e.target.style.color = 'var(--primary)'; }}
                                     onMouseLeave={e => { e.target.style.borderColor = 'var(--dark-border)'; e.target.style.color = 'var(--text-secondary)'; }}>
@@ -189,42 +231,73 @@ export default function Home() {
                     <p style={{ color: 'var(--text-secondary)', fontSize: 15, maxWidth: 500, margin: '0 auto 36px' }}>Select your city to find properties, PGs, and flatmates near you.</p>
                     
                     <div className="city-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 14, maxWidth: 900, margin: '0 auto' }}>
-                        {[
-                            { name: 'Bangalore', emoji: '🏙️' },
-                            { name: 'Pune', emoji: '🏔️' },
-                            { name: 'Hyderabad', emoji: '🕌' },
-                            { name: 'Mumbai', emoji: '🌊' },
-                            { name: 'Delhi NCR', emoji: '🏛️' },
-                            { name: 'Chennai', emoji: '🛕' },
-                            { name: 'Kolkata', emoji: '🌉' },
-                            { name: 'Ahmedabad', emoji: '🏗️' },
-                            { name: 'Jaipur', emoji: '🏰' },
-                            { name: 'Indore', emoji: '🍜' },
-                        ].map(city => (
+                        {CITIES.map(city => (
                             <motion.button
                                 key={city.name}
                                 onClick={() => navigate(`/properties?city=${encodeURIComponent(city.name)}`)}
+                                onMouseEnter={() => setHoveredCity(city.name)}
+                                onMouseLeave={() => setHoveredCity(null)}
                                 whileHover={{ y: -4, borderColor: 'var(--primary)' }}
                                 whileTap={{ scale: 0.97 }}
-                                style={{
-                                    background: 'rgba(255,255,255,0.03)',
-                                    border: '1px solid var(--dark-border)',
-                                    borderRadius: 12,
-                                    padding: '20px 12px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    fontFamily: 'inherit',
-                                    textAlign: 'center'
-                                }}
+                                className="city-card"
                             >
                                 <div style={{ fontSize: 28, marginBottom: 8 }}>{city.emoji}</div>
-                                <div style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600 }}>{city.name}</div>
+                                <div style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{city.name}</div>
+                                {hoveredCity === city.name && (
+                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                                        {city.localities.slice(0, 3).join(' • ')}
+                                    </motion.div>
+                                )}
                             </motion.button>
                         ))}
                     </div>
                 </div>
             </section>
-            <section className="section" style={{ padding: 'clamp(40px, 8vw, 80px) 0', background: 'var(--dark-card)', borderBottom: '1px solid var(--dark-border)' }}>
+
+            {/* WHY ESTATEXAI – SOLVING REAL INDIAN PROBLEMS */}
+            <section style={{ padding: 'clamp(40px, 5vw, 70px) 0', background: 'var(--dark-card)', borderTop: '1px solid var(--dark-border)' }}>
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: 48 }}>
+                        <p style={{ color: 'var(--primary)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Why EstateXAi?</p>
+                        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 5vw, 38px)', fontWeight: 400, color: 'white', lineHeight: 1.2, marginBottom: 12 }}>
+                            We Solve <span style={{ color: 'var(--primary)', fontWeight: 600, fontStyle: 'italic' }}>Real Problems</span> Indian Renters Face
+                        </h2>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, maxWidth: 1000, margin: '0 auto' }}>
+                        {problemSolutions.map((item, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: i * 0.08 }}
+                                style={{
+                                    display: 'flex', gap: 16, padding: '20px', borderRadius: 12,
+                                    border: '1px solid var(--dark-border)', background: 'rgba(255,255,255,0.02)',
+                                    transition: 'border-color 0.2s'
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = `${item.color}40`}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--dark-border)'}
+                            >
+                                <div style={{ width: 44, height: 44, borderRadius: 10, background: `${item.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <item.icon size={20} color={item.color} />
+                                </div>
+                                <div>
+                                    <div style={{ color: 'var(--text-muted)', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4, textDecoration: 'line-through', opacity: 0.7 }}>
+                                        {item.problem}
+                                    </div>
+                                    <div style={{ color: item.color, fontSize: 14, fontWeight: 600 }}>
+                                        ✓ {item.solution}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* VISUAL CAROUSEL */}
+            <section className="section" style={{ padding: 'clamp(40px, 8vw, 80px) 0', background: 'var(--dark)', borderBottom: '1px solid var(--dark-border)' }}>
                 <div className="container" style={{ textAlign: 'center', marginBottom: 'clamp(20px, 5vw, 40px)', padding: '0 20px' }}>
                     <p style={{ color: 'var(--primary)', fontSize: 'clamp(10px, 2vw, 11px)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 3, marginBottom: 8 }}>Visual Tour</p>
                     <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 400, color: 'white', lineHeight: 1.2 }}>Exceptional Architecture</h2>
@@ -268,10 +341,8 @@ export default function Home() {
                         </Link>
                     </div>
                     {loading ? (
-                        <div style={{ display: 'flex', gap: 24 }}>
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="glass-card" style={{ flex: 1, height: 400, background: 'rgba(201, 163, 94,0.05)' }} />
-                            ))}
+                        <div className="grid-3">
+                            {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
                         </div>
                     ) : featuredProperties.length > 0 ? (
                         <div className="grid-3">
@@ -302,10 +373,8 @@ export default function Home() {
                         </Link>
                     </div>
                     {loading ? (
-                        <div style={{ display: 'flex', gap: 24 }}>
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="glass-card" style={{ flex: 1, height: 400, background: 'rgba(201, 163, 94,0.05)' }} />
-                            ))}
+                        <div className="grid-3">
+                            {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
                         </div>
                     ) : featuredPGs.length > 0 ? (
                         <div className="grid-3">
@@ -323,7 +392,64 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* WHY ESTATEXAI */}
+            {/* DIGITAL RENTAL TOOLKIT PROMO */}
+            <section className="section" style={{ paddingTop: 0 }}>
+                <div className="container">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        style={{
+                            background: 'linear-gradient(135deg, rgba(201,163,94,0.08), rgba(201,163,94,0.02))',
+                            border: '1px solid rgba(201,163,94,0.2)',
+                            borderRadius: 16,
+                            padding: 'clamp(32px, 5vw, 56px)',
+                            display: 'grid',
+                            gridTemplateColumns: '1fr auto',
+                            gap: 40,
+                            alignItems: 'center'
+                        }}
+                    >
+                        <div>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,163,94,0.1)', borderRadius: 20, padding: '4px 14px', marginBottom: 16 }}>
+                                <FileText size={14} color="var(--primary)" />
+                                <span style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600 }}>FREE TOOLS</span>
+                            </div>
+                            <h3 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 600, color: 'white', marginBottom: 12 }}>
+                                Digital Rental Toolkit
+                            </h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7, marginBottom: 24, maxWidth: 500 }}>
+                                Free rental agreement generator, rent receipts for tax benefits, police verification checklist, and move-in checklist. Everything an Indian renter needs.
+                            </p>
+                            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                                <Link to="/rental-toolkit" className="btn btn-primary" style={{ borderRadius: 8, padding: '12px 28px' }}>
+                                    Open Toolkit <ArrowRight size={16} />
+                                </Link>
+                                <Link to="/roommates" className="btn btn-ghost" style={{ borderRadius: 8, padding: '12px 28px', border: '1px solid var(--dark-border)' }}>
+                                    <Heart size={16} /> Find Flatmates
+                                </Link>
+                            </div>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} className="desktop-nav">
+                            {[
+                                { icon: '📝', label: 'Rental Agreement', sub: 'Generate in seconds' },
+                                { icon: '🧾', label: 'Rent Receipts', sub: 'For tax benefits' },
+                                { icon: '🛡️', label: 'Police Verification', sub: 'State-wise guide' },
+                                { icon: '✅', label: 'Move-in Checklist', sub: 'Never miss anything' }
+                            ].map((tool, i) => (
+                                <div key={i} style={{ padding: 16, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--dark-border)', textAlign: 'center' }}>
+                                    <div style={{ fontSize: 24, marginBottom: 6 }}>{tool.icon}</div>
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{tool.label}</div>
+                                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tool.sub}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* WHY ESTATEXAI FEATURES */}
             <section className="section" style={{ background: 'var(--dark-card)' }}>
                 <div className="container">
                     <div style={{ textAlign: 'center', marginBottom: 60 }}>
@@ -387,6 +513,3 @@ export default function Home() {
         </div>
     );
 }
-
-
-

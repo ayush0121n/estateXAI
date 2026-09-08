@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
@@ -19,6 +19,7 @@ import Profile from './pages/Profile';
 import Compare from './pages/Compare';
 import AIPredictor from './pages/AIPredictor';
 import Roommates from './pages/Roommates';
+import RentalToolkit from './pages/RentalToolkit';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -54,10 +55,16 @@ function App() {
                 <Route path="/compare" element={<Compare />} />
                 <Route path="/ai-prediction" element={<AIPredictor />} />
                 <Route path="/roommates" element={<Roommates />} />
+                <Route path="/rental-toolkit" element={<RentalToolkit />} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/list-property" element={<ProtectedRoute roles={['owner', 'admin']}><ListProperty /></ProtectedRoute>} />
                 <Route path="/list-pg" element={<ProtectedRoute roles={['owner', 'admin']}><ListPG /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                {/* Route aliases – fix 404s for common alternative URLs */}
+                <Route path="/signup" element={<Navigate to="/register" replace />} />
+                <Route path="/find-flatmates" element={<Navigate to="/roommates" replace />} />
+                <Route path="/pg-hostel" element={<Navigate to="/pgs" replace />} />
+                <Route path="/ai-predictor" element={<Navigate to="/ai-prediction" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

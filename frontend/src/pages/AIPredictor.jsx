@@ -35,6 +35,30 @@ const CITY_ZONES = {
         { value: 'Gurgaon Sec 42',  label: '🔥 Gurgaon Sec 42 (IT/Corporate)' },
         { value: 'Noida Sec 15',    label: '💼 Noida Sec 15 (Commercial)' },
         { value: 'Dwarka',          label: '🏠 Dwarka (Residential)' }
+    ],
+    'Hyderabad': [
+        { value: 'Gachibowli',      label: '🔥 Gachibowli (IT Hub)' },
+        { value: 'Hitech City',     label: '🔥 Hitech City (IT Hub)' },
+        { value: 'Madhapur',        label: '⭐ Madhapur (Premium IT)' },
+        { value: 'Kondapur',        label: '💼 Kondapur (High Demand)' },
+        { value: 'Kukatpally',      label: '🏠 Kukatpally (Mid-Range)' },
+        { value: 'Banjara Hills',   label: '🏆 Banjara Hills (Ultra Premium)' },
+        { value: 'Jubilee Hills',   label: '🏆 Jubilee Hills (Premium)' }
+    ],
+    'Chennai': [
+        { value: 'OMR',             label: '🔥 OMR / IT Corridor (IT Hub)' },
+        { value: 'Velachery',       label: '⭐ Velachery (Prime)' },
+        { value: 'T Nagar',         label: '🏆 T Nagar (Premium)' },
+        { value: 'Anna Nagar',      label: '🏆 Anna Nagar (Premium)' },
+        { value: 'Adyar',           label: '⭐ Adyar (Prime)' },
+        { value: 'Sholinganallur',  label: '💼 Sholinganallur (IT)' }
+    ],
+    'Ahmedabad': [
+        { value: 'SG Highway',      label: '🔥 SG Highway (High Demand)' },
+        { value: 'Prahlad Nagar',   label: '⭐ Prahlad Nagar (Premium)' },
+        { value: 'Satellite',       label: '⭐ Satellite (Prime)' },
+        { value: 'Vastrapur',       label: '💼 Vastrapur (Commercial)' },
+        { value: 'Bodakdev',        label: '🏠 Bodakdev (Residential)' }
     ]
 };
 
@@ -330,6 +354,30 @@ export default function AIPredictor() {
                                     </div>
                                 </div>
                             )}
+                            {/* Negotiation Tips */}
+                            <div style={{ marginTop: 28, padding: 24, background: 'rgba(34,211,165,0.06)', border: '1px solid rgba(34,211,165,0.2)', borderRadius: 14 }}>
+                                <h4 style={{ color: '#22d3a5', fontSize: 16, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    💡 Negotiation Tips for {formData.zone}
+                                </h4>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    {[
+                                        result.listing_type === 'rent' 
+                                            ? `Fair rent for ${formData.bhk} BHK in ${formData.zone} is typically ${result.range_label}. Use this as your benchmark.`
+                                            : `Market value for ${formData.bhk} BHK in ${formData.zone} is around ${result.predicted_label}. Compare with at least 3-4 similar properties.`,
+                                        result.listing_type === 'rent'
+                                            ? 'Ask for a 11-month agreement with clear renewal terms. Avoid paying more than 2 months deposit.'
+                                            : 'Check the builder/society maintenance charges. Factor in registration + stamp duty (5-7% in most states).',
+                                        `${formData.furnishing === 'fully-furnished' ? 'Fully furnished properties command 20-30% premium.' : formData.furnishing === 'semi-furnished' ? 'Semi-furnished saves you ~₹50K-1L in setup costs.' : 'Unfurnished gives you room to negotiate 5-10% lower.'} Use this as leverage.`,
+                                        formData.age > 10 ? 'Property is 10+ years old — negotiate 5-15% below asking price for maintenance and depreciation.' : formData.age > 5 ? 'Property age of 5-10 years is ideal — reasonable price with established infrastructure.' : 'Newer property — check for hidden charges like parking, club membership, GST.',
+                                        result.listing_type === 'rent' ? 'Pro tip: Offer 2-3 months advance rent for a lower monthly rate. Many landlords prefer assured income.' : 'Pro tip: Check if the seller is in a hurry (job transfer, financial need). You can negotiate 8-12% lower.'
+                                    ].map((tip, i) => (
+                                        <div key={i} style={{ display: 'flex', gap: 10, fontSize: 13, color: '#b0b7d3', lineHeight: 1.6 }}>
+                                            <span style={{ color: '#22d3a5', fontWeight: 700, flexShrink: 0 }}>#{i + 1}</span>
+                                            <span>{tip}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
