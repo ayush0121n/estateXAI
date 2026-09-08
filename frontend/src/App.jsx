@@ -61,6 +61,7 @@ function App() {
                 <Route path="/list-pg" element={<ProtectedRoute roles={['owner', 'admin']}><ListPG /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 {/* Route aliases – fix 404s for common alternative URLs */}
+                <Route path="/toolkit" element={<Navigate to="/rental-toolkit" replace />} />
                 <Route path="/signup" element={<Navigate to="/register" replace />} />
                 <Route path="/find-flatmates" element={<Navigate to="/roommates" replace />} />
                 <Route path="/pg-hostel" element={<Navigate to="/pgs" replace />} />

@@ -95,6 +95,25 @@ export default function Navbar() {
 
                     {/* Desktop Auth */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }} className="desktop-nav">
+                        {/* Global City Selector */}
+                        <div style={{ marginRight: 8 }}>
+                            <select 
+                                className="input" 
+                                style={{ padding: '6px 12px', fontSize: 13, minWidth: 120, height: 'auto', background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
+                                value={localStorage.getItem('userCity') || ''}
+                                onChange={(e) => {
+                                    localStorage.setItem('userCity', e.target.value);
+                                    window.dispatchEvent(new Event('storage'));
+                                    window.location.reload();
+                                }}
+                            >
+                                <option value="">Global: All Cities</option>
+                                {['Bangalore', 'Pune', 'Hyderabad', 'Mumbai', 'Delhi NCR', 'Chennai', 'Kolkata', 'Ahmedabad'].map(c => (
+                                    <option key={c} value={c}>{c}</option>
+                                ))}
+                            </select>
+                        </div>
+
                         {user ? (
                             <>
                                 {(user.role === 'owner' || user.role === 'admin') && (

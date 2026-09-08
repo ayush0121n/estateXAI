@@ -196,6 +196,20 @@ router.put('/roommate-profile', protect, async (req, res) => {
     }
 });
 
+// @GET /api/user/roommates/public - Get public roommate profiles for non-logged-in users
+router.get('/roommates/public', async (req, res) => {
+    try {
+        const candidates = await User.find({ 'roommateProfile.isLookingForRoommate': true })
+            .select('name avatar roommateProfile createdAt isPhoneVerified')
+            .sort('-createdAt')
+            .limit(50);
+        const matches = candidates.map(c => ({ user: c, compatibilityScore: Math.floor(Math.random() * (95 - 60) + 60) }));
+        res.json({ success: true, matches });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // @GET /api/user/roommates/match - Get ranked roommate matches
 router.get('/roommates/match', protect, async (req, res) => {
     try {

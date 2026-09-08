@@ -213,11 +213,12 @@ export default function Roommates() {
     const fetchMatches = async () => {
         setLoadingMatches(true);
         try {
-            const { data } = await api.get(`/user/roommates/match`);
+            const endpoint = user ? `/user/roommates/match` : `/user/roommates/public`;
+            const { data } = await api.get(endpoint);
             setMatches(data.matches || []);
             setFilteredMatches(data.matches || []);
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Could not fetch matches.');
+            if (user) toast.error(err.response?.data?.message || 'Could not fetch matches.');
         } finally {
             setLoadingMatches(false);
         }
@@ -236,6 +237,10 @@ export default function Roommates() {
     };
 
     const handleConnect = (match) => {
+        if (!user) {
+            toast.error("Please login to connect with flatmates!");
+            return;
+        }
         // Request to Connect flow (frontend-only mutual interest)
         const isConnected = connectedUsers.includes(match.user?._id || match._id);
         if (!isConnected) {
@@ -258,20 +263,6 @@ export default function Roommates() {
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
     };
 
-    if (!user) return (
-        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 20, paddingTop: 100 }}>
-            <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(201,163,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Users size={40} color="var(--primary)" />
-            </div>
-            <h2 style={{ color: 'var(--text-primary)', fontSize: 28, margin: 0 }}>Find Your Perfect Flatmate</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: 16, maxWidth: 500, textAlign: 'center' }}>AI-powered lifestyle matching on diet, sleep, cleanliness, budget & more. Say goodbye to random WhatsApp groups.</p>
-            <div style={{ display: 'flex', gap: 12 }}>
-                <Link to="/login" className="btn btn-primary" style={{ padding: '12px 32px', borderRadius: 8 }}>Log In to Continue</Link>
-                <Link to="/register" className="btn btn-ghost" style={{ padding: '12px 32px', borderRadius: 8 }}>Create Account</Link>
-            </div>
-        </div>
-    );
-
     return (
         <div style={{ paddingTop: 90, minHeight: '100vh', background: 'var(--dark)' }}>
             <div className="container" style={{ paddingBottom: 80 }}>
@@ -287,12 +278,24 @@ export default function Roommates() {
                     </p>
                 </motion.div>
 
-                {(!myProfile?.isLookingForRoommate || showSetup) ? (
+                {(user && (!myProfile?.isLookingForRoommate || showSetup)) ? (
                     <div style={{ maxWidth: 800, margin: '0 auto' }}>
                         <ProfileForm profile={myProfile} onSave={handleSaveProfile} />
                     </div>
                 ) : (
                     <div>
+                        {!user && (
+                            <div style={{ background: 'rgba(201,163,94,0.1)', border: '1px solid rgba(201,163,94,0.3)', borderRadius: 12, padding: '16px 24px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+                                <div>
+                                    <h3 style={{ color: 'var(--primary)', margin: '0 0 4px' }}>Want to see your compatibility scores?</h3>
+                                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: 14 }}>Log in and create your lifestyle profile to get AI-matched with the perfect flatmates.</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: 12 }}>
+                                    <Link to="/login" className="btn btn-ghost" style={{ padding: '8px 16px', fontSize: 13 }}>Log In</Link>
+                                    <Link to="/register" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: 13 }}>Sign Up</Link>
+                                </div>
+                            </div>
+                        )}
                         {/* Controls + Filter Bar */}
                         <div style={{ marginBottom: 24 }}>
                             <div className="roommate-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: 12, border: '1px solid var(--dark-border)' }}>
