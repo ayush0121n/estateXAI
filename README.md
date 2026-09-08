@@ -61,7 +61,12 @@ npm run dev
 - **Neighborhood Safety & Vibe Ratings**: Access community-driven ratings for safety, noise levels, and cleanliness for every neighborhood.
 - **Advanced Filtering**: Search for properties and PGs using highly granular filters including rent, amenities, sharing type, and proximity to major institutions.
 - **One-Click Comparison**: Save properties and compare them side-by-side on an interactive dashboard.
-- **Interactive Maps**: Browse real-estate using map-based visual search powered by Leaflet.
+- **City-First Experience & Global State Synchronization**: Persistent global `userCity` state using local storage ensures users' preferred city synchronizes across Home, Properties, and PG feeds.
+- **Role-Based Dashboard Overhaul**: Completely re-engineered dashboard with distinct views for tenants and property owners, including lead tracking, active listing performance, and saved items.
+- **Intelligent Trust Score Engine**: Preliminary user Trust Score widget calculating reliability based on profile completeness (identity verification, work/college affiliation).
+- **Enhanced Roommate Matching Algorithm**: Upgraded Flatmate Finder with advanced lifestyle metrics (WFH preferences, guest policies, noise tolerance) for higher accuracy compatibility scoring.
+- **Digital Rental Toolkit (PDF Export)**: Professional `jsPDF`-powered Rental Agreement and Rent Receipt generators that export formatted, print-ready PDF documents dynamically populated with user data.
+- **System Stability & Reliability**: Automated background health-check ping on the Node.js server preventing free-tier sleep during idle periods.
 
 ---
 
