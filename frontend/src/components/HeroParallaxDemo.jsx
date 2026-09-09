@@ -1,7 +1,7 @@
 import React from "react";
 import { HeroParallax } from "./HeroParallax";
 
-export const products = [
+const products = [
   {
     title: "Modern Penthouse",
     link: "/properties",

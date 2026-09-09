@@ -9,7 +9,6 @@ export default function PillNav({
   baseColor = "#0a0a0a",
   pillColor = "#f5c518",
   pillTextColor = "#0a0a0a",
-  hoveredPillTextColor = "#ffffff",
   ease = "power2.easeOut",
   initialLoadAnimation = true
 }) {
