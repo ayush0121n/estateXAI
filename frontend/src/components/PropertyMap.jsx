@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { useEffect, useRef, useMemo } from 'react';
 import { MapPin, School, Hospital, Bus, ShoppingBag, Leaf } from 'lucide-react';
+import 'leaflet/dist/leaflet.css';
 
 // Using Leaflet (react-leaflet) for the interactive map — fully free, no API key needed
 // Install: npm install react-leaflet leaflet
@@ -73,6 +74,13 @@ export default function PropertyMap({ property }) {
             const map = L.map(mapRef.current).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
             mapInstance.current = map;
 
+            // Fix container sizing issues when rendered in tabs or dynamic layout
+            setTimeout(() => {
+                if (mapInstance.current) {
+                    mapInstance.current.invalidateSize();
+                }
+            }, 250);
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
@@ -134,9 +142,8 @@ export default function PropertyMap({ property }) {
             </h3>
 
             {/* Map */}
-            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
             <div style={{ position: 'relative' }}>
-                <div ref={mapRef} style={{ height: 320, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(201, 163, 94,0.2)', marginBottom: 16 }} />
+                <div ref={mapRef} style={{ height: 320, width: '100%', minHeight: 320, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(201, 163, 94,0.2)', marginBottom: 16 }} />
                 {!isExactLocation && (
                     <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 400, background: 'rgba(0,0,0,0.7)', color: 'white', padding: '4px 10px', borderRadius: 20, fontSize: 12, backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.1)' }}>
                         Approximate Location
