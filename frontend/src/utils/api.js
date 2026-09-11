@@ -2,14 +2,17 @@ import axios from 'axios';
 
 // Priority: VITE_API_URL env var → hardcoded Render URL → dev proxy
 const getBaseURL = () => {
-    // Check if running in development (Vite dev server) 
     if (import.meta.env.DEV) {
         return '/api'; // Use Vite proxy in dev
     }
-    // In production: use env variable or fall back to hardcoded Render URL
-    const envUrl = import.meta.env.VITE_API_URL;
-    const renderUrl = 'https://estatexai.onrender.com';
-    return `${envUrl || renderUrl}/api`;
+    let envUrl = import.meta.env.VITE_API_URL;
+    if (envUrl) {
+        // Fix common trailing slash or duplicate /api issues
+        envUrl = envUrl.replace(/\/+$/, ''); // Remove trailing slashes
+        if (envUrl.endsWith('/api')) return envUrl;
+        return `${envUrl}/api`;
+    }
+    return 'https://estatexai.onrender.com/api';
 };
 
 const api = axios.create({
