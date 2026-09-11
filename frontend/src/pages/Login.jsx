@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Building2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
 
 export default function Login() {
     const { login } = useAuth();
@@ -26,57 +28,65 @@ export default function Login() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', background: 'radial-gradient(ellipse at 30% 40%, rgba(201, 163, 94,0.2) 0%, transparent 60%), var(--dark)' }}>
-            <div style={{ width: '100%', maxWidth: 420 }}>
+        <div className="light-page min-h-[calc(100vh-72px)] flex items-center justify-center p-6 md:p-8 font-sans relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-3xl" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-accent/5 blur-3xl" />
+            
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="w-full max-w-[420px] relative z-10">
                 {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                    <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 30px rgba(201, 163, 94,0.4)' }}>
-                        <Building2 size={28} color="white" />
+                <motion.div variants={staggerItem} className="text-center mb-10">
+                    <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary/20">
+                        <Building2 className="w-8 h-8 text-white" />
                     </div>
-                    <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 28, fontWeight: 800, color: 'white', marginBottom: 8 }}>Welcome Back</h1>
-                    <p style={{ color: '#6b7298', fontSize: 14 }}>Sign in to your EstateXAi account</p>
-                </div>
+                    <h1 className="font-serif text-3xl font-bold text-primary mb-2">Welcome Back</h1>
+                    <p className="text-muted font-medium">Sign in to your EstateXAI account</p>
+                </motion.div>
 
-                <div className="glass-card" style={{ padding: 36 }}>
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <motion.div variants={staggerItem} className="bg-elevated border border-borderSubtle/20 rounded-card p-8 md:p-10 shadow-xl shadow-black/5">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>Email Address</label>
+                            <label className="block text-sm font-bold text-primary mb-2">Email Address</label>
                             <input type="email" required placeholder="you@example.com" value={form.email}
                                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                                className="input" />
+                                className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>Password</label>
-                            <div style={{ position: 'relative' }}>
+                            <label className="block text-sm font-bold text-primary mb-2">Password</label>
+                            <div className="relative">
                                 <input type={showPwd ? 'text' : 'password'} required placeholder="••••••••" value={form.password}
                                     onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
-                                    className="input" style={{ paddingRight: 44 }} />
+                                    className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 pr-12 outline-none focus:border-primary text-primary transition-colors" />
                                 <button type="button" onClick={() => setShowPwd(!showPwd)}
-                                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7298', display: 'flex' }}>
-                                    {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-primary transition-colors">
+                                    {showPwd ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
 
-                        <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '14px', borderRadius: 12, fontSize: 16, marginTop: 4 }}>
+                        <button type="submit" disabled={loading} className="btn btn-primary mt-2 py-3.5 text-base font-bold shadow-md hover:shadow-lg transition-all">
                             {loading ? 'Signing in...' : 'Sign In'}
                         </button>
                     </form>
 
-                    <div className="divider" />
-
-                    {/* Demo credentials */}
-                    <div style={{ background: 'rgba(201, 163, 94,0.08)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
-                        <p style={{ fontSize: 12, color: '#6b7298', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Demo Credentials</p>
-                        <p style={{ fontSize: 13, color: '#b0b7d3' }}>Register an account to get started, or use the admin seed feature.</p>
+                    <div className="flex items-center gap-4 my-8">
+                        <div className="flex-1 h-px bg-borderSubtle/20" />
+                        <span className="text-muted text-xs font-bold uppercase tracking-wider">Or</span>
+                        <div className="flex-1 h-px bg-borderSubtle/20" />
                     </div>
 
-                    <p style={{ textAlign: 'center', color: '#6b7298', fontSize: 14 }}>
+                    {/* Demo credentials */}
+                    <div className="bg-surface border border-borderSubtle/10 rounded-xl p-4 mb-6 text-center">
+                        <p className="text-xs text-primary font-bold uppercase tracking-wider mb-2">Demo Access</p>
+                        <p className="text-sm text-muted font-medium">Register a free account to get started, or use the admin seed feature if available.</p>
+                    </div>
+
+                    <p className="text-center text-muted text-sm font-medium">
                         Don't have an account?{' '}
-                        <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>Create one free</Link>
+                        <Link to="/register" className="text-primary font-bold hover:underline decoration-2 underline-offset-4">Create one free</Link>
                     </p>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
         </div>
     );
 }

@@ -73,12 +73,59 @@ router.get('/me', protect, async (req, res) => {
     }
 });
 
+// Helper function to calculate trust score
+const calculateTrustScore = (user) => {
+    let score = 40; // Base score for registered users
+    if (user.isPhoneVerified) score += 20;
+    if (user.email) score += 10;
+    if (user.institution || user.workplace) score += 15;
+    if (user.avatar) score += 5;
+    if (user.roommateProfile?.bio) score += 10;
+    if (user.isIdVerified) score += 30; // High weight for Govt ID
+    return Math.min(score, 100);
+};
+
 // @PUT /api/auth/profile
 router.put('/profile', protect, async (req, res) => {
     try {
         const { name, phone, institution, workplace } = req.body;
-        const user = await User.findByIdAndUpdate(req.user._id, { name, phone, institution, workplace }, { new: true, runValidators: true });
+        let user = await User.findById(req.user._id);
+        
+        user.name = name || user.name;
+        user.phone = phone || user.phone;
+        user.institution = institution !== undefined ? institution : user.institution;
+        user.workplace = workplace !== undefined ? workplace : user.workplace;
+        
+        user.trustScore = calculateTrustScore(user);
+        await user.save();
+        
         res.json({ success: true, user });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// @POST /api/auth/verify-id
+router.post('/verify-id', protect, async (req, res) => {
+    try {
+        let user = await User.findById(req.user._id);
+        user.isIdVerified = true;
+        user.trustScore = calculateTrustScore(user);
+        await user.save();
+        res.json({ success: true, user, message: 'Government ID verified successfully!' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// @POST /api/auth/verify-phone
+router.post('/verify-phone', protect, async (req, res) => {
+    try {
+        let user = await User.findById(req.user._id);
+        user.isPhoneVerified = true;
+        user.trustScore = calculateTrustScore(user);
+        await user.save();
+        res.json({ success: true, user, message: 'Phone number verified successfully!' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

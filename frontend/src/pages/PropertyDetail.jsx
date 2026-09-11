@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, BedDouble, Bath, Square, Phone, Mail, ArrowLeft, Heart, Share2, Eye, Calendar, Shield, Wifi, Car, Dumbbell, Waves, GitCompare, Footprints, Link2, Sparkles } from 'lucide-react';
+import { MapPin, ArrowLeft, Share2, Eye, Calendar, Shield, Wifi, Car, Dumbbell, Waves, GitCompare, Footprints, Link2, Sparkles, Phone, Mail } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { PropertyCard } from '../components/ListingCard';
@@ -10,8 +10,10 @@ import PricePredictionWidget from '../components/PricePredictionWidget';
 import PropertyMap from '../components/PropertyMap';
 import CommuteScorer from '../components/CommuteScorer';
 import NeighborhoodCard from '../components/NeighborhoodCard';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
 
-const amenityIcons = { parking: <Car size={14} />, gym: <Dumbbell size={14} />, pool: <Waves size={14} />, security: <Shield size={14} />, wifi: <Wifi size={14} /> };
+const amenityIcons = { parking: <Car className="w-3.5 h-3.5" />, gym: <Dumbbell className="w-3.5 h-3.5" />, pool: <Waves className="w-3.5 h-3.5" />, security: <Shield className="w-3.5 h-3.5" />, wifi: <Wifi className="w-3.5 h-3.5" /> };
 
 const formatPrice = (price, type) => {
     if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
@@ -30,6 +32,8 @@ export default function PropertyDetail() {
     const [showInquiry, setShowInquiry] = useState(false);
     const [inquiry, setInquiry] = useState({ message: '', phone: '' });
     const [submitting, setSubmitting] = useState(false);
+    const [isEditingFutureDev, setIsEditingFutureDev] = useState(false);
+    const [futureDevInput, setFutureDevInput] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,7 +42,23 @@ export default function PropertyDetail() {
                     api.get(`/properties/${id}`),
                     api.get(`/recommendations/similar/property/${id}`)
                 ]);
-                setProperty(propRes.data.property);
+                let propData = propRes.data.property;
+                
+                if (!propData.walkabilityScore || propData.walkabilityScore === 0) {
+                    try {
+                        const liRes = await api.get(`/commute/location-intelligence/${id}`);
+                        if (liRes.data.success) {
+                            propData.walkabilityScore = liRes.data.walkabilityScore;
+                            propData.connectivityScore = liRes.data.connectivityScore;
+                            if (liRes.data.futureDevelopment) propData.futureDevelopment = liRes.data.futureDevelopment;
+                        }
+                    } catch (e) {
+                        console.error("Location intelligence error", e);
+                    }
+                }
+                
+                setProperty(propData);
+                setFutureDevInput(propData.futureDevelopment || '');
                 setSimilar(simRes.data.similar || []);
             } catch (err) {
                 toast.error('Property not found');
@@ -47,6 +67,17 @@ export default function PropertyDetail() {
         };
         fetchData();
     }, [id]);
+
+    const handleSaveFutureDev = async () => {
+        try {
+            const res = await api.put(`/properties/${id}`, { futureDevelopment: futureDevInput });
+            setProperty(res.data.property);
+            setIsEditingFutureDev(false);
+            toast.success("Future development info updated.");
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to update info');
+        }
+    };
 
     const handleInquiry = async (e) => {
         e.preventDefault();
@@ -65,7 +96,7 @@ export default function PropertyDetail() {
         } finally { setSubmitting(false); }
     };
 
-    if (loading) return <div className="loader"><div className="spinner" /></div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-surface"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
     if (!property) return null;
 
     const images = property.images?.length > 0 ? property.images : [
@@ -75,85 +106,85 @@ export default function PropertyDetail() {
     ];
 
     return (
-        <div style={{ paddingTop: 90, minHeight: '100vh' }}>
-            <div className="container" style={{ paddingTop: 24, paddingBottom: 60 }}>
+        <div className="light-page min-h-screen pt-6 pb-20 font-sans">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 {/* Back */}
-                <button onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: '#b0b7d3', cursor: 'pointer', fontSize: 14, marginBottom: 24, fontFamily: 'inherit', padding: 0 }}>
-                    <ArrowLeft size={16} /> Back to Properties
+                <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-muted hover:text-primary transition-colors text-sm font-medium mb-6">
+                    <ArrowLeft className="w-4 h-4" /> Back to Properties
                 </button>
 
-                <div className="detail-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 28, alignItems: 'start' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                     {/* Left Content */}
-                    <div>
+                    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="lg:col-span-2">
                         {/* Image Gallery */}
-                        <div className="glass-card" style={{ overflow: 'hidden', marginBottom: 24 }}>
-                            <div style={{ height: 420, overflow: 'hidden', position: 'relative' }}>
-                                <img src={images[activeImg]} alt={property.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        <motion.div variants={staggerItem} className="bg-elevated border border-borderSubtle/20 rounded-card overflow-hidden shadow-sm mb-6">
+                            <div className="h-[420px] relative overflow-hidden group">
+                                <img src={images[activeImg]} alt={property.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     onError={e => { e.target.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=900&q=80'; }} />
-                                <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 8 }}>
-                                    <span className={`badge ${property.listingType === 'sale' ? 'badge-primary' : 'badge-success'}`}>
+                                <div className="absolute top-4 left-4 flex gap-2">
+                                    <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-md shadow-sm ${property.listingType === 'sale' ? 'bg-primary text-white' : 'bg-emerald-500 text-white'}`}>
                                         {property.listingType === 'sale' ? 'For Sale' : 'For Rent'}
                                     </span>
-                                    {property.isFeatured && <span className="badge badge-warning">⭐ Featured</span>}
+                                    {property.isFeatured && <span className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-md shadow-sm bg-amber-500 text-white">⭐ Featured</span>}
                                 </div>
-                                <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 8 }}>
+                                <div className="absolute top-4 right-4 flex gap-2">
                                     <button onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied!'); }}
-                                        style={{ background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(10px)' }}>
-                                        <Share2 size={16} color="white" />
+                                        className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary transition-colors">
+                                        <Share2 className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
                             {images.length > 1 && (
-                                <div style={{ display: 'flex', gap: 8, padding: 12, overflowX: 'auto' }}>
+                                <div className="flex gap-2 p-3 overflow-x-auto">
                                     {images.map((img, i) => (
                                         <img key={i} src={img} alt="" onClick={() => setActiveImg(i)}
-                                            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: activeImg === i ? '2px solid var(--primary)' : '2px solid transparent', opacity: activeImg === i ? 1 : 0.6, transition: 'all 0.2s' }}
+                                            className={`w-20 h-16 object-cover rounded-lg cursor-pointer transition-all border-2 ${activeImg === i ? 'border-primary opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
                                             onError={e => { e.target.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&q=80'; }} />
                                     ))}
                                 </div>
                             )}
-                        </div>
+                        </motion.div>
 
                         {/* Info */}
-                        <div className="glass-card" style={{ padding: 28, marginBottom: 24 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 20 }}>
+                        <motion.div variants={staggerItem} className="bg-elevated border border-borderSubtle/20 rounded-card p-6 md:p-8 shadow-sm mb-6">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                                 <div>
-                                    <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 8 }}>{property.title}</h1>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7298', fontSize: 14 }}>
-                                        <MapPin size={14} color="var(--primary)" /> {property.location?.address}, {property.location?.city}
+                                    <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary mb-2">{property.title}</h1>
+                                    <div className="flex items-center gap-1.5 text-muted text-sm font-medium">
+                                        <MapPin className="w-4 h-4 text-primary" /> {property.location?.address}, {property.location?.city}
                                     </div>
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                <div className="text-left md:text-right">
+                                    <div className="text-4xl font-bold text-primary font-serif">
                                         {formatPrice(property.price, property.listingType)}
                                     </div>
-                                    {property.listingType === 'rent' && <div style={{ fontSize: 12, color: '#6b7298' }}>per month</div>}
+                                    {property.listingType === 'rent' && <div className="text-xs text-muted font-medium mt-1">per month</div>}
                                 </div>
                             </div>
 
                             {/* Quick Stats */}
-                            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', padding: 20, background: 'rgba(201, 163, 94,0.07)', borderRadius: 14, marginBottom: 20 }}>
-                                {property.bhk && <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white' }}>{property.bhk}</div><div style={{ fontSize: 12, color: '#6b7298' }}>BHK</div></div>}
-                                {property.bathrooms && <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white' }}>{property.bathrooms}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Bathrooms</div></div>}
-                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white' }}>{property.area}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Sq. Ft.</div></div>
-                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white' }}>{property.floor || 1}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Floor</div></div>
-                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white', textTransform: 'capitalize' }}>{property.furnishing?.split('-')[0]}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Furnished</div></div>
-                                {property.facing && <div style={{ textAlign: 'center' }}><div style={{ fontSize: 20, fontWeight: 700, color: 'white', textTransform: 'capitalize' }}>{property.facing}</div><div style={{ fontSize: 12, color: '#6b7298' }}>Facing</div></div>}
+                            <div className="flex flex-wrap gap-4 md:gap-8 p-5 bg-surface border border-borderSubtle/10 rounded-xl mb-8">
+                                {property.bhk && <div className="text-center flex-1"><div className="text-xl font-bold text-primary">{property.bhk}</div><div className="text-xs font-semibold text-muted">BHK</div></div>}
+                                {property.bathrooms && <div className="text-center flex-1"><div className="text-xl font-bold text-primary">{property.bathrooms}</div><div className="text-xs font-semibold text-muted">Baths</div></div>}
+                                <div className="text-center flex-1"><div className="text-xl font-bold text-primary">{property.area}</div><div className="text-xs font-semibold text-muted">Sq. Ft.</div></div>
+                                <div className="text-center flex-1"><div className="text-xl font-bold text-primary">{property.floor || 1}</div><div className="text-xs font-semibold text-muted">Floor</div></div>
+                                <div className="text-center flex-1"><div className="text-xl font-bold text-primary capitalize">{property.furnishing?.split('-')[0]}</div><div className="text-xs font-semibold text-muted">Furnished</div></div>
+                                {property.facing && <div className="text-center flex-1"><div className="text-xl font-bold text-primary capitalize">{property.facing}</div><div className="text-xs font-semibold text-muted">Facing</div></div>}
                             </div>
 
-                            <div className="divider" />
+                            <hr className="border-borderSubtle/20 my-8" />
 
-                            <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 12 }}>Description</h3>
-                            <p style={{ color: '#b0b7d3', lineHeight: 1.8 }}>{property.description}</p>
+                            <h3 className="font-bold text-primary text-lg mb-4">Description</h3>
+                            <p className="text-muted leading-relaxed whitespace-pre-line">{property.description}</p>
 
                             {/* Amenities */}
                             {property.amenities?.length > 0 && (
                                 <>
-                                    <div className="divider" />
-                                    <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 14 }}>Amenities</h3>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                    <hr className="border-borderSubtle/20 my-8" />
+                                    <h3 className="font-bold text-primary text-lg mb-4">Amenities</h3>
+                                    <div className="flex flex-wrap gap-2.5">
                                         {property.amenities.map(a => (
-                                            <span key={a} className="amenity-chip" style={{ textTransform: 'capitalize' }}>
+                                            <span key={a} className="flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-borderSubtle/20 rounded-full text-primary text-xs font-semibold capitalize">
                                                 {amenityIcons[a] || '✓'} {a.replace('_', ' ')}
                                             </span>
                                         ))}
@@ -162,10 +193,10 @@ export default function PropertyDetail() {
                             )}
 
                             {/* Meta */}
-                            <div className="divider" />
-                            <div style={{ display: 'flex', gap: 24, color: '#6b7298', fontSize: 13, alignItems: 'center', flexWrap: 'wrap' }}>
-                                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Eye size={13} /> {property.views} views</span>
-                                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={13} /> {new Date(property.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                            <hr className="border-borderSubtle/20 my-8" />
+                            <div className="flex flex-wrap items-center gap-6 text-sm text-muted font-medium">
+                                <span className="flex items-center gap-1.5"><Eye className="w-4 h-4" /> {property.views} views</span>
+                                <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> {new Date(property.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                                 <button
                                     onClick={() => {
                                         const current = JSON.parse(sessionStorage.getItem('compareList') || '[]');
@@ -180,43 +211,45 @@ export default function PropertyDetail() {
                                         }
                                         navigate('/compare');
                                     }}
-                                    style={{ marginLeft: 'auto', background: 'rgba(201, 163, 94,0.15)', border: '1px solid rgba(201, 163, 94,0.3)', color: 'var(--primary)', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                                    className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-md font-semibold hover:bg-primary/20 transition-colors"
                                 >
-                                    <GitCompare size={14} /> Compare Property
+                                    <GitCompare className="w-4 h-4" /> Compare Property
                                 </button>
                             </div>
 
                             {/* Location Intelligence Map */}
-                            <PropertyMap property={property} />
+                            <div className="mt-8">
+                                <PropertyMap property={property} />
+                            </div>
 
                             {/* Reviews Section */}
                             {property.reviews && property.reviews.length > 0 && (
                                 <>
-                                    <div className="divider" />
-                                    <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 20 }}>Reviews & Ratings</h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                    <hr className="border-borderSubtle/20 my-8" />
+                                    <h3 className="font-bold text-primary text-xl mb-6">Reviews & Ratings</h3>
+                                    <div className="flex flex-col gap-4">
                                         {property.reviews.map((r, i) => (
-                                            <div key={i} style={{ background: 'var(--dark-bg)', padding: 16, borderRadius: 12, border: '1px solid var(--dark-border)' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: r.userType === 'owner' ? 'var(--primary)' : '#2a2d3e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                                            <div key={i} className="bg-surface border border-borderSubtle/10 p-5 rounded-xl">
+                                                <div className="flex justify-between mb-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm ${r.userType === 'owner' ? 'bg-primary' : 'bg-accent'}`}>
                                                             {r.user.charAt(0).toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <div style={{ color: 'white', fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                            <div className="text-primary font-bold text-sm flex items-center gap-2">
                                                                 {r.user}
-                                                                {r.userType === 'owner' && <span style={{ fontSize: 10, background: 'rgba(201,163,94,0.2)', color: 'var(--primary)', padding: '2px 6px', borderRadius: 4 }}>Owner</span>}
+                                                                {r.userType === 'owner' && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded uppercase tracking-wider font-bold">Owner</span>}
                                                             </div>
-                                                            <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
+                                                            <div className="text-muted text-xs font-medium">
                                                                 {new Date(r.createdAt).toLocaleDateString()}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div style={{ color: '#fbbf24', fontSize: 16, letterSpacing: 2 }}>
+                                                    <div className="text-amber-400 text-lg tracking-widest drop-shadow-sm">
                                                         {'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}
                                                     </div>
                                                 </div>
-                                                <p style={{ color: '#a0aabf', fontSize: 14, lineHeight: 1.5, margin: 0 }}>
+                                                <p className="text-muted text-sm leading-relaxed italic m-0">
                                                     "{r.comment}"
                                                 </p>
                                             </div>
@@ -224,152 +257,176 @@ export default function PropertyDetail() {
                                     </div>
                                 </>
                             )}
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
 
                     {/* Right Sidebar */}
-                    <div className="detail-sidebar" style={{ position: 'sticky', top: 90 }}>
+                    <motion.div variants={fadeIn} initial="initial" animate="animate" className="lg:sticky lg:top-24 flex flex-col gap-6">
                         {/* Price Prediction Widget */}
                         <PricePredictionWidget property={property} />
 
                         {/* Deposit Calculator */}
                         {property.listingType === 'rent' && property.deposit > 0 && (
-                            <div className="glass-card" style={{ padding: 24, marginBottom: 20, marginTop: 20, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.3)' }}>
-                                <h3 style={{ fontWeight: 600, color: '#10b981', marginBottom: 12, fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <Shield size={16} /> Move-in Costs
+                            <div className="bg-emerald-50 border border-emerald-200 rounded-card p-6 shadow-sm">
+                                <h3 className="font-bold text-emerald-800 mb-4 text-base flex items-center gap-2">
+                                    <Shield className="w-5 h-5" /> Move-in Costs
                                 </h3>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14 }}>
-                                    <span style={{ color: '#b0b7d3' }}>First Month Rent</span>
-                                    <span style={{ color: 'white', fontWeight: 600 }}>₹{property.price.toLocaleString()}</span>
+                                <div className="flex justify-between mb-2 text-sm text-emerald-900 font-medium">
+                                    <span>First Month Rent</span>
+                                    <span className="font-bold">₹{property.price.toLocaleString()}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, fontSize: 14 }}>
-                                    <span style={{ color: '#b0b7d3' }}>Security Deposit</span>
-                                    <span style={{ color: 'white', fontWeight: 600 }}>₹{property.deposit.toLocaleString()}</span>
+                                <div className="flex justify-between mb-3 text-sm text-emerald-900 font-medium">
+                                    <span>Security Deposit</span>
+                                    <span className="font-bold">₹{property.deposit.toLocaleString()}</span>
                                 </div>
-                                <div style={{ borderTop: '1px solid rgba(16,185,129,0.2)', paddingTop: 12, display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700 }}>
-                                    <span style={{ color: 'white' }}>Total Upfront</span>
-                                    <span style={{ color: '#10b981' }}>₹{(property.price + property.deposit).toLocaleString()}</span>
+                                <div className="border-t border-emerald-200 pt-3 flex justify-between font-bold text-lg text-emerald-900">
+                                    <span>Total Upfront</span>
+                                    <span className="text-emerald-700">₹{(property.price + property.deposit).toLocaleString()}</span>
                                 </div>
-                                <div style={{ fontSize: 12, color: '#6b7298', marginTop: 12, textAlign: 'center' }}>
+                                <div className="text-xs text-emerald-700/80 mt-3 text-center font-medium">
                                     Deposit is {(property.deposit / property.price).toFixed(1)}x monthly rent. {property.deposit / property.price <= 2 ? 'This is considered low!' : ''}
                                 </div>
                             </div>
                         )}
 
                         {/* Owner Card */}
-                        <div className="glass-card" style={{ padding: 24, marginBottom: 20, marginTop: 20 }}>
-                            <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 16 }}>Posted By</h3>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
-                                <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: 'white' }}>
+                        <div className="bg-elevated border border-borderSubtle/20 rounded-card p-6 shadow-sm">
+                            <h3 className="font-bold text-primary mb-5 text-base">Posted By</h3>
+                            <div className="flex items-center gap-4 mb-5">
+                                <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-2xl shadow-inner">
                                     {property.owner?.name?.[0]?.toUpperCase() || 'O'}
                                 </div>
                                 <div>
-                                    <div style={{ fontWeight: 600, color: 'white' }}>{property.owner?.name || 'Owner'}</div>
-                                    <div style={{ fontSize: 12, color: '#22d3a5' }}>Verified Owner ✓</div>
+                                    <div className="font-bold text-primary">{property.owner?.name || 'Owner'}</div>
+                                    <div className="text-xs text-emerald-600 font-semibold flex items-center gap-1">Verified Owner <Shield className="w-3 h-3" /></div>
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                            <div className="flex flex-col gap-3 mb-6">
                                 {property.owner?.phone && (
-                                    <a href={`tel:${property.owner.phone}`} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(34,211,165,0.1)', border: '1px solid rgba(34,211,165,0.3)', borderRadius: 10, padding: 12, color: '#22d3a5', fontSize: 14 }}>
-                                        <Phone size={16} /> {property.owner.phone}
+                                    <a href={`tel:${property.owner.phone}`} className="flex items-center justify-center gap-2 bg-emerald-50 border border-emerald-200 rounded-btn p-3 text-emerald-700 text-sm font-bold hover:bg-emerald-100 transition-colors">
+                                        <Phone className="w-4 h-4" /> {property.owner.phone}
                                     </a>
                                 )}
                                 {property.owner?.email && (
-                                    <a href={`mailto:${property.owner.email}`} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(201, 163, 94,0.1)', border: '1px solid rgba(201, 163, 94,0.3)', borderRadius: 10, padding: 12, color: 'var(--primary)', fontSize: 14 }}>
-                                        <Mail size={16} /> {property.owner.email}
+                                    <a href={`mailto:${property.owner.email}`} className="flex items-center justify-center gap-2 bg-primary/5 border border-primary/20 rounded-btn p-3 text-primary text-sm font-bold hover:bg-primary/10 transition-colors">
+                                        <Mail className="w-4 h-4" /> Email Owner
                                     </a>
                                 )}
                             </div>
 
-                            <button onClick={() => setShowInquiry(!showInquiry)} className="btn btn-primary" style={{ width: '100%', borderRadius: 12 }}>
-                                Send Inquiry
-                            </button>
+                            {!showInquiry ? (
+                                <button onClick={() => setShowInquiry(true)} className="btn btn-primary w-full shadow-md hover:shadow-lg">
+                                    Send Message
+                                </button>
+                            ) : (
+                                <AnimatePresence>
+                                    <motion.form initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} onSubmit={handleInquiry} className="flex flex-col gap-3">
+                                        <textarea
+                                            required
+                                            placeholder="Hi, I'm interested in this property..."
+                                            value={inquiry.message}
+                                            onChange={e => setInquiry(p => ({ ...p, message: e.target.value }))}
+                                            className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary text-sm min-h-[100px] resize-y"
+                                        />
+                                        <input type="tel" placeholder="Your phone number" value={inquiry.phone}
+                                            onChange={e => setInquiry(p => ({ ...p, phone: e.target.value }))}
+                                            className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-2 outline-none focus:border-primary text-primary text-sm" />
+                                        <div className="flex gap-2">
+                                            <button type="button" onClick={() => setShowInquiry(false)} className="btn btn-secondary bg-surface flex-1">Cancel</button>
+                                            <button type="submit" disabled={submitting} className="btn btn-primary flex-[2]">
+                                                {submitting ? 'Sending...' : 'Send'}
+                                            </button>
+                                        </div>
+                                    </motion.form>
+                                </AnimatePresence>
+                            )}
                         </div>
-
-                        {/* Inquiry Form */}
-                        {showInquiry && (
-                            <div className="glass-card" style={{ padding: 24 }}>
-                                <h3 style={{ fontWeight: 600, color: 'white', marginBottom: 16, fontSize: 16 }}>Send a Message</h3>
-                                <form onSubmit={handleInquiry} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                    <textarea
-                                        required
-                                        placeholder="Hi, I'm interested in this property..."
-                                        value={inquiry.message}
-                                        onChange={e => setInquiry(p => ({ ...p, message: e.target.value }))}
-                                        className="input"
-                                        style={{ resize: 'vertical', minHeight: 100 }}
-                                    />
-                                    <input type="tel" placeholder="Your phone number" value={inquiry.phone}
-                                        onChange={e => setInquiry(p => ({ ...p, phone: e.target.value }))}
-                                        className="input" />
-                                    <button type="submit" disabled={submitting} className="btn btn-primary" style={{ borderRadius: 10 }}>
-                                        {submitting ? 'Sending...' : 'Send Message'}
-                                    </button>
-                                </form>
-                            </div>
-                        )}
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* Similar */}
                 {similar.length > 0 && (
-                    <div style={{ marginTop: 60 }}>
-                        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 800, color: 'white', marginBottom: 28 }}>Similar Properties</h2>
-                        <div className="grid-3">
+                    <motion.div variants={fadeIn} initial="initial" animate="animate" className="mt-16">
+                        <h2 className="font-serif text-2xl font-bold text-primary mb-6">Similar Properties</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {similar.map(p => <PropertyCard key={p._id} property={p} />)}
                         </div>
-                    </div>
+                    </motion.div>
                 )}
 
                 {/* AI Commute Scorer & Neighborhood */}
-                <div style={{ marginTop: 40, marginBottom: 24 }}>
-                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 800, color: 'white', marginBottom: 24 }}>Location Intelligence</h2>
+                <motion.div variants={fadeIn} initial="initial" animate="animate" className="mt-16 mb-8">
+                    <h2 className="font-serif text-2xl font-bold text-primary mb-6">Location Intelligence</h2>
                     
-                    <div className="location-intel-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 24 }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         {/* Walkability & Connectivity */}
-                        <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 16, padding: 24 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                                <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(201,163,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Sparkles size={20} color="var(--primary)" />
+                        <div className="bg-elevated border border-borderSubtle/20 rounded-card p-6 md:p-8 shadow-sm">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <Sparkles className="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
-                                    <h3 style={{ color: 'white', fontSize: 16, fontWeight: 600, margin: 0 }}>Area Analysis</h3>
-                                    <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Smart scores based on surroundings</div>
+                                    <h3 className="text-primary font-bold text-lg">Area Analysis</h3>
+                                    <div className="text-muted text-sm font-medium">Smart scores based on surroundings</div>
                                 </div>
                             </div>
                             
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div className="flex flex-col gap-6">
                                 <div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 14 }}>
-                                            <Footprints size={16} color="var(--primary)" /> Walkability Score
+                                    <div className="flex justify-between mb-2">
+                                        <div className="flex items-center gap-2 text-muted text-sm font-semibold">
+                                            <Footprints className="w-4 h-4 text-primary" /> Walkability Score
                                         </div>
-                                        <div style={{ color: 'white', fontWeight: 600 }}>{property.walkabilityScore || 85}/100</div>
+                                        <div className="text-primary font-bold">{property.walkabilityScore || 0}/100</div>
                                     </div>
-                                    <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
-                                        <div style={{ width: `${property.walkabilityScore || 85}%`, height: '100%', background: 'var(--primary)', borderRadius: 3 }} />
+                                    <div className="h-2 bg-surface rounded-full overflow-hidden">
+                                        <div className="h-full bg-primary rounded-full transition-all duration-1000" style={{ width: `${property.walkabilityScore || 0}%` }} />
                                     </div>
                                 </div>
                                 
                                 <div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 14 }}>
-                                            <Link2 size={16} color="var(--primary)" /> Connectivity Score
+                                    <div className="flex justify-between mb-2">
+                                        <div className="flex items-center gap-2 text-muted text-sm font-semibold">
+                                            <Link2 className="w-4 h-4 text-emerald-600" /> Connectivity Score
                                         </div>
-                                        <div style={{ color: 'white', fontWeight: 600 }}>{property.connectivityScore || 88}/100</div>
+                                        <div className="text-primary font-bold">{property.connectivityScore || 0}/100</div>
                                     </div>
-                                    <div style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
-                                        <div style={{ width: `${property.connectivityScore || 88}%`, height: '100%', background: '#4CAF50', borderRadius: 3 }} />
+                                    <div className="h-2 bg-surface rounded-full overflow-hidden">
+                                        <div className="h-full bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: `${property.connectivityScore || 0}%` }} />
                                     </div>
                                 </div>
                                 
-                                {property.futureDevelopment && (
-                                    <div style={{ marginTop: 8, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--dark-border)', borderRadius: 8 }}>
-                                        <div style={{ color: 'var(--primary)', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>NEIGHBORHOOD VIBE</div>
-                                        <div style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.5 }}>"{property.futureDevelopment}"</div>
+                                <div className="mt-2 p-4 bg-surface border border-borderSubtle/10 rounded-xl relative group">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div className="text-primary text-xs font-bold uppercase tracking-wider">NEIGHBORHOOD VIBE & FUTURE DEV</div>
+                                        {(user?.role === 'admin' || user?._id === property.owner?._id) && !isEditingFutureDev && (
+                                            <button onClick={() => setIsEditingFutureDev(true)} className="text-xs text-primary font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                                                Edit
+                                            </button>
+                                        )}
                                     </div>
-                                )}
+                                    
+                                    {isEditingFutureDev ? (
+                                        <div className="space-y-2">
+                                            <textarea 
+                                                value={futureDevInput} 
+                                                onChange={e => setFutureDevInput(e.target.value)} 
+                                                className="w-full bg-elevated border border-borderSubtle/30 rounded p-2 text-sm text-primary focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                                rows="3"
+                                                placeholder="Enter future infrastructure plans (e.g., upcoming metro station...)"
+                                            />
+                                            <div className="flex justify-end gap-2">
+                                                <button onClick={() => { setIsEditingFutureDev(false); setFutureDevInput(property.futureDevelopment || ''); }} className="px-3 py-1 text-xs rounded bg-surface border border-borderSubtle text-muted hover:text-primary transition">Cancel</button>
+                                                <button onClick={handleSaveFutureDev} className="px-3 py-1 text-xs rounded bg-primary text-white font-semibold">Save</button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-muted text-sm leading-relaxed font-medium italic">
+                                            {property.futureDevelopment ? `"${property.futureDevelopment}"` : 'No upcoming development information available for this area. Owners and admins can add nearby infrastructure projects via the dashboard.'}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -383,9 +440,8 @@ export default function PropertyDetail() {
                         propertyLat={property?.location?.coordinates?.lat}
                         propertyLng={property?.location?.coordinates?.lng}
                     />
-                </div>
+                </motion.div>
             </div>
         </div>
     );
 }
-

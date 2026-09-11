@@ -1,29 +1,31 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 import { Users, Plus, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
 
 const Section = ({ title, children }) => (
-    <div className="glass-card" style={{ padding: 28, marginBottom: 20 }}>
-        <h3 style={{ color: 'white', fontWeight: 700, marginBottom: 20, fontSize: 16, borderBottom: '1px solid rgba(201, 163, 94,0.2)', paddingBottom: 12 }}>{title}</h3>
+    <motion.div variants={staggerItem} className="bg-elevated border border-borderSubtle/20 rounded-card p-6 md:p-8 mb-6 shadow-sm">
+        <h3 className="text-primary font-bold text-lg mb-6 pb-3 border-b border-borderSubtle/10">{title}</h3>
         {children}
-    </div>
+    </motion.div>
 );
 
 const Field = ({ label, required, children }) => (
     <div>
-        <label style={{ display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 }}>{label} {required && <span style={{ color: '#ef4444' }}>*</span>}</label>
+        <label className="block text-sm font-semibold text-primary mb-2">{label} {required && <span className="text-red-500">*</span>}</label>
         {children}
     </div>
 );
 
 const Toggle = ({ label, checked, onChange }) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <span style={{ color: '#b0b7d3', fontSize: 14 }}>{label}</span>
+    <div className="flex items-center justify-between py-3 border-b border-borderSubtle/10">
+        <span className="text-primary text-sm font-medium">{label}</span>
         <button type="button" onClick={() => onChange(!checked)}
-            style={{ width: 44, height: 24, borderRadius: 12, background: checked ? 'var(--primary)' : 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'all 0.3s' }}>
-            <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: checked ? 23 : 3, transition: 'left 0.3s' }} />
+            className={`w-11 h-6 rounded-full relative transition-colors ${checked ? 'bg-primary' : 'bg-surface border border-borderSubtle/30'}`}>
+            <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${checked ? 'left-6 shadow-sm' : 'left-1'}`} />
         </button>
     </div>
 );
@@ -77,37 +79,37 @@ export default function ListPG() {
     };
 
     return (
-        <div style={{ paddingTop: 90, minHeight: '100vh' }}>
-            <div className="container" style={{ paddingTop: 24, paddingBottom: 60, maxWidth: 800 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-                    <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, var(--primary-light), var(--primary))', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Users size={22} color="white" />
+        <div className="light-page min-h-screen pt-6 pb-20 font-sans">
+            <div className="max-w-3xl mx-auto px-6 lg:px-8">
+                <motion.div variants={fadeIn} initial="initial" animate="animate" className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center">
+                        <Users className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                        <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 26, fontWeight: 800, color: 'white' }}>List a PG / Hostel</h1>
-                        <p style={{ color: '#6b7298', fontSize: 14 }}>Reach students & professionals looking for accommodation</p>
+                        <h1 className="font-serif text-3xl font-bold text-primary mb-1">List a PG / Hostel</h1>
+                        <p className="text-muted text-sm">Reach students & professionals looking for accommodation</p>
                     </div>
-                </div>
+                </motion.div>
 
-                <form onSubmit={handleSubmit}>
+                <motion.form variants={staggerContainer} initial="initial" animate="animate" onSubmit={handleSubmit}>
                     <Section title="📋 Basic Info">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div className="flex flex-col gap-5">
                             <Field label="PG / Hostel Name" required>
-                                <input required className="input" placeholder="e.g. Green Valley Boys PG" value={form.name} onChange={e => set('name', e.target.value)} />
+                                <input required className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="e.g. Green Valley Boys PG" value={form.name} onChange={e => set('name', e.target.value)} />
                             </Field>
                             <Field label="Description" required>
-                                <textarea required className="input" placeholder="Describe your PG..." value={form.description} onChange={e => set('description', e.target.value)} style={{ resize: 'vertical', minHeight: 90 }} />
+                                <textarea required className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary min-h-[90px] resize-y" placeholder="Describe your PG..." value={form.description} onChange={e => set('description', e.target.value)} />
                             </Field>
-                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <Field label="Type">
-                                    <select className="input" value={form.type} onChange={e => set('type', e.target.value)}>
+                                    <select className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" value={form.type} onChange={e => set('type', e.target.value)}>
                                         <option value="pg">PG</option>
                                         <option value="hostel">Hostel</option>
                                         <option value="coliving">Co-Living</option>
                                     </select>
                                 </Field>
                                 <Field label="Gender Type" required>
-                                    <select className="input" value={form.genderType} onChange={e => set('genderType', e.target.value)}>
+                                    <select className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" value={form.genderType} onChange={e => set('genderType', e.target.value)}>
                                         <option value="male">Boys Only</option>
                                         <option value="female">Girls Only</option>
                                         <option value="unisex">Unisex</option>
@@ -118,25 +120,25 @@ export default function ListPG() {
                     </Section>
 
                     <Section title="💰 Rent & Capacity">
-                        <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                             <Field label="Rent per Month (₹)" required>
-                                <input required type="number" className="input" placeholder="8500" value={form.rentPerMonth} onChange={e => set('rentPerMonth', e.target.value)} />
+                                <input required type="number" className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="8500" value={form.rentPerMonth} onChange={e => set('rentPerMonth', e.target.value)} />
                             </Field>
                             <Field label="Security Deposit (₹)">
-                                <input type="number" className="input" placeholder="17000" value={form.securityDeposit} onChange={e => set('securityDeposit', e.target.value)} />
+                                <input type="number" className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="17000" value={form.securityDeposit} onChange={e => set('securityDeposit', e.target.value)} />
                             </Field>
                             <Field label="Total Rooms">
-                                <input type="number" className="input" value={form.totalRooms} onChange={e => set('totalRooms', e.target.value)} min={1} />
+                                <input type="number" className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" value={form.totalRooms} onChange={e => set('totalRooms', e.target.value)} min={1} />
                             </Field>
                             <Field label="Available Rooms">
-                                <input type="number" className="input" value={form.availableRooms} onChange={e => set('availableRooms', e.target.value)} min={0} />
+                                <input type="number" className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" value={form.availableRooms} onChange={e => set('availableRooms', e.target.value)} min={0} />
                             </Field>
                         </div>
                         <Field label="Sharing Types">
-                            <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+                            <div className="flex flex-wrap gap-2.5 mt-2">
                                 {['single', 'double', 'triple', 'quad'].map(s => (
                                     <button key={s} type="button" onClick={() => toggleSharing(s)}
-                                        style={{ padding: '8px 16px', borderRadius: 20, border: `1px solid ${form.sharingType.includes(s) ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, background: form.sharingType.includes(s) ? 'rgba(201, 163, 94,0.2)' : 'transparent', color: form.sharingType.includes(s) ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', textTransform: 'capitalize', transition: 'all 0.2s' }}>
+                                        className={`px-4 py-2 rounded-full border text-sm capitalize transition-all ${form.sharingType.includes(s) ? 'bg-primary/10 border-primary text-primary' : 'bg-transparent border-borderSubtle/30 text-muted hover:border-primary/50'}`}>
                                         {form.sharingType.includes(s) ? '✓ ' : ''}{s}
                                     </button>
                                 ))}
@@ -145,29 +147,29 @@ export default function ListPG() {
                     </Section>
 
                     <Section title="📍 Location">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        <div className="flex flex-col gap-5">
                             <Field label="Full Address" required>
-                                <input required className="input" placeholder="e.g. 45, Andheri West, Mumbai" value={form.location.address} onChange={e => setLoc('address', e.target.value)} />
+                                <input required className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="e.g. 45, Andheri West, Mumbai" value={form.location.address} onChange={e => setLoc('address', e.target.value)} />
                             </Field>
-                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <Field label="City">
-                                    <input className="input" value={form.location.city} onChange={e => setLoc('city', e.target.value)} />
+                                    <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" value={form.location.city} onChange={e => setLoc('city', e.target.value)} />
                                 </Field>
                                 <Field label="Pincode">
-                                    <input className="input" placeholder="411007" value={form.location.pincode} onChange={e => setLoc('pincode', e.target.value)} />
+                                    <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="411007" value={form.location.pincode} onChange={e => setLoc('pincode', e.target.value)} />
                                 </Field>
                             </div>
                             <Field label="Nearby Institutions (for AI matching)">
-                                <div style={{ display: 'flex', gap: 10 }}>
-                                    <input className="input" placeholder="e.g. SPPU University" value={institutionInput} onChange={e => setInstitution(e.target.value)}
+                                <div className="flex gap-3">
+                                    <input className="flex-1 bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="e.g. SPPU University" value={institutionInput} onChange={e => setInstitution(e.target.value)}
                                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addInstitution(); } }} />
-                                    <button type="button" onClick={addInstitution} className="btn btn-secondary"><Plus size={16} /></button>
+                                    <button type="button" onClick={addInstitution} className="btn btn-secondary bg-surface border border-borderSubtle/30"><Plus className="w-4 h-4" /></button>
                                 </div>
                                 {form.location.nearbyInstitutions.length > 0 && (
-                                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+                                    <div className="flex flex-wrap gap-2 mt-3">
                                         {form.location.nearbyInstitutions.map((inst, i) => (
-                                            <span key={i} className="amenity-chip" style={{ cursor: 'pointer' }} onClick={() => setLoc('nearbyInstitutions', form.location.nearbyInstitutions.filter((_, idx) => idx !== i))}>
-                                                🏛️ {inst} <X size={12} />
+                                            <span key={i} className="px-3 py-1.5 bg-surface border border-borderSubtle/20 rounded-full text-xs text-primary flex items-center gap-1.5 cursor-pointer hover:bg-red-50 hover:text-red-600 hover:border-red-200" onClick={() => setLoc('nearbyInstitutions', form.location.nearbyInstitutions.filter((_, idx) => idx !== i))}>
+                                                🏛️ {inst} <X className="w-3 h-3" />
                                             </span>
                                         ))}
                                     </div>
@@ -177,43 +179,43 @@ export default function ListPG() {
                     </Section>
 
                     <Section title="🧠 Location Intelligence (Optional)">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                        <div className="flex flex-col gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <Field label="Walkability Score (0-100)">
-                                    <input type="number" className="input" value={form.walkabilityScore} onChange={e => set('walkabilityScore', Number(e.target.value))} min={0} max={100} />
+                                    <input type="number" className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" value={form.walkabilityScore} onChange={e => set('walkabilityScore', Number(e.target.value))} min={0} max={100} />
                                 </Field>
                                 <Field label="Connectivity Score (0-100)">
-                                    <input type="number" className="input" value={form.connectivityScore} onChange={e => set('connectivityScore', Number(e.target.value))} min={0} max={100} />
+                                    <input type="number" className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" value={form.connectivityScore} onChange={e => set('connectivityScore', Number(e.target.value))} min={0} max={100} />
                                 </Field>
                             </div>
                             <Field label="Future Development Notes">
-                                <textarea className="input" placeholder="e.g. Upcoming metro station in 500m..." value={form.futureDevelopment} onChange={e => set('futureDevelopment', e.target.value)} style={{ resize: 'vertical', minHeight: 60 }} />
+                                <textarea className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary min-h-[60px] resize-y" placeholder="e.g. Upcoming metro station in 500m..." value={form.futureDevelopment} onChange={e => set('futureDevelopment', e.target.value)} />
                             </Field>
                         </div>
                     </Section>
 
                     <Section title="✨ Amenities">
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
                             {Object.entries(form.amenities).map(([key, val]) => (
                                 <Toggle key={key} label={key.replace(/([A-Z])/g, ' $1').replace(/^\w/, c => c.toUpperCase())} checked={val} onChange={v => setAm(key, v)} />
                             ))}
                         </div>
                     </Section>
 
-                    <Section title="🍽️ Meals">
-                        <div style={{ display: 'flex', gap: 16 }}>
+                    <Section title="🍽️ Meals Included">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-1">
                             {Object.entries(form.meals).map(([key, val]) => (
                                 <Toggle key={key} label={key.charAt(0).toUpperCase() + key.slice(1)} checked={val} onChange={v => setMeal(key, v)} />
                             ))}
                         </div>
                     </Section>
 
-                    <Section title="📜 House Rules">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                            <Field label="Curfew Time (leave blank if none)">
-                                <input className="input" placeholder="e.g. 10:00 PM" value={form.rules.curfewTime} onChange={e => setRule('curfewTime', e.target.value)} />
+                    <Section title="📜 PG Rules">
+                        <div className="flex flex-col gap-5">
+                            <Field label="Curfew Time">
+                                <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="e.g. 10:30 PM (Leave blank if no curfew)" value={form.rules.curfewTime} onChange={e => setRule('curfewTime', e.target.value)} />
                             </Field>
-                            <div style={{ marginTop: 16 }}>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-1 mt-2">
                                 <Toggle label="Guests Allowed" checked={form.rules.guestsAllowed} onChange={v => setRule('guestsAllowed', v)} />
                                 <Toggle label="Smoking Allowed" checked={form.rules.smokingAllowed} onChange={v => setRule('smokingAllowed', v)} />
                                 <Toggle label="Pets Allowed" checked={form.rules.petsAllowed} onChange={v => setRule('petsAllowed', v)} />
@@ -222,18 +224,18 @@ export default function ListPG() {
                     </Section>
 
                     <Section title="🖼️ Images (Optional)">
-                        <div className="image-add-row" style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
-                            <input className="input" placeholder="Paste image URL..." value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
-                            <button type="button" onClick={addImage} className="btn btn-secondary"><Plus size={16} /></button>
+                        <div className="flex gap-3 mb-4">
+                            <input className="flex-1 bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary" placeholder="Paste image URL..." value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
+                            <button type="button" onClick={addImage} className="btn btn-secondary bg-surface border border-borderSubtle/30 whitespace-nowrap"><Plus className="w-4 h-4" /> Add</button>
                         </div>
                         {form.images.length > 0 && (
-                            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                            <div className="flex gap-3 flex-wrap">
                                 {form.images.map((img, i) => (
-                                    <div key={i} style={{ position: 'relative' }}>
-                                        <img src={img} alt="" style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8 }} onError={e => { e.target.src = 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=200&q=80'; }} />
+                                    <div key={i} className="relative">
+                                        <img src={img} alt="" className="w-20 h-16 object-cover rounded-lg" onError={e => { e.target.src = 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=200&q=80'; }} />
                                         <button type="button" onClick={() => setForm(p => ({ ...p, images: p.images.filter((_, idx) => idx !== i) }))}
-                                            style={{ position: 'absolute', top: -6, right: -6, background: '#ef4444', border: 'none', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                                            <X size={12} color="white" />
+                                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
+                                            <X className="w-3 h-3" />
                                         </button>
                                     </div>
                                 ))}
@@ -241,13 +243,13 @@ export default function ListPG() {
                         )}
                     </Section>
 
-                    <div className="form-actions" style={{ display: 'flex', gap: 14 }}>
-                        <button type="button" onClick={() => navigate(-1)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
-                        <button type="submit" disabled={loading} className="btn btn-primary" style={{ flex: 2, padding: '14px', fontSize: 16, borderRadius: 12 }}>
-                            {loading ? 'Listing...' : '🚀 List PG / Hostel'}
+                    <motion.div variants={staggerItem} className="flex gap-4">
+                        <button type="button" onClick={() => navigate(-1)} className="btn btn-secondary bg-surface flex-1">Cancel</button>
+                        <button type="submit" disabled={loading} className="btn btn-primary flex-[2] py-3 text-base shadow-md hover:shadow-lg">
+                            {loading ? 'Listing...' : '🚀 List PG'}
                         </button>
-                    </div>
-                </form>
+                    </motion.div>
+                </motion.form>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useState } from 'react';
-import { MapPin, Bike, Car, Bus, Zap, Clock } from 'lucide-react';
+import { MapPin, Bike, Car, Bus, Zap, Clock, LocateFixed } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
@@ -13,19 +13,31 @@ export default function CommuteScorer({ propertyLat, propertyLng }) {
 
     if (!propertyLat || !propertyLng) return null;
 
-    const handleCalculate = async () => {
-        if (!workplace.trim()) return toast.error('Please enter your workplace.');
+    const handleCalculate = async (useLocation = false) => {
+        if (!useLocation && !workplace.trim()) return toast.error('Please enter your workplace.');
         setLoading(true);
         setResult(null);
+        
         try {
-            const { data } = await axios.post(`${API}/api/commute/score`, {
-                workplace,
-                propertyLat,
-                propertyLng
-            });
+            let payload = { propertyLat, propertyLng };
+            
+            if (useLocation) {
+                // Fetch browser location
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                });
+                payload.userLat = position.coords.latitude;
+                payload.userLng = position.coords.longitude;
+                setWorkplace('Current Location');
+            } else {
+                payload.workplace = workplace;
+            }
+
+            const { data } = await axios.post(`${API}/api/commute/score`, payload);
             setResult(data);
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Could not calculate commute. Try a specific landmark name.');
+            console.error(err);
+            toast.error(err.response?.data?.message || 'Could not calculate commute. Ensure location permissions are granted.');
         } finally {
             setLoading(false);
         }
@@ -57,10 +69,10 @@ export default function CommuteScorer({ propertyLat, propertyLng }) {
                     <MapPin size={16} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                         type="text"
-                        placeholder="e.g. Infosys Hinjewadi, Persistent Systems..."
+                        placeholder="e.g. Infosys Hinjewadi..."
                         value={workplace}
                         onChange={e => setWorkplace(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleCalculate()}
+                        onKeyDown={e => e.key === 'Enter' && handleCalculate(false)}
                         style={{
                             width: '100%', paddingLeft: 38, padding: '10px 12px 10px 38px',
                             background: 'rgba(255,255,255,0.04)', border: '1px solid var(--dark-border)',
@@ -70,7 +82,19 @@ export default function CommuteScorer({ propertyLat, propertyLng }) {
                     />
                 </div>
                 <button
-                    onClick={handleCalculate}
+                    onClick={() => handleCalculate(true)}
+                    disabled={loading}
+                    title="Use My Exact Location"
+                    style={{
+                        background: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)', border: '1px solid var(--dark-border)',
+                        borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, transition: 'all 0.2s'
+                    }}
+                >
+                    <LocateFixed size={18} />
+                </button>
+                <button
+                    onClick={() => handleCalculate(false)}
                     disabled={loading}
                     style={{
                         background: 'var(--primary)', color: '#000', border: 'none',

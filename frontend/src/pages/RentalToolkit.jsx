@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Receipt, Shield, ClipboardCheck, Download, ChevronDown, ChevronRight, CheckCircle2, Building2 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
 
 const STATES = ['Maharashtra', 'Karnataka', 'Telangana', 'Delhi', 'Tamil Nadu', 'Gujarat', 'West Bengal', 'Rajasthan', 'Uttar Pradesh', 'Madhya Pradesh'];
 
@@ -70,88 +71,88 @@ Generated via EstateXAi Digital Rental Toolkit
     };
 
     return (
-        <div>
+        <motion.div variants={fadeIn} initial="initial" animate="animate">
             {!generated ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
-                        <label style={labelStyle}>Landlord / Owner Name *</label>
-                        <input className="input" placeholder="Full legal name" value={form.landlordName} onChange={e => s('landlordName', e.target.value)} />
+                        <label className="block mb-2 text-sm text-primary font-bold">Landlord / Owner Name *</label>
+                        <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" placeholder="Full legal name" value={form.landlordName} onChange={e => s('landlordName', e.target.value)} />
                     </div>
                     <div>
-                        <label style={labelStyle}>Tenant Name *</label>
-                        <input className="input" placeholder="Full legal name" value={form.tenantName} onChange={e => s('tenantName', e.target.value)} />
+                        <label className="block mb-2 text-sm text-primary font-bold">Tenant Name *</label>
+                        <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" placeholder="Full legal name" value={form.tenantName} onChange={e => s('tenantName', e.target.value)} />
                     </div>
-                    <div style={{ gridColumn: 'span 2' }}>
-                        <label style={labelStyle}>Property Address *</label>
-                        <input className="input" placeholder="Flat no, building, street, locality" value={form.address} onChange={e => s('address', e.target.value)} />
-                    </div>
-                    <div>
-                        <label style={labelStyle}>City</label>
-                        <input className="input" placeholder="e.g. Pune" value={form.city} onChange={e => s('city', e.target.value)} />
+                    <div className="md:col-span-2 lg:col-span-2">
+                        <label className="block mb-2 text-sm text-primary font-bold">Property Address *</label>
+                        <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" placeholder="Flat no, building, street, locality" value={form.address} onChange={e => s('address', e.target.value)} />
                     </div>
                     <div>
-                        <label style={labelStyle}>State</label>
-                        <select className="input" value={form.state} onChange={e => s('state', e.target.value)} style={{ cursor: 'pointer' }}>
+                        <label className="block mb-2 text-sm text-primary font-bold">City</label>
+                        <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" placeholder="e.g. Pune" value={form.city} onChange={e => s('city', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="block mb-2 text-sm text-primary font-bold">State</label>
+                        <select className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors cursor-pointer" value={form.state} onChange={e => s('state', e.target.value)}>
                             {STATES.map(st => <option key={st} value={st}>{st}</option>)}
                         </select>
                     </div>
                     <div>
-                        <label style={labelStyle}>Monthly Rent (₹) *</label>
-                        <input className="input" type="number" placeholder="15000" value={form.rent} onChange={e => s('rent', e.target.value)} />
+                        <label className="block mb-2 text-sm text-primary font-bold">Monthly Rent (₹) *</label>
+                        <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" type="number" placeholder="15000" value={form.rent} onChange={e => s('rent', e.target.value)} />
                     </div>
                     <div>
-                        <label style={labelStyle}>Security Deposit (₹)</label>
-                        <input className="input" type="number" placeholder="30000" value={form.deposit} onChange={e => s('deposit', e.target.value)} />
+                        <label className="block mb-2 text-sm text-primary font-bold">Security Deposit (₹)</label>
+                        <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" type="number" placeholder="30000" value={form.deposit} onChange={e => s('deposit', e.target.value)} />
                     </div>
                     <div>
-                        <label style={labelStyle}>Start Date</label>
-                        <input className="input" type="date" value={form.startDate} onChange={e => s('startDate', e.target.value)} />
+                        <label className="block mb-2 text-sm text-primary font-bold">Start Date</label>
+                        <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" type="date" value={form.startDate} onChange={e => s('startDate', e.target.value)} />
                     </div>
                     <div>
-                        <label style={labelStyle}>Duration (months)</label>
-                        <select className="input" value={form.duration} onChange={e => s('duration', e.target.value)} style={{ cursor: 'pointer' }}>
+                        <label className="block mb-2 text-sm text-primary font-bold">Duration (months)</label>
+                        <select className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors cursor-pointer" value={form.duration} onChange={e => s('duration', e.target.value)}>
                             {['6', '11', '12', '24', '36'].map(d => <option key={d} value={d}>{d} months</option>)}
                         </select>
                     </div>
-                    <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <button onClick={() => s('includeNotice', !form.includeNotice)} style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: form.includeNotice ? 'var(--primary)' : 'rgba(255,255,255,0.1)', position: 'relative', transition: 'background 0.3s' }}>
-                            <div style={{ position: 'absolute', top: 2, left: form.includeNotice ? 20 : 2, width: 18, height: 18, borderRadius: '50%', background: 'white', transition: 'left 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                    <div className="md:col-span-2 flex items-center gap-3">
+                        <button onClick={() => s('includeNotice', !form.includeNotice)} className={`relative w-11 h-6 rounded-full transition-colors ${form.includeNotice ? 'bg-primary' : 'bg-borderSubtle/30'}`}>
+                            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm ${form.includeNotice ? 'left-6' : 'left-1'}`} />
                         </button>
-                        <span style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Include 1-month notice period clause</span>
+                        <span className="text-sm font-medium text-muted">Include 1-month notice period clause</span>
                     </div>
-                    <div style={{ gridColumn: 'span 2' }}>
-                        <button onClick={generateAgreement} className="btn btn-primary" style={{ padding: '14px 32px', fontSize: 15 }}>
-                            <FileText size={18} /> Generate Agreement
+                    <div className="md:col-span-2 lg:col-span-3 mt-4">
+                        <button onClick={generateAgreement} className="btn btn-primary py-4 px-8 text-base font-bold shadow-md hover:shadow-lg inline-flex items-center gap-2">
+                            <FileText className="w-5 h-5" /> Generate Agreement
                         </button>
                     </div>
                 </div>
             ) : (
-                <div>
-                    <div style={{ background: 'rgba(34,211,165,0.08)', border: '1px solid rgba(34,211,165,0.3)', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                            <CheckCircle2 size={22} color="#22d3a5" />
-                            <span style={{ color: '#22d3a5', fontWeight: 700, fontSize: 16 }}>Agreement Generated Successfully</span>
+                <motion.div variants={fadeIn} initial="initial" animate="animate">
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6 mb-6">
+                        <div className="flex items-center gap-3 mb-5">
+                            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                            <span className="text-emerald-600 font-bold text-lg">Agreement Generated Successfully</span>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 14, color: 'var(--text-secondary)' }}>
-                            <div>Landlord: <strong style={{ color: 'var(--text-primary)' }}>{form.landlordName}</strong></div>
-                            <div>Tenant: <strong style={{ color: 'var(--text-primary)' }}>{form.tenantName}</strong></div>
-                            <div>Rent: <strong style={{ color: 'var(--primary)' }}>₹{Number(form.rent).toLocaleString('en-IN')}/mo</strong></div>
-                            <div>Deposit: <strong style={{ color: 'var(--primary)' }}>₹{Number(form.deposit || 0).toLocaleString('en-IN')}</strong></div>
-                            <div>Duration: <strong style={{ color: 'var(--text-primary)' }}>{form.duration} months</strong></div>
-                            <div>City: <strong style={{ color: 'var(--text-primary)' }}>{form.city}, {form.state}</strong></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-muted">
+                            <div>Landlord: <strong className="text-primary">{form.landlordName}</strong></div>
+                            <div>Tenant: <strong className="text-primary">{form.tenantName}</strong></div>
+                            <div>Rent: <strong className="text-primary">₹{Number(form.rent).toLocaleString('en-IN')}/mo</strong></div>
+                            <div>Deposit: <strong className="text-primary">₹{Number(form.deposit || 0).toLocaleString('en-IN')}</strong></div>
+                            <div>Duration: <strong className="text-primary">{form.duration} months</strong></div>
+                            <div>City: <strong className="text-primary">{form.city}, {form.state}</strong></div>
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                        <button onClick={downloadAgreement} className="btn btn-primary" style={{ padding: '12px 28px' }}>
-                            <Download size={16} /> Download Agreement
+                    <div className="flex flex-wrap gap-4">
+                        <button onClick={downloadAgreement} className="btn btn-primary py-3 px-6 text-sm font-bold shadow-md hover:shadow-lg inline-flex items-center gap-2">
+                            <Download className="w-4 h-4" /> Download Agreement
                         </button>
-                        <button onClick={() => setGenerated(false)} className="btn btn-ghost" style={{ padding: '12px 28px' }}>
+                        <button onClick={() => setGenerated(false)} className="btn btn-ghost py-3 px-6 text-sm font-bold inline-flex items-center gap-2">
                             Edit Details
                         </button>
                     </div>
-                </div>
+                </motion.div>
             )}
-        </div>
+        </motion.div>
     );
 }
 
@@ -186,7 +187,6 @@ Generated via EstateXAi Digital Rental Toolkit`;
         const lines = doc.splitTextToSize(content, 170);
         doc.text(lines, 20, 30);
         
-        // Add a nice border for the receipt
         doc.setLineWidth(0.5);
         doc.rect(15, 20, 180, 120);
         
@@ -194,39 +194,39 @@ Generated via EstateXAi Digital Rental Toolkit`;
     };
 
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+        <motion.div variants={fadeIn} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
-                <label style={labelStyle}>Landlord Name *</label>
-                <input className="input" placeholder="Owner name" value={form.landlordName} onChange={e => s('landlordName', e.target.value)} />
+                <label className="block mb-2 text-sm text-primary font-bold">Landlord Name *</label>
+                <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" placeholder="Owner name" value={form.landlordName} onChange={e => s('landlordName', e.target.value)} />
             </div>
             <div>
-                <label style={labelStyle}>Tenant Name *</label>
-                <input className="input" placeholder="Tenant name" value={form.tenantName} onChange={e => s('tenantName', e.target.value)} />
+                <label className="block mb-2 text-sm text-primary font-bold">Tenant Name *</label>
+                <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" placeholder="Tenant name" value={form.tenantName} onChange={e => s('tenantName', e.target.value)} />
             </div>
-            <div style={{ gridColumn: 'span 2' }}>
-                <label style={labelStyle}>Property Address</label>
-                <input className="input" placeholder="Flat no, building, locality" value={form.address} onChange={e => s('address', e.target.value)} />
-            </div>
-            <div>
-                <label style={labelStyle}>Rent Amount (₹) *</label>
-                <input className="input" type="number" placeholder="15000" value={form.rent} onChange={e => s('rent', e.target.value)} />
+            <div className="md:col-span-2 lg:col-span-2">
+                <label className="block mb-2 text-sm text-primary font-bold">Property Address</label>
+                <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" placeholder="Flat no, building, locality" value={form.address} onChange={e => s('address', e.target.value)} />
             </div>
             <div>
-                <label style={labelStyle}>For Month</label>
-                <input className="input" type="month" value={form.month} onChange={e => s('month', e.target.value)} />
+                <label className="block mb-2 text-sm text-primary font-bold">Rent Amount (₹) *</label>
+                <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" type="number" placeholder="15000" value={form.rent} onChange={e => s('rent', e.target.value)} />
             </div>
             <div>
-                <label style={labelStyle}>Payment Mode</label>
-                <select className="input" value={form.paymentMode} onChange={e => s('paymentMode', e.target.value)} style={{ cursor: 'pointer' }}>
+                <label className="block mb-2 text-sm text-primary font-bold">For Month</label>
+                <input className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" type="month" value={form.month} onChange={e => s('month', e.target.value)} />
+            </div>
+            <div>
+                <label className="block mb-2 text-sm text-primary font-bold">Payment Mode</label>
+                <select className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors cursor-pointer" value={form.paymentMode} onChange={e => s('paymentMode', e.target.value)}>
                     {['UPI', 'Bank Transfer', 'Cash', 'Cheque', 'Google Pay', 'PhonePe', 'Paytm'].map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
             </div>
-            <div style={{ gridColumn: 'span 2' }}>
-                <button onClick={downloadReceipt} className="btn btn-primary" style={{ padding: '14px 32px', fontSize: 15 }}>
-                    <Download size={18} /> Generate & Download Receipt
+            <div className="md:col-span-2 lg:col-span-3 mt-4">
+                <button onClick={downloadReceipt} className="btn btn-primary py-4 px-8 text-base font-bold shadow-md hover:shadow-lg inline-flex items-center gap-2">
+                    <Download className="w-5 h-5" /> Generate & Download Receipt
                 </button>
             </div>
-        </div>
+        </motion.div>
     );
 }
 
@@ -258,7 +258,7 @@ const MOVEIN_CHECKLIST = [
     { id: 12, text: 'Complete police verification (see checklist above)', important: true },
 ];
 
-function InteractiveChecklist({ items, title, icon: Icon, color }) {
+function InteractiveChecklist({ items, title, icon: Icon, color, colorClass, bgClass, borderClass }) {
     const storageKey = `checklist_${title.replace(/\s/g, '_')}`;
     const [checked, setChecked] = useState(() => {
         try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { return []; }
@@ -273,52 +273,41 @@ function InteractiveChecklist({ items, title, icon: Icon, color }) {
     const progress = Math.round((checked.length / items.length) * 100);
 
     return (
-        <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 8, background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Icon size={18} color={color} />
+        <motion.div variants={fadeIn} initial="initial" animate="animate">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl ${bgClass} flex items-center justify-center`}>
+                        <Icon className={`w-5 h-5 ${colorClass}`} />
                     </div>
-                    <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 16 }}>{title}</span>
+                    <span className="text-primary font-bold text-lg">{title}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 100, height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                        <div style={{ width: `${progress}%`, height: '100%', borderRadius: 3, background: color, transition: 'width 0.3s' }} />
+                <div className="flex items-center gap-3">
+                    <div className="w-24 h-2 rounded-full bg-borderSubtle/20 overflow-hidden">
+                        <div className={`h-full rounded-full transition-all duration-300`} style={{ width: `${progress}%`, backgroundColor: color }} />
                     </div>
-                    <span style={{ color, fontSize: 13, fontWeight: 600 }}>{progress}%</span>
+                    <span className={`text-sm font-bold`} style={{ color }}>{progress}%</span>
                 </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className="flex flex-col gap-3">
                 {items.map(item => (
-                    <button key={item.id} onClick={() => toggle(item.id)} style={{
-                        display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 16px', borderRadius: 8,
-                        border: `1px solid ${checked.includes(item.id) ? `${color}40` : 'var(--dark-border)'}`,
-                        background: checked.includes(item.id) ? `${color}08` : 'rgba(255,255,255,0.02)',
-                        cursor: 'pointer', textAlign: 'left', width: '100%', fontFamily: 'inherit', transition: 'all 0.2s'
-                    }}>
-                        <div style={{
-                            width: 22, height: 22, borderRadius: 6, border: `2px solid ${checked.includes(item.id) ? color : 'rgba(255,255,255,0.15)'}`,
-                            background: checked.includes(item.id) ? color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            flexShrink: 0, marginTop: 1, transition: 'all 0.2s'
-                        }}>
-                            {checked.includes(item.id) && <CheckCircle2 size={14} color="#000" />}
+                    <button key={item.id} onClick={() => toggle(item.id)} className={`flex items-start gap-4 p-4 rounded-xl border text-left w-full transition-all ${checked.includes(item.id) ? `${bgClass} ${borderClass}` : 'bg-surface border-borderSubtle/30 hover:border-borderSubtle/50'}`}>
+                        <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${checked.includes(item.id) ? 'border-transparent bg-primary' : 'border-borderSubtle/40'}`} style={{ backgroundColor: checked.includes(item.id) ? color : 'transparent' }}>
+                            {checked.includes(item.id) && <CheckCircle2 className="w-4 h-4 text-white" />}
                         </div>
                         <div>
-                            <span style={{ color: checked.includes(item.id) ? 'var(--text-muted)' : 'var(--text-primary)', fontSize: 14, textDecoration: checked.includes(item.id) ? 'line-through' : 'none', transition: 'all 0.2s' }}>
+                            <span className={`text-sm transition-all ${checked.includes(item.id) ? 'text-muted line-through' : 'text-primary font-medium'}`}>
                                 {item.text}
                             </span>
                             {item.important && !checked.includes(item.id) && (
-                                <span style={{ marginLeft: 8, fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(239,68,68,0.1)', color: '#ef4444', fontWeight: 600 }}>Important</span>
+                                <span className="ml-3 text-[11px] px-2 py-0.5 rounded-md bg-red-500/10 text-red-500 font-bold uppercase tracking-wider">Important</span>
                             )}
                         </div>
                     </button>
                 ))}
             </div>
-        </div>
+        </motion.div>
     );
 }
-
-const labelStyle = { display: 'block', marginBottom: 6, fontSize: 13, color: '#b0b7d3', fontWeight: 500 };
 
 function numberToWords(num) {
     if (num === 0) return 'Zero';
@@ -333,61 +322,57 @@ function numberToWords(num) {
 }
 
 const TOOLS = [
-    { id: 'agreement', title: 'Rental Agreement Generator', desc: 'Generate a legally-formatted rental agreement in seconds', icon: FileText, color: 'var(--primary)', component: AgreementGenerator },
-    { id: 'receipt', title: 'Rent Receipt Generator', desc: 'Create monthly rent receipts for tax benefits (Section 10(13A))', icon: Receipt, color: '#22d3a5', component: ReceiptGenerator },
-    { id: 'police', title: 'Police Verification Checklist', desc: 'Complete checklist with state-specific portal links', icon: Shield, color: '#f59e0b', component: null },
-    { id: 'movein', title: 'Move-In Checklist', desc: 'Never miss anything when moving into a new place', icon: ClipboardCheck, color: '#8b5cf6', component: null }
+    { id: 'agreement', title: 'Rental Agreement Generator', desc: 'Generate a legally-formatted rental agreement in seconds', icon: FileText, color: 'var(--primary)', colorClass: 'text-primary', bgClass: 'bg-primary/10', borderClass: 'border-primary/30', component: AgreementGenerator },
+    { id: 'receipt', title: 'Rent Receipt Generator', desc: 'Create monthly rent receipts for tax benefits (Section 10(13A))', icon: Receipt, color: '#22c55e', colorClass: 'text-emerald-500', bgClass: 'bg-emerald-500/10', borderClass: 'border-emerald-500/30', component: ReceiptGenerator },
+    { id: 'police', title: 'Police Verification Checklist', desc: 'Complete checklist with state-specific portal links', icon: Shield, color: '#f59e0b', colorClass: 'text-amber-500', bgClass: 'bg-amber-500/10', borderClass: 'border-amber-500/30', component: null },
+    { id: 'movein', title: 'Move-In Checklist', desc: 'Never miss anything when moving into a new place', icon: ClipboardCheck, color: '#8b5cf6', colorClass: 'text-violet-500', bgClass: 'bg-violet-500/10', borderClass: 'border-violet-500/30', component: null }
 ];
 
 export default function RentalToolkit() {
     const [activeTab, setActiveTab] = useState('agreement');
 
     return (
-        <div style={{ paddingTop: 90, minHeight: '100vh', background: 'var(--dark)' }}>
-            <div className="container" style={{ paddingBottom: 80 }}>
+        <div className="light-page min-h-screen pt-24 pb-20 font-sans">
+            <div className="max-w-6xl mx-auto px-6 lg:px-8">
                 {/* Hero */}
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ textAlign: 'center', marginBottom: 48 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(201,163,94,0.1)', border: '1px solid rgba(201,163,94,0.3)', borderRadius: 20, padding: '6px 16px', marginBottom: 20 }}>
-                        <Building2 size={14} color="var(--primary)" />
-                        <span style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 600, letterSpacing: '0.5px' }}>FREE TOOLS FOR RENTERS</span>
+                <motion.div variants={fadeIn} initial="initial" animate="animate" className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
+                        <Building2 className="w-4 h-4 text-primary" />
+                        <span className="text-xs text-primary font-bold tracking-wider uppercase">Free Tools for Renters</span>
                     </div>
-                    <h1 style={{ fontSize: 'clamp(28px, 5vw, 46px)', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 16px', fontFamily: 'Outfit, sans-serif' }}>
-                        Digital Rental <span style={{ color: 'var(--primary)' }}>Toolkit</span>
+                    <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-4">
+                        Digital Rental <span className="text-accent">Toolkit</span>
                     </h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: 17, maxWidth: 540, margin: '0 auto', lineHeight: 1.6 }}>
+                    <p className="text-muted text-lg max-w-2xl mx-auto">
                         Free tools every Indian renter needs — agreements, receipts, police verification guides, and move-in checklists.
                     </p>
                 </motion.div>
 
                 {/* Tab Selector */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 40 }}>
-                    {TOOLS.map(tool => (
+                <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                    {TOOLS.map((tool) => (
                         <motion.button
                             key={tool.id}
+                            variants={staggerItem}
                             whileHover={{ y: -2 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setActiveTab(tool.id)}
-                            style={{
-                                padding: '20px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
-                                border: `1px solid ${activeTab === tool.id ? `${tool.color}60` : 'var(--dark-border)'}`,
-                                background: activeTab === tool.id ? `${tool.color}10` : 'rgba(255,255,255,0.02)',
-                                transition: 'all 0.2s'
-                            }}
+                            className={`p-6 rounded-2xl text-left border transition-all ${activeTab === tool.id ? `${tool.bgClass} ${tool.borderClass}` : 'bg-surface border-borderSubtle/20 hover:border-borderSubtle/50'}`}
                         >
-                            <tool.icon size={24} color={activeTab === tool.id ? tool.color : 'var(--text-muted)'} style={{ marginBottom: 10 }} />
-                            <div style={{ color: activeTab === tool.id ? tool.color : 'var(--text-primary)', fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{tool.title}</div>
-                            <div style={{ color: 'var(--text-muted)', fontSize: 12, lineHeight: 1.5 }}>{tool.desc}</div>
+                            <tool.icon className={`w-8 h-8 mb-4 ${activeTab === tool.id ? tool.colorClass : 'text-muted'}`} />
+                            <div className={`font-bold text-base mb-2 ${activeTab === tool.id ? tool.colorClass : 'text-primary'}`}>{tool.title}</div>
+                            <div className="text-sm text-muted leading-relaxed">{tool.desc}</div>
                         </motion.button>
                     ))}
-                </div>
+                </motion.div>
 
                 {/* Active Tool Content */}
                 <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-                    style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 16, padding: 'clamp(20px, 4vw, 40px)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+                    className="bg-elevated border border-borderSubtle/20 rounded-[2rem] p-8 md:p-12 shadow-xl shadow-black/5">
                     {activeTab === 'agreement' && <AgreementGenerator />}
                     {activeTab === 'receipt' && <ReceiptGenerator />}
-                    {activeTab === 'police' && <InteractiveChecklist items={POLICE_CHECKLIST} title="Police Verification Checklist" icon={Shield} color="#f59e0b" />}
-                    {activeTab === 'movein' && <InteractiveChecklist items={MOVEIN_CHECKLIST} title="Move-In Checklist" icon={ClipboardCheck} color="#8b5cf6" />}
+                    {activeTab === 'police' && <InteractiveChecklist items={POLICE_CHECKLIST} title="Police Verification Checklist" icon={Shield} color="#f59e0b" colorClass="text-amber-500" bgClass="bg-amber-500/10" borderClass="border-amber-500/30" />}
+                    {activeTab === 'movein' && <InteractiveChecklist items={MOVEIN_CHECKLIST} title="Move-In Checklist" icon={ClipboardCheck} color="#8b5cf6" colorClass="text-violet-500" bgClass="bg-violet-500/10" borderClass="border-violet-500/30" />}
                 </motion.div>
             </div>
         </div>

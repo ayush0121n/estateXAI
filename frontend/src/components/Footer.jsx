@@ -6,26 +6,21 @@ export default function Footer() {
     const year = new Date().getFullYear();
 
     return (
-        <footer style={{
-            background: 'linear-gradient(180deg, var(--dark) 0%, #050612 100%)',
-            borderTop: '1px solid rgba(201, 163, 94, 0.15)',
-            padding: '60px 0 24px',
-            marginTop: 'auto'
-        }}>
-            <div className="container">
-                <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, marginBottom: 48 }}>
+        <footer className="bg-gradient-to-b from-primary to-[#050612] border-t border-accent/15 pt-16 pb-6 mt-auto">
+            <div className="container mx-auto px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
                     {/* Brand */}
                     <div>
-                        <Link to="/" style={{ display: 'inline-block', textDecoration: 'none', marginBottom: 16 }}>
+                        <Link to="/" className="inline-block mb-4">
                             <Logo size="medium" />
                         </Link>
-                        <p style={{ color: '#6b7298', fontSize: 14, lineHeight: 1.8 }}>
+                        <p className="text-[#6b7298] text-sm leading-relaxed">
                             AI-powered real estate platform connecting property buyers, tenants, and PG seekers with verified listings.
                         </p>
-                        <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+                        <div className="flex gap-3 mt-5">
                             {[Github, Twitter, Linkedin].map((Icon, i) => (
-                                <div key={i} style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(201, 163, 94,0.1)', border: '1px solid rgba(201, 163, 94,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
-                                    <Icon size={16} color="#6b7298" />
+                                <div key={i} className="w-9 h-9 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center cursor-pointer hover:bg-accent/20 hover:-translate-y-1 transition-all duration-300">
+                                    <Icon size={16} className="text-[#6b7298] hover:text-accent transition-colors" />
                                 </div>
                             ))}
                         </div>
@@ -33,8 +28,8 @@ export default function Footer() {
 
                     {/* Quick Links */}
                     <div>
-                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, fontSize: 15 }}>Quick Links</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        <h3 className="text-white font-semibold mb-5 text-base">Quick Links</h3>
+                        <div className="flex flex-col gap-3">
                             {[
                                 { label: 'Buy Property', to: '/properties?listingType=sale' },
                                 { label: 'Rent Property', to: '/properties?listingType=rent' },
@@ -42,10 +37,9 @@ export default function Footer() {
                                 { label: 'PG for Girls', to: '/pgs?genderType=female' },
                                 { label: 'Co-living Spaces', to: '/pgs?type=coliving' }
                             ].map(link => (
-                                <Link key={link.to} to={link.to} style={{ color: '#6b7298', fontSize: 14, transition: 'color 0.2s' }}
-                                    onMouseEnter={e => e.target.style.color = 'var(--primary)'}
-                                    onMouseLeave={e => e.target.style.color = '#6b7298'}>
-                                    → {link.label}
+                                <Link key={link.to} to={link.to} className="text-[#6b7298] text-sm hover:text-accent transition-colors flex items-center gap-1 group">
+                                    <span className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300">→</span>
+                                    {link.label}
                                 </Link>
                             ))}
                         </div>
@@ -53,13 +47,11 @@ export default function Footer() {
 
                     {/* Locations */}
                     <div>
-                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, fontSize: 15 }}>Popular Areas</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        <h3 className="text-white font-semibold mb-5 text-base">Popular Areas</h3>
+                        <div className="flex flex-col gap-3">
                             {['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Kolkata'].map(area => (
-                                <Link key={area} to={`/properties?city=${area}`} style={{ color: '#6b7298', fontSize: 14, transition: 'color 0.2s' }}
-                                    onMouseEnter={e => e.target.style.color = 'var(--primary)'}
-                                    onMouseLeave={e => e.target.style.color = '#6b7298'}>
-                                    <MapPin size={12} style={{ display: 'inline', marginRight: 6 }} />{area}
+                                <Link key={area} to={`/properties?city=${area}`} className="text-[#6b7298] text-sm hover:text-accent transition-colors flex items-center gap-2">
+                                    <MapPin size={12} className="inline text-accent/70" />{area}
                                 </Link>
                             ))}
                         </div>
@@ -67,23 +59,26 @@ export default function Footer() {
 
                     {/* Contact */}
                     <div>
-                        <h3 style={{ color: 'white', fontWeight: 600, marginBottom: 20, fontSize: 15 }}>Contact</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7298', fontSize: 14 }}>
-                                <MapPin size={16} color="var(--primary)" />
+                        <h3 className="text-white font-semibold mb-5 text-base">Contact</h3>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-3 text-[#6b7298] text-sm">
+                                <MapPin size={16} className="text-accent" />
                                 India
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7298', fontSize: 14 }}>
-                                <Mail size={16} color="var(--primary)" />
+                            <div className="flex items-center gap-3 text-[#6b7298] text-sm">
+                                <Mail size={16} className="text-accent" />
                                 contact@estatexai.com
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ borderTop: '1px solid rgba(201, 163, 94,0.15)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-                    <p style={{ color: '#6b7298', fontSize: 13 }}>
-                        © {year} EstateXAi. All rights reserved Made by Ayush Narkhede
+                <div className="border-t border-accent/15 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-[#6b7298] text-sm">
+                        © {year} EstateXAi. All rights reserved.
+                    </p>
+                    <p className="text-[#6b7298] text-sm">
+                        Made by Ayush Narkhede
                     </p>
                 </div>
             </div>

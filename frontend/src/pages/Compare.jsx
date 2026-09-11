@@ -1,14 +1,15 @@
 /* eslint-disable */
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { X, Plus, GitCompare, Check, ChevronRight, Wifi, Car, Dumbbell, Waves, Shield, Zap, TreePine, Building } from 'lucide-react';
 import api from '../utils/api';
+import { fadeIn } from '../utils/animations';
 
 const AMENITY_ICONS = {
-    wifi: <Wifi size={14} />, parking: <Car size={14} />, gym: <Dumbbell size={14} />,
-    pool: <Waves size={14} />, security: <Shield size={14} />, power_backup: <Zap size={14} />,
-    garden: <TreePine size={14} />, elevator: <Building size={14} />,
+    wifi: <Wifi className="w-3.5 h-3.5" />, parking: <Car className="w-3.5 h-3.5" />, gym: <Dumbbell className="w-3.5 h-3.5" />,
+    pool: <Waves className="w-3.5 h-3.5" />, security: <Shield className="w-3.5 h-3.5" />, power_backup: <Zap className="w-3.5 h-3.5" />,
+    garden: <TreePine className="w-3.5 h-3.5" />, elevator: <Building className="w-3.5 h-3.5" />,
 };
 
 const MAX_COMPARE = 3;
@@ -23,17 +24,13 @@ function formatPrice(price, listingType) {
 function CompareRow({ label, values, highlight }) {
     const max = Math.max(...values.filter(v => typeof v === 'number'));
     return (
-        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <td style={{ padding: '10px 16px', fontSize: 12, color: '#888', fontWeight: 600, whiteSpace: 'nowrap' }}>{label}</td>
+        <tr className="border-b border-borderSubtle/10">
+            <td className="py-3 px-4 text-sm font-semibold text-muted whitespace-nowrap">{label}</td>
             {values.map((val, i) => {
                 const isMax = typeof val === 'number' && val === max && max > 0;
                 return (
-                    <td key={i} style={{
-                        padding: '10px 16px', textAlign: 'center', fontSize: 13,
-                        color: isMax && highlight ? '#22d3a5' : '#ddd',
-                        fontWeight: isMax && highlight ? 700 : 400,
-                    }}>
-                        {val === null || val === undefined ? <span style={{ color: '#555' }}>—</span> : String(val)}
+                    <td key={i} className={`py-3 px-4 text-center text-sm ${isMax && highlight ? 'text-emerald-600 font-bold' : 'text-primary font-medium'}`}>
+                        {val === null || val === undefined ? <span className="text-muted">—</span> : String(val)}
                     </td>
                 );
             })}
@@ -86,51 +83,53 @@ export default function Compare() {
     const emptySlots = MAX_COMPARE - numCols;
 
     return (
-        <div style={{ minHeight: '100vh', background: '#0a0d1a', padding: '100px 24px 60px' }}>
-            <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div className="light-page min-h-screen pt-24 pb-20 font-sans">
+            <div className="max-w-6xl mx-auto px-6 lg:px-8">
                 {/* Header */}
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: 32 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg,var(--primary),#22d3a5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <GitCompare size={22} color="#fff" />
+                <motion.div variants={fadeIn} initial="initial" animate="animate" className="mb-8">
+                    <div className="flex items-center gap-4 mb-2">
+                        <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center">
+                            <GitCompare className="w-6 h-6 text-primary" />
                         </div>
                         <div>
-                            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800 }}>Property Comparison</h1>
-                            <p style={{ margin: 0, color: '#888', fontSize: 14 }}>Compare up to 3 properties side-by-side</p>
+                            <h1 className="font-serif text-3xl font-bold text-primary mb-1">Property Comparison</h1>
+                            <p className="text-muted text-sm">Compare up to 3 properties side-by-side</p>
                         </div>
                     </div>
                 </motion.div>
 
                 {/* Search */}
-                <div style={{ background: 'rgba(201, 163, 94,0.06)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 16, padding: 20, marginBottom: 28 }}>
-                    <form onSubmit={handleSearch} className="compare-search-form" style={{ display: 'flex', gap: 10 }}>
+                <div className="bg-elevated border border-borderSubtle/20 rounded-card p-6 shadow-sm mb-8">
+                    <form onSubmit={handleSearch} className="flex gap-3">
                         <input
                             value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Search for a property to compare..."
-                            style={{ flex: 1, padding: '10px 16px', borderRadius: 10, background: '#0f1124', border: '1px solid rgba(201, 163, 94,0.3)', color: '#fff', fontSize: 14 }}
+                            className="flex-1 bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary"
                         />
-                        <motion.button type="submit" whileTap={{ scale: 0.97 }} disabled={searching || selected.length >= MAX_COMPARE}
-                            style={{ padding: '10px 20px', borderRadius: 10, background: 'var(--primary)', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-                            {searching ? 'Searching...' : <><Plus size={16} /> Add Property</>}
-                        </motion.button>
+                        <button type="submit" disabled={searching || selected.length >= MAX_COMPARE}
+                            className="btn btn-primary px-6 whitespace-nowrap shadow-sm disabled:opacity-50">
+                            {searching ? 'Searching...' : <><Plus className="w-4 h-4" /> Add Property</>}
+                        </button>
                     </form>
 
                     {/* Search Results */}
                     {searchResults.length > 0 && (
-                        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div className="mt-4 flex flex-col gap-2">
                             {searchResults.map(prop => {
                                 const isAdded = !!selected.find(p => p._id === prop._id);
                                 return (
-                                    <div key={prop._id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: '#0f1124', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 600, fontSize: 14 }}>{prop.title}</div>
-                                            <div style={{ fontSize: 12, color: '#888' }}>{prop.location?.address} · {formatPrice(prop.price, prop.listingType)}</div>
+                                    <div key={prop._id} className="flex items-center gap-3 p-3 bg-surface border border-borderSubtle/10 rounded-lg">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-semibold text-primary text-sm truncate">{prop.title}</div>
+                                            <div className="text-xs text-muted truncate">{prop.location?.address} · {formatPrice(prop.price, prop.listingType)}</div>
                                         </div>
-                                        <motion.button whileTap={{ scale: 0.95 }}
+                                        <button 
                                             onClick={() => addToCompare(prop)} disabled={isAdded || selected.length >= MAX_COMPARE}
-                                            style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: isAdded ? '#22d3a5' : 'var(--primary)', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                            {isAdded ? <><Check size={12} /> Added</> : <><Plus size={12} /> Compare</>}
-                                        </motion.button>
+                                            className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                                                isAdded ? 'bg-emerald-100 text-emerald-700' : 'bg-primary/10 text-primary hover:bg-primary hover:text-white'
+                                            }`}>
+                                            {isAdded ? <><Check className="w-3.5 h-3.5" /> Added</> : <><Plus className="w-3.5 h-3.5" /> Compare</>}
+                                        </button>
                                     </div>
                                 );
                             })}
@@ -140,40 +139,40 @@ export default function Compare() {
 
                 {/* Comparison Table */}
                 {selected.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '60px 0', color: '#555' }}>
-                        <GitCompare size={48} style={{ marginBottom: 16, opacity: 0.4 }} />
-                        <p style={{ fontSize: 16 }}>Search and add properties to compare them side-by-side.</p>
+                    <div className="text-center py-16 text-muted">
+                        <GitCompare className="w-12 h-12 mx-auto mb-4 opacity-40 text-borderSubtle" />
+                        <p className="text-base font-medium">Search and add properties to compare them side-by-side.</p>
                     </div>
                 ) : (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
-                        <div className="compare-table-wrap" style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-elevated border border-borderSubtle/20 rounded-card overflow-hidden shadow-sm">
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse min-w-[600px]">
                                 <thead>
-                                    <tr style={{ background: 'rgba(201, 163, 94,0.1)' }}>
-                                        <th style={{ width: 160, padding: '14px 16px', textAlign: 'left', fontSize: 12, color: '#aaa', fontWeight: 600 }}>Feature</th>
+                                    <tr className="bg-primary/5">
+                                        <th className="w-40 py-4 px-4 text-left text-sm font-semibold text-muted">Feature</th>
                                         {selected.map(prop => (
-                                            <th key={prop._id} style={{ padding: '14px 16px', textAlign: 'center' }}>
-                                                <div style={{ position: 'relative' }}>
+                                            <th key={prop._id} className="py-4 px-4 text-center align-top relative">
+                                                <div className="relative">
                                                     <button onClick={() => removeFromCompare(prop._id)}
-                                                        style={{ position: 'absolute', top: -4, right: -4, background: '#ef4444', border: 'none', borderRadius: '50%', width: 20, height: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
-                                                        <X size={12} color="#fff" />
+                                                        className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
+                                                        <X className="w-3 h-3" />
                                                     </button>
                                                     {prop.images?.[0] && (
-                                                        <img src={prop.images[0]} alt={prop.title} style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 10, marginBottom: 8 }} />
+                                                        <img src={prop.images[0]} alt={prop.title} className="w-full h-28 object-cover rounded-xl mb-3 shadow-sm" />
                                                     )}
-                                                    <div style={{ fontWeight: 700, fontSize: 13 }}>{prop.title}</div>
-                                                    <div style={{ color: '#22d3a5', fontWeight: 800, fontSize: 15, marginTop: 4 }}>{formatPrice(prop.price, prop.listingType)}</div>
+                                                    <div className="font-bold text-primary text-sm line-clamp-2 leading-snug">{prop.title}</div>
+                                                    <div className="text-emerald-600 font-serif font-bold text-lg mt-1">{formatPrice(prop.price, prop.listingType)}</div>
                                                     <button onClick={() => navigate(`/properties/${prop._id}`)}
-                                                        style={{ marginTop: 8, padding: '4px 12px', borderRadius: 8, border: '1px solid rgba(201, 163, 94,0.4)', background: 'transparent', color: 'var(--primary)', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, margin: '8px auto 0' }}>
-                                                        View <ChevronRight size={11} />
+                                                        className="mt-3 px-3 py-1.5 rounded-full border border-primary/20 text-primary text-xs font-medium inline-flex items-center gap-1 hover:bg-primary/5 transition-colors mx-auto">
+                                                        View <ChevronRight className="w-3 h-3" />
                                                     </button>
                                                 </div>
                                             </th>
                                         ))}
                                         {/* Empty slots */}
                                         {Array.from({ length: emptySlots }).map((_, i) => (
-                                            <th key={`empty-${i}`} style={{ padding: '14px 16px', textAlign: 'center' }}>
-                                                <div style={{ height: 130, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed rgba(201, 163, 94,0.3)', borderRadius: 10, color: '#555', fontSize: 13 }}>
+                                            <th key={`empty-${i}`} className="py-4 px-4 text-center align-top">
+                                                <div className="h-[160px] flex items-center justify-center border-2 border-dashed border-borderSubtle/30 rounded-xl text-muted text-sm font-medium">
                                                     + Add Property
                                                 </div>
                                             </th>
@@ -192,24 +191,21 @@ export default function Compare() {
                                     <CompareRow label="City" values={selected.map(p => p.location?.city)} />
                                     <CompareRow label="Views" values={selected.map(p => p.views)} highlight />
                                     <CompareRow label="Featured" values={selected.map(p => p.isFeatured ? '⭐ Yes' : 'No')} />
-                                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <td style={{ padding: '10px 16px', fontSize: 12, color: '#888', fontWeight: 600 }}>Amenities</td>
+                                    <tr className="border-b border-borderSubtle/10">
+                                        <td className="py-3 px-4 text-sm font-semibold text-muted">Amenities</td>
                                         {selected.map(prop => (
-                                            <td key={prop._id} style={{ padding: '10px 16px', textAlign: 'center' }}>
-                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
+                                            <td key={prop._id} className="py-3 px-4 text-center">
+                                                <div className="flex flex-wrap gap-1.5 justify-center">
                                                     {(prop.amenities || []).map(a => (
-                                                        <span key={a} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 10, background: 'rgba(201, 163, 94,0.15)', color: '#aaa', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                            {AMENITY_ICONS[a]} {a}
+                                                        <span key={a} title={a} className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                                                            {AMENITY_ICONS[a] || <Check className="w-3.5 h-3.5" />}
                                                         </span>
                                                     ))}
-                                                    {(prop.amenities || []).length === 0 && <span style={{ color: '#555' }}>None</span>}
                                                 </div>
                                             </td>
                                         ))}
-                                        {Array.from({ length: emptySlots }).map((_, i) => <td key={i} />)}
+                                        {Array.from({ length: emptySlots }).map((_, i) => <td key={`empty-am-${i}`} />)}
                                     </tr>
-                                    <CompareRow label="Walkability" values={selected.map(p => p.walkabilityScore != null ? `${p.walkabilityScore}/100` : '—')} />
-                                    <CompareRow label="Year Built" values={selected.map(p => p.yearBuilt || '—')} />
                                 </tbody>
                             </table>
                         </div>
@@ -219,6 +215,3 @@ export default function Compare() {
         </div>
     );
 }
-
-
-

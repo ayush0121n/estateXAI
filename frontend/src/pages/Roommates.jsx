@@ -1,11 +1,12 @@
 /* eslint-disable */
 import { useState, useEffect } from 'react';
-import { Users, Heart, Moon, Sun, Leaf, Cigarette, Briefcase, GraduationCap, MapPin, ChevronRight, Sliders, MessageCircle, ShieldCheck, Filter, X } from 'lucide-react';
+import { Users, Heart, MapPin, ChevronRight, Sliders, MessageCircle, ShieldCheck, Filter, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
 
 const CITIES = ['Bangalore', 'Pune', 'Hyderabad', 'Mumbai', 'Delhi NCR', 'Chennai', 'Kolkata', 'Ahmedabad'];
 
@@ -27,23 +28,24 @@ const FIELDS = {
 function CompatibilityRing({ score }) {
     const color = score >= 80 ? '#22c55e' : score >= 60 ? 'var(--primary)' : score >= 40 ? '#f59e0b' : '#ef4444';
     const label = score >= 80 ? 'Great Match' : score >= 60 ? 'Good Match' : score >= 40 ? 'Fair Match' : 'Low Match';
+    const strokeColor = score >= 80 ? 'text-emerald-500' : score >= 60 ? 'text-primary' : score >= 40 ? 'text-amber-500' : 'text-red-500';
+    
     return (
-        <div style={{ textAlign: 'center' }}>
-            <div style={{ position: 'relative', width: 64, height: 64, margin: '0 auto 4px' }}>
-                <svg width="64" height="64" viewBox="0 0 64 64">
-                    <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
-                    <circle cx="32" cy="32" r="26" fill="none" stroke={color} strokeWidth="6"
+        <div className="text-center">
+            <div className="relative w-16 h-16 mx-auto mb-1">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="26" fill="none" className="stroke-borderSubtle/20" strokeWidth="6" />
+                    <circle cx="32" cy="32" r="26" fill="none" className={strokeColor} strokeWidth="6"
                         strokeDasharray={`${(score / 100) * 163} 163`}
                         strokeLinecap="round"
-                        transform="rotate(-90 32 32)"
                         style={{ transition: 'stroke-dasharray 0.8s ease' }}
                     />
                 </svg>
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color }}>
+                <div className={`absolute inset-0 flex items-center justify-center text-sm font-extrabold ${strokeColor}`}>
                     {score}%
                 </div>
             </div>
-            <div style={{ fontSize: 11, color, fontWeight: 600 }}>{label}</div>
+            <div className={`text-[11px] font-bold ${strokeColor}`}>{label}</div>
         </div>
     );
 }
@@ -73,103 +75,91 @@ function ProfileForm({ profile, onSave }) {
     });
 
     return (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 12, padding: 32, boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(201,163,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Sliders size={20} color="var(--primary)" />
+        <motion.div variants={fadeIn} initial="initial" animate="animate" className="bg-elevated border border-borderSubtle/20 rounded-[2rem] p-8 md:p-12 shadow-xl shadow-black/5">
+            <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <Sliders className="w-6 h-6 text-primary" />
                 </div>
-                <h2 style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 22, margin: 0 }}>My Roommate Profile</h2>
+                <h2 className="text-primary font-bold text-2xl m-0">My Roommate Profile</h2>
             </div>
 
             {/* Toggle */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32, padding: '16px 20px', background: form.isLookingForRoommate ? 'rgba(201,163,94,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid var(--dark-border)', borderRadius: 10 }}>
-                <button onClick={() => setForm(p => ({ ...p, isLookingForRoommate: !p.isLookingForRoommate }))} style={{
-                    width: 50, height: 28, borderRadius: 14, border: 'none', cursor: 'pointer',
-                    background: form.isLookingForRoommate ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-                    position: 'relative', transition: 'background 0.3s ease'
-                }}>
-                    <div style={{ position: 'absolute', top: 3, left: form.isLookingForRoommate ? 25 : 3, width: 22, height: 22, borderRadius: '50%', background: 'white', transition: 'left 0.3s ease', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }} />
+            <div className={`flex items-center gap-5 p-5 mb-8 rounded-2xl border transition-colors ${form.isLookingForRoommate ? 'bg-primary/5 border-primary/30' : 'bg-surface border-borderSubtle/20'}`}>
+                <button onClick={() => setForm(p => ({ ...p, isLookingForRoommate: !p.isLookingForRoommate }))} className={`relative w-14 h-8 rounded-full transition-colors ${form.isLookingForRoommate ? 'bg-primary' : 'bg-borderSubtle/30'}`}>
+                    <div className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-all shadow-sm ${form.isLookingForRoommate ? 'left-7' : 'left-1'}`} />
                 </button>
                 <div>
-                    <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: 15, marginBottom: 4 }}>Looking for a Roommate</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{form.isLookingForRoommate ? 'You are visible in the matching pool and can find flatmates.' : 'Enable this to start finding your perfect flatmate.'}</div>
+                    <div className="text-primary font-bold text-base mb-1">Looking for a Roommate</div>
+                    <div className="text-muted text-sm">{form.isLookingForRoommate ? 'You are visible in the matching pool and can find flatmates.' : 'Enable this to start finding your perfect flatmate.'}</div>
                 </div>
             </div>
 
             {/* City selector */}
-            <div style={{ marginBottom: 28 }}>
-                <label style={{ color: 'var(--text-secondary)', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>City</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <div className="mb-8">
+                <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-3">City</label>
+                <div className="flex flex-wrap gap-2.5">
                     {CITIES.map(c => (
-                        <button key={c} onClick={() => setForm(p => ({ ...p, city: c }))} style={{
-                            padding: '8px 16px', borderRadius: 8, fontSize: 13, border: '1px solid',
-                            borderColor: form.city === c ? 'var(--primary)' : 'var(--dark-border)',
-                            background: form.city === c ? 'rgba(201,163,94,0.1)' : 'rgba(255,255,255,0.02)',
-                            color: form.city === c ? 'var(--primary)' : 'var(--text-muted)',
-                            cursor: 'pointer', transition: 'all 0.2s ease',
-                            fontWeight: form.city === c ? 600 : 400
-                        }}>{c}</button>
+                        <button key={c} onClick={() => setForm(p => ({ ...p, city: c }))} 
+                            className={`px-4 py-2 rounded-xl text-sm transition-all border ${form.city === c ? 'bg-primary/10 border-primary text-primary font-bold' : 'bg-surface border-borderSubtle/30 text-muted hover:border-borderSubtle/60'}`}>
+                            {c}
+                        </button>
                     ))}
                 </div>
             </div>
 
-            <div className="roommate-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24, marginBottom: 28 }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 {Object.entries(FIELDS).map(([key, { label, options }]) => (
                     <div key={key}>
-                        <label style={{ color: 'var(--text-secondary)', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-3">{label}</label>
+                        <div className="flex flex-wrap gap-2.5">
                             {options.map(({ v, l }) => (
-                                <button key={v} onClick={() => setForm(p => ({ ...p, [key]: v }))} style={{
-                                    padding: '8px 14px', borderRadius: 8, fontSize: 13, border: '1px solid',
-                                    borderColor: form[key] === v ? 'var(--primary)' : 'var(--dark-border)',
-                                    background: form[key] === v ? 'rgba(201,163,94,0.1)' : 'rgba(255,255,255,0.02)',
-                                    color: form[key] === v ? 'var(--primary)' : 'var(--text-muted)',
-                                    cursor: 'pointer', transition: 'all 0.2s ease',
-                                    fontWeight: form[key] === v ? 600 : 400
-                                }}>{l}</button>
+                                <button key={v} onClick={() => setForm(p => ({ ...p, [key]: v }))} 
+                                    className={`px-4 py-2 rounded-xl text-sm transition-all border ${form[key] === v ? 'bg-primary/10 border-primary text-primary font-bold' : 'bg-surface border-borderSubtle/30 text-muted hover:border-borderSubtle/60'}`}>
+                                    {l}
+                                </button>
                             ))}
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div style={{ height: 1, background: 'var(--dark-border)', margin: '32px 0' }} />
+            <div className="h-px bg-borderSubtle/20 my-10" />
 
-            <div className="roommate-form-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20, marginBottom: 24 }}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
                 <div>
-                    <label style={{ color: 'var(--text-muted)', fontSize: 13, display: 'block', marginBottom: 8, fontWeight: 500 }}>Age</label>
-                    <input type="number" placeholder="25" value={form.age} onChange={e => setForm(p => ({ ...p, age: Number(e.target.value) }))} style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '12px 14px', fontSize: 14, outline: 'none', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                    <label className="block text-sm font-bold text-primary mb-2">Age</label>
+                    <input type="number" placeholder="25" value={form.age} onChange={e => setForm(p => ({ ...p, age: Number(e.target.value) }))} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" />
                 </div>
                 <div>
-                    <label style={{ color: 'var(--text-muted)', fontSize: 13, display: 'block', marginBottom: 8, fontWeight: 500 }}>Budget Min (₹)</label>
-                    <input type="number" value={form.budgetMin} onChange={e => setForm(p => ({ ...p, budgetMin: Number(e.target.value) }))} style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '12px 14px', fontSize: 14, outline: 'none', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                    <label className="block text-sm font-bold text-primary mb-2">Budget Min (₹)</label>
+                    <input type="number" value={form.budgetMin} onChange={e => setForm(p => ({ ...p, budgetMin: Number(e.target.value) }))} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" />
                 </div>
                 <div>
-                    <label style={{ color: 'var(--text-muted)', fontSize: 13, display: 'block', marginBottom: 8, fontWeight: 500 }}>Budget Max (₹)</label>
-                    <input type="number" value={form.budgetMax} onChange={e => setForm(p => ({ ...p, budgetMax: Number(e.target.value) }))} style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '12px 14px', fontSize: 14, outline: 'none', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                    <label className="block text-sm font-bold text-primary mb-2">Budget Max (₹)</label>
+                    <input type="number" value={form.budgetMax} onChange={e => setForm(p => ({ ...p, budgetMax: Number(e.target.value) }))} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" />
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div>
-                    <label style={{ color: 'var(--text-muted)', fontSize: 13, display: 'block', marginBottom: 8, fontWeight: 500 }}>Preferred Area (e.g. Hinjewadi)</label>
-                    <input value={form.preferredArea} onChange={e => setForm(p => ({ ...p, preferredArea: e.target.value }))} placeholder="Hinjewadi, Baner, Kothrud..." style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '12px 14px', fontSize: 14, outline: 'none', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                    <label className="block text-sm font-bold text-primary mb-2">Preferred Area</label>
+                    <input value={form.preferredArea} onChange={e => setForm(p => ({ ...p, preferredArea: e.target.value }))} placeholder="Hinjewadi, Baner..." className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" />
                 </div>
                 <div>
-                    <label style={{ color: 'var(--text-muted)', fontSize: 13, display: 'block', marginBottom: 8, fontWeight: 500 }}>Contact Number (WhatsApp)</label>
-                    <input type="tel" value={form.contactNumber} onChange={e => setForm(p => ({ ...p, contactNumber: e.target.value }))} placeholder="+91 9876543210" style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '12px 14px', fontSize: 14, outline: 'none', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                    <label className="block text-sm font-bold text-primary mb-2">Contact Number (WhatsApp)</label>
+                    <input type="tel" value={form.contactNumber} onChange={e => setForm(p => ({ ...p, contactNumber: e.target.value }))} placeholder="+91 9876543210" className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors" />
                 </div>
             </div>
 
-            <div style={{ marginBottom: 32 }}>
-                <label style={{ color: 'var(--text-muted)', fontSize: 13, display: 'block', marginBottom: 8, fontWeight: 500 }}>Bio (max 300 chars)</label>
-                <textarea value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value.slice(0, 300) }))} rows={3} placeholder="Tell potential flatmates about yourself, your habits, and what you're looking for..." style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '12px 14px', fontSize: 14, outline: 'none', resize: 'vertical', boxSizing: 'border-box', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
-                <div style={{ color: 'var(--text-muted)', fontSize: 12, textAlign: 'right', marginTop: 4 }}>{form.bio.length}/300</div>
+            <div className="mb-10">
+                <label className="block text-sm font-bold text-primary mb-2">Bio (max 300 chars)</label>
+                <textarea value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value.slice(0, 300) }))} rows={3} placeholder="Tell potential flatmates about yourself..." className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-4 py-3 outline-none focus:border-primary text-primary transition-colors resize-y" />
+                <div className="text-right text-xs text-muted mt-2 font-medium">{form.bio.length}/300</div>
             </div>
 
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onSave(form)} style={{ width: '100%', background: 'var(--primary)', color: '#000', border: 'none', borderRadius: 8, padding: '14px', fontWeight: 700, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 14px rgba(201,163,94,0.3)' }}>
-                Save Profile & Find Matches <ChevronRight size={18} />
-            </motion.button>
+            <button onClick={() => onSave(form)} className="btn btn-primary w-full py-4 text-base font-bold rounded-xl shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2">
+                Save Profile & Find Matches <ChevronRight className="w-5 h-5" />
+            </button>
         </motion.div>
     );
 }
@@ -241,16 +231,14 @@ export default function Roommates() {
             toast.error("Please login to connect with flatmates!");
             return;
         }
-        // Request to Connect flow (frontend-only mutual interest)
         const isConnected = connectedUsers.includes(match.user?._id || match._id);
         if (!isConnected) {
             const newConnects = [...connectedUsers, match.user?._id || match._id];
             setConnectedUsers(newConnects);
             localStorage.setItem('flatmate_connects', JSON.stringify(newConnects));
-            toast.success(`Connection request sent to ${match.name || match.user?.name}! They'll see your interest.`);
+            toast.success(`Connection request sent to ${match.name || match.user?.name}!`);
             return;
         }
-        // Already connected — open WhatsApp
         const contact = match.roommateProfile?.contactNumber || match.user?.roommateProfile?.contactNumber;
         if (!contact) {
             toast.error("This user hasn't provided a contact number.");
@@ -264,50 +252,53 @@ export default function Roommates() {
     };
 
     return (
-        <div style={{ paddingTop: 90, minHeight: '100vh', background: 'var(--dark)' }}>
-            <div className="container" style={{ paddingBottom: 80 }}>
+        <div className="light-page min-h-screen pt-24 pb-20 font-sans">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 {/* Hero */}
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ textAlign: 'center', marginBottom: 56 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(201,163,94,0.1)', border: '1px solid rgba(201,163,94,0.3)', borderRadius: 20, padding: '6px 16px', marginBottom: 20 }}>
-                        <Heart size={14} color="var(--primary)" />
-                        <span style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 600, letterSpacing: '0.5px' }}>FLATMATE FINDER</span>
+                <motion.div variants={fadeIn} initial="initial" animate="animate" className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
+                        <Heart className="w-4 h-4 text-primary" />
+                        <span className="text-xs text-primary font-bold tracking-wider uppercase">Flatmate Finder</span>
                     </div>
-                    <h1 style={{ fontSize: 'clamp(32px, 5vw, 46px)', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 16px', letterSpacing: '-0.5px', fontFamily: 'Outfit, sans-serif' }}>Find Your <span style={{ color: 'var(--primary)' }}>Perfect</span> Flatmate</h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: 17, maxWidth: 580, margin: '0 auto', lineHeight: 1.6 }}>
+                    <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-4">
+                        Find Your <span className="text-accent">Perfect</span> Flatmate
+                    </h1>
+                    <p className="text-muted text-lg max-w-2xl mx-auto leading-relaxed">
                         Our AI matches you based on lifestyle, diet, cleanliness, work style, and budget — say goodbye to random WhatsApp group searches.
                     </p>
                 </motion.div>
 
                 {(user && (!myProfile?.isLookingForRoommate || showSetup)) ? (
-                    <div style={{ maxWidth: 800, margin: '0 auto' }}>
+                    <div className="max-w-4xl mx-auto">
                         <ProfileForm profile={myProfile} onSave={handleSaveProfile} />
                     </div>
                 ) : (
                     <div>
                         {!user && (
-                            <div style={{ background: 'rgba(201,163,94,0.1)', border: '1px solid rgba(201,163,94,0.3)', borderRadius: 12, padding: '16px 24px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+                            <motion.div variants={fadeIn} initial="initial" animate="animate" className="bg-primary/10 border border-primary/30 rounded-2xl p-6 md:p-8 mb-8 flex flex-col md:flex-row justify-between items-center gap-6">
                                 <div>
-                                    <h3 style={{ color: 'var(--primary)', margin: '0 0 4px' }}>Want to see your compatibility scores?</h3>
-                                    <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: 14 }}>Log in and create your lifestyle profile to get AI-matched with the perfect flatmates.</p>
+                                    <h3 className="text-primary font-bold text-xl mb-2">Want to see your compatibility scores?</h3>
+                                    <p className="text-muted text-sm font-medium">Log in and create your lifestyle profile to get AI-matched with the perfect flatmates.</p>
                                 </div>
-                                <div style={{ display: 'flex', gap: 12 }}>
-                                    <Link to="/login" className="btn btn-ghost" style={{ padding: '8px 16px', fontSize: 13 }}>Log In</Link>
-                                    <Link to="/register" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: 13 }}>Sign Up</Link>
+                                <div className="flex gap-4 w-full md:w-auto">
+                                    <Link to="/login" className="btn btn-ghost py-2.5 px-6 flex-1 md:flex-none justify-center">Log In</Link>
+                                    <Link to="/register" className="btn btn-primary py-2.5 px-6 flex-1 md:flex-none justify-center">Sign Up</Link>
                                 </div>
-                            </div>
+                            </motion.div>
                         )}
+                        
                         {/* Controls + Filter Bar */}
-                        <div style={{ marginBottom: 24 }}>
-                            <div className="roommate-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: 12, border: '1px solid var(--dark-border)' }}>
-                                <div style={{ color: 'var(--text-primary)', fontSize: 16, fontWeight: 500 }}>
-                                    Found <strong style={{ color: 'var(--primary)', fontSize: 20 }}>{filteredMatches.length}</strong> compatible flatmates
-                                    {filters.city && <span style={{ color: 'var(--text-muted)', fontSize: 13 }}> in {filters.city}</span>}
+                        <div className="mb-10">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-elevated border border-borderSubtle/20 p-5 rounded-2xl shadow-sm mb-4">
+                                <div className="text-primary font-medium">
+                                    Found <strong className="text-accent text-2xl mx-2">{filteredMatches.length}</strong> compatible flatmates
+                                    {filters.city && <span className="text-muted text-sm ml-2">in {filters.city}</span>}
                                 </div>
-                                <div style={{ display: 'flex', gap: 10 }}>
-                                    <button onClick={() => setShowFilters(!showFilters)} className={`filter-chip ${showFilters ? 'active' : ''}`}>
-                                        <Filter size={14} /> Filters
+                                <div className="flex gap-3 w-full sm:w-auto">
+                                    <button onClick={() => setShowFilters(!showFilters)} className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-colors border ${showFilters ? 'bg-primary text-white border-primary' : 'bg-surface border-borderSubtle/30 text-primary hover:border-borderSubtle/60'}`}>
+                                        <Filter className="w-4 h-4" /> Filters
                                     </button>
-                                    <button onClick={() => setShowSetup(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--dark-border)', borderRadius: 8, color: 'var(--text-primary)', padding: '10px 20px', fontSize: 14, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>
+                                    <button onClick={() => setShowSetup(true)} className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-bold bg-surface border border-borderSubtle/30 text-primary hover:border-borderSubtle/60 transition-colors">
                                         Edit Profile
                                     </button>
                                 </div>
@@ -316,31 +307,31 @@ export default function Roommates() {
                             {/* Filter panel */}
                             <AnimatePresence>
                                 {showFilters && (
-                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
-                                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', padding: '16px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid var(--dark-border)', marginBottom: 16 }}>
-                                            <select value={filters.city} onChange={e => setFilters(p => ({ ...p, city: e.target.value }))} className="input" style={{ width: 'auto', minWidth: 140, padding: '8px 12px', fontSize: 13 }}>
+                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                                        <div className="flex flex-wrap gap-3 p-5 bg-surface border border-borderSubtle/20 rounded-2xl shadow-sm mb-4">
+                                            <select value={filters.city} onChange={e => setFilters(p => ({ ...p, city: e.target.value }))} className="bg-elevated border border-borderSubtle/30 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-primary text-primary min-w-[140px] cursor-pointer">
                                                 <option value="">All Cities</option>
                                                 {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                                             </select>
-                                            <select value={filters.diet} onChange={e => setFilters(p => ({ ...p, diet: e.target.value }))} className="input" style={{ width: 'auto', minWidth: 120, padding: '8px 12px', fontSize: 13 }}>
+                                            <select value={filters.diet} onChange={e => setFilters(p => ({ ...p, diet: e.target.value }))} className="bg-elevated border border-borderSubtle/30 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-primary text-primary min-w-[140px] cursor-pointer">
                                                 <option value="">Any Diet</option>
                                                 <option value="veg">Vegetarian</option>
                                                 <option value="non-veg">Non-Veg</option>
                                                 <option value="vegan">Vegan</option>
                                             </select>
-                                            <select value={filters.gender} onChange={e => setFilters(p => ({ ...p, gender: e.target.value }))} className="input" style={{ width: 'auto', minWidth: 120, padding: '8px 12px', fontSize: 13 }}>
+                                            <select value={filters.gender} onChange={e => setFilters(p => ({ ...p, gender: e.target.value }))} className="bg-elevated border border-borderSubtle/30 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-primary text-primary min-w-[140px] cursor-pointer">
                                                 <option value="">Any Gender</option>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
                                             </select>
                                             <button onClick={() => setFilters(p => ({ ...p, verifiedOnly: !p.verifiedOnly }))}
-                                                className={`filter-chip ${filters.verifiedOnly ? 'active' : ''}`} style={{ fontSize: 13 }}>
-                                                <ShieldCheck size={14} /> Verified Only
+                                                className={`px-4 py-2.5 rounded-xl text-sm font-medium inline-flex items-center gap-2 border transition-colors ${filters.verifiedOnly ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600' : 'bg-elevated border-borderSubtle/30 text-muted'}`}>
+                                                <ShieldCheck className="w-4 h-4" /> Verified Only
                                             </button>
                                             {(filters.diet || filters.gender || filters.city || filters.verifiedOnly) && (
                                                 <button onClick={() => setFilters({ diet: '', gender: '', city: '', verifiedOnly: false })}
-                                                    className="filter-chip" style={{ color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)', fontSize: 13 }}>
-                                                    <X size={14} /> Clear
+                                                    className="px-4 py-2.5 rounded-xl text-sm font-bold text-red-500 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors inline-flex items-center gap-2">
+                                                    <X className="w-4 h-4" /> Clear All
                                                 </button>
                                             )}
                                         </div>
@@ -350,66 +341,65 @@ export default function Roommates() {
                         </div>
 
                         {loadingMatches ? (
-                            <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-                                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} style={{ width: 40, height: 40, border: '3px solid rgba(201,163,94,0.2)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto 20px' }} />
+                            <div className="text-center py-24 text-muted font-medium">
+                                <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4" />
                                 Finding your best matches...
                             </div>
                         ) : filteredMatches.length === 0 ? (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '80px 0', background: 'var(--dark-card)', borderRadius: 16, border: '1px dashed var(--dark-border)' }}>
-                                <Users size={56} color="var(--text-muted)" style={{ marginBottom: 20, opacity: 0.5 }} />
-                                <h3 style={{ color: 'var(--text-primary)', fontSize: 20, marginBottom: 8 }}>No matches found</h3>
-                                <p style={{ color: 'var(--text-muted)', maxWidth: 400, margin: '0 auto' }}>
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-24 bg-surface border border-dashed border-borderSubtle/40 rounded-3xl">
+                                <Users className="w-16 h-16 text-borderSubtle mx-auto mb-5 opacity-60" />
+                                <h3 className="text-primary font-bold text-2xl mb-3">No matches found</h3>
+                                <p className="text-muted text-lg max-w-md mx-auto">
                                     {filters.city || filters.diet || filters.gender ? 'Try adjusting your filters to see more results.' : 'Check back later as more people join every day!'}
                                 </p>
                             </motion.div>
                         ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 24 }}>
+                            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                                 <AnimatePresence>
                                     {filteredMatches.map(({ user: m, compatibilityScore }, idx) => {
                                         const isConnected = connectedUsers.includes(m._id);
                                         return (
-                                        <motion.div key={m._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--dark-border)', borderRadius: 16, padding: 28, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                        <motion.div key={m._id} variants={staggerItem} className="bg-elevated border border-borderSubtle/20 rounded-[2rem] p-8 shadow-sm hover:shadow-md transition-shadow relative flex flex-col group">
                                             
                                             {/* Top badges */}
-                                            <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 6, flexDirection: 'column', alignItems: 'flex-end' }}>
+                                            <div className="absolute top-5 right-5 flex flex-col items-end gap-2">
                                                 {m.isPhoneVerified && (
-                                                    <span className="trust-badge trust-badge-verified" style={{ fontSize: 10 }}><ShieldCheck size={10} /> Verified</span>
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider border border-blue-200 shadow-sm">
+                                                        <ShieldCheck className="w-3 h-3" /> Verified
+                                                    </span>
                                                 )}
                                                 {m.trustScore > 0 && (
-                                                    <span style={{ background: 'rgba(34,211,165,0.1)', color: '#22d3a5', border: '1px solid rgba(34,211,165,0.3)', padding: '2px 8px', borderRadius: 12, fontSize: 10, fontWeight: 700 }}>
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider border border-emerald-200 shadow-sm">
                                                         🏆 Trust: {m.trustScore}
                                                     </span>
                                                 )}
                                             </div>
 
                                             {/* Top Section */}
-                                            <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
-                                                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(201,163,94,0.4), rgba(201,163,94,0.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, color: 'var(--primary)', flexShrink: 0, border: '2px solid rgba(201,163,94,0.3)', overflow: 'hidden' }}>
-                                                    {m.avatar ? <img src={m.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : m.name?.charAt(0).toUpperCase()}
+                                            <div className="flex gap-5 mb-6">
+                                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/5 flex items-center justify-center text-3xl font-bold text-primary shrink-0 border border-primary/20 overflow-hidden shadow-inner">
+                                                    {m.avatar ? <img src={m.avatar} alt="" className="w-full h-full object-cover" /> : m.name?.charAt(0).toUpperCase()}
                                                 </div>
-                                                <div style={{ flex: 1, paddingTop: 4 }}>
-                                                    <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 18, marginBottom: 4 }}>{m.name}</div>
-                                                    <div style={{ display: 'flex', gap: 12, color: 'var(--text-muted)', fontSize: 13, flexWrap: 'wrap' }}>
+                                                <div className="flex-1 pt-1 min-w-0">
+                                                    <div className="text-primary font-bold text-xl mb-1.5 truncate pr-20">{m.name}</div>
+                                                    <div className="flex flex-wrap gap-y-1.5 gap-x-3 text-muted text-sm font-medium">
                                                         {m.roommateProfile?.age > 0 && <span>{m.roommateProfile.age} yrs</span>}
                                                         {m.roommateProfile?.city && (
-                                                            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                                <MapPin size={12} color="var(--primary)" /> {m.roommateProfile.city}
+                                                            <span className="flex items-center gap-1">
+                                                                <MapPin className="w-3.5 h-3.5 text-primary" /> {m.roommateProfile.city}
                                                             </span>
                                                         )}
                                                         {m.roommateProfile?.preferredArea && (
-                                                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-secondary)' }}>
+                                                            <span className="flex items-center gap-1 text-primary/80">
                                                                 {m.roommateProfile.preferredArea}
                                                             </span>
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div style={{ flexShrink: 0, transform: 'scale(0.9)', transformOrigin: 'top right' }}>
-                                                    <CompatibilityRing score={compatibilityScore} />
-                                                </div>
                                             </div>
 
                                             {/* Traits */}
-                                            <div className="roommate-traits" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20, flex: 1 }}>
+                                            <div className="flex flex-wrap gap-2 mb-6 flex-1">
                                                 {[
                                                     m.roommateProfile?.timeline && m.roommateProfile?.timeline !== 'flexible' && `📅 ${FIELDS.timeline.options.find(o=>o.v===m.roommateProfile.timeline)?.l.slice(3) || 'Timeline'}`,
                                                     m.roommateProfile?.cleanliness && m.roommateProfile?.cleanliness !== 'moderate' && `✨ ${FIELDS.cleanliness.options.find(o=>o.v===m.roommateProfile.cleanliness)?.l.slice(3) || 'Cleanliness'}`,
@@ -420,44 +410,48 @@ export default function Roommates() {
                                                     m.roommateProfile?.wfhPreference && m.roommateProfile?.wfhPreference !== 'any' && `${m.roommateProfile.wfhPreference === 'full-wfh' ? '🏠 WFH' : m.roommateProfile.wfhPreference === 'hybrid' ? '🔄 Hybrid' : '🏢 Office'}`,
                                                     m.roommateProfile?.noiseTolerance && m.roommateProfile?.noiseTolerance !== 'moderate' && `${m.roommateProfile.noiseTolerance === 'silent' ? '🤫 Silent' : '🎵 Lively'}`,
                                                     m.roommateProfile?.pets !== 'open-to-pets' && `🐾 ${FIELDS.pets.options.find(o=>o.v===m.roommateProfile.pets)?.l.slice(3) || 'Pets'}`
-                                                ].filter(Boolean).map(trait => (
-                                                    <span key={trait} style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>{trait}</span>
+                                                ].filter(Boolean).map((trait, i) => (
+                                                    <span key={i} className="px-3 py-1.5 rounded-lg bg-surface border border-borderSubtle/30 text-xs text-primary font-medium shadow-sm">
+                                                        {trait}
+                                                    </span>
                                                 ))}
                                             </div>
 
-                                            {/* Budget & Bio */}
-                                            <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
-                                                <div style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: m.roommateProfile?.bio ? 12 : 0 }}>
-                                                    Budget: <strong style={{ color: 'var(--primary)', fontSize: 15 }}>₹{m.roommateProfile?.budgetMin?.toLocaleString()} – ₹{m.roommateProfile?.budgetMax?.toLocaleString()}/mo</strong>
+                                            {/* Score & Budget */}
+                                            <div className="bg-surface rounded-2xl p-5 mb-6 border border-borderSubtle/20 flex items-center justify-between gap-4">
+                                                <div>
+                                                    <div className="text-muted text-xs font-bold uppercase tracking-wider mb-1">Budget Range</div>
+                                                    <div className="text-primary font-bold text-lg">
+                                                        ₹{m.roommateProfile?.budgetMin?.toLocaleString()} – ₹{m.roommateProfile?.budgetMax?.toLocaleString()}<span className="text-sm font-medium text-muted">/mo</span>
+                                                    </div>
                                                 </div>
-                                                {m.roommateProfile?.bio && (
-                                                    <p style={{ color: 'var(--text-secondary)', fontSize: 13, margin: 0, lineHeight: 1.6, fontStyle: 'italic' }}>
+                                                <div className="shrink-0 scale-90 origin-right">
+                                                    <CompatibilityRing score={compatibilityScore} />
+                                                </div>
+                                            </div>
+
+                                            {m.roommateProfile?.bio && (
+                                                <div className="mb-6">
+                                                    <p className="text-sm text-muted italic line-clamp-3 leading-relaxed border-l-2 border-primary/30 pl-3 py-1">
                                                         "{m.roommateProfile.bio}"
                                                     </p>
-                                                )}
-                                            </div>
+                                                </div>
+                                            )}
 
                                             {/* Connect Button */}
                                             <motion.button 
                                                 whileHover={{ scale: 1.02 }} 
                                                 whileTap={{ scale: 0.98 }} 
                                                 onClick={() => handleConnect({user: m, name: m.name, compatibilityScore, roommateProfile: m.roommateProfile, _id: m._id})}
-                                                style={{
-                                                    width: '100%',
-                                                    background: isConnected ? 'var(--primary)' : 'rgba(201,163,94,0.1)',
-                                                    color: isConnected ? '#000' : 'var(--primary)',
-                                                    border: `1px solid ${isConnected ? 'var(--primary)' : 'rgba(201,163,94,0.3)'}`,
-                                                    borderRadius: 8, padding: '12px', fontWeight: 600, fontSize: 14, cursor: 'pointer',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.2s'
-                                                }}
+                                                className={`w-full py-3.5 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 transition-all shadow-sm border ${isConnected ? 'bg-primary text-white border-primary' : 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/20'}`}
                                             >
-                                                {isConnected ? <><MessageCircle size={16} /> Chat on WhatsApp</> : <><Heart size={16} /> Request to Connect</>}
+                                                {isConnected ? <><MessageCircle className="w-5 h-5" /> Chat on WhatsApp</> : <><Heart className="w-5 h-5" /> Request to Connect</>}
                                             </motion.button>
                                             
                                         </motion.div>
                                     )})}
                                 </AnimatePresence>
-                            </div>
+                            </motion.div>
                         )}
                     </div>
                 )}

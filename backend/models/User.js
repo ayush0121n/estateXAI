@@ -66,6 +66,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    isIdVerified: {
+        type: Boolean,
+        default: false
+    },
     isActive: {
         type: Boolean,
         default: true

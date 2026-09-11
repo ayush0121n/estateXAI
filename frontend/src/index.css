@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --primary: #c9a35e; /* Elegant Gold */
@@ -53,12 +57,18 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--dark);
-  color: var(--text-primary);
+  background: #F5F1EB;
+  color: #121820;
   line-height: 1.6;
   font-size: var(--fs-base);
   overflow-x: hidden;
   min-height: 100vh;
+}
+
+/* Light theme override — used for Home page hero & new light sections */
+.light-page {
+  background-color: #F5F1EB !important;
+  color: #000000;
 }
 
 /* Scrollbar */
@@ -71,10 +81,10 @@ a { color: inherit; text-decoration: none; }
 
 /* Clean Card */
 .glass-card {
-  background: var(--dark-card);
-  border: 1px solid var(--dark-border);
+  background: #F7F4ED;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 /* Gradient Text */

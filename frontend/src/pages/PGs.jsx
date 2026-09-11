@@ -85,33 +85,41 @@ export default function PGs() {
     );
 
     return (
-        <div style={{ paddingTop: 90, minHeight: '100vh' }}>
-            <div className="container" style={{ paddingTop: 24 }}>
-                <div style={{ marginBottom: 32 }}>
-                    <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px,4vw,36px)', fontWeight: 800, color: 'white', marginBottom: 8 }}>
+        <div className="light-page min-h-screen pt-6 pb-20">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="font-serif text-4xl font-bold text-primary mb-2">
                         PGs & Hostels
                     </h1>
-                    <p style={{ color: '#6b7298' }}>{total} listings found</p>
+                    <p className="text-muted">{total} listings found</p>
                 </div>
 
                 {/* Search Bar */}
-                <div className="glass-card" style={{ padding: 16, marginBottom: 20, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 16px', minWidth: 200 }}>
-                        <Search size={16} color="#6b7298" />
+                <div className="bg-elevated border border-borderSubtle/20 rounded-card p-4 shadow-sm mb-6 flex flex-wrap gap-4 items-center">
+                    <div className="flex-1 min-w-[240px] flex items-center gap-3 bg-surface border border-borderSubtle/30 rounded-btn px-4 py-2.5 focus-within:border-primary transition-colors">
+                        <Search className="w-4 h-4 text-muted" />
                         <input type="text" placeholder="Search name, area, institution..." value={filters.search} onChange={e => handleFilterChange('search', e.target.value)}
-                            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: 14, fontFamily: 'inherit' }} />
+                            className="bg-transparent border-none outline-none text-sm text-primary placeholder-muted flex-1" />
                     </div>
 
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        {['', 'male', 'female', 'unisex'].map(g => (
-                            <button key={g} onClick={() => handleFilterChange('genderType', g)}
-                                style={{ padding: '8px 14px', borderRadius: 20, border: `1px solid ${filters.genderType === g ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, background: filters.genderType === g ? 'rgba(201, 163, 94,0.2)' : 'transparent', color: filters.genderType === g ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', transition: 'all 0.2s' }}>
-                                {g === '' ? 'All' : g === 'male' ? '♂ Boys' : g === 'female' ? '♀ Girls' : '⚥ Unisex'}
-                            </button>
-                        ))}
+                    <div className="flex gap-2">
+                        {['', 'male', 'female', 'unisex'].map(g => {
+                            const isActive = filters.genderType === g;
+                            return (
+                                <button key={g} onClick={() => handleFilterChange('genderType', g)}
+                                    className={`px-3 py-2 rounded-btn text-sm font-medium transition-colors border ${
+                                        isActive 
+                                            ? 'bg-primary text-white border-primary' 
+                                            : 'bg-surface text-muted border-borderSubtle/30 hover:border-borderSubtle/60 hover:text-primary'
+                                    }`}>
+                                    {g === '' ? 'All' : g === 'male' ? '♂ Boys' : g === 'female' ? '♀ Girls' : '⚥ Unisex'}
+                                </button>
+                            );
+                        })}
                     </div>
 
-                    <select value={filters.sort} onChange={e => handleFilterChange('sort', e.target.value)} className="input" style={{ width: 'auto' }}>
+                    <select value={filters.sort} onChange={e => handleFilterChange('sort', e.target.value)} className="bg-surface border border-borderSubtle/30 rounded-btn px-4 py-2.5 text-sm text-primary outline-none focus:border-primary cursor-pointer transition-colors">
                         <option value="-rating">Top Rated</option>
                         <option value="rentPerMonth">Rent: Low to High</option>
                         <option value="-rentPerMonth">Rent: High to Low</option>
@@ -119,30 +127,44 @@ export default function PGs() {
                     </select>
 
                     <button onClick={() => setShowFilters(!showFilters)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 8, background: showFilters ? 'rgba(201, 163, 94,0.2)' : 'rgba(255,255,255,0.05)', border: `1px solid ${showFilters ? 'rgba(201, 163, 94,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, padding: '10px 16px', color: showFilters ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}>
-                        <SlidersHorizontal size={16} /> Filters
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-btn text-sm font-medium transition-colors border ${showFilters ? 'bg-primary text-white border-primary' : 'bg-surface text-primary border-borderSubtle/30 hover:border-borderSubtle/60'}`}>
+                        <SlidersHorizontal className="w-4 h-4" /> Filters
                     </button>
 
                     {(filters.minRent || filters.maxRent || filters.wifi || filters.food || filters.ac || filters.city) && (
-                        <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-                            <X size={14} /> Clear
+                        <button onClick={clearFilters} className="flex items-center gap-1.5 text-red-500 hover:text-red-600 text-sm font-medium px-2 transition-colors">
+                            <X className="w-4 h-4" /> Clear All
                         </button>
                     )}
                 </div>
 
                 {/* Amenity Quick Toggles */}
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
-                    <AmenityToggle label="WiFi" filterKey="wifi" icon="📶" />
-                    <AmenityToggle label="Food Included" filterKey="food" icon="🍽️" />
-                    <AmenityToggle label="AC" filterKey="ac" icon="❄️" />
+                <div className="flex flex-wrap gap-3 mb-6">
+                    {[
+                        { label: 'WiFi', filterKey: 'wifi', icon: '📶' },
+                        { label: 'Food Included', filterKey: 'food', icon: '🍽️' },
+                        { label: 'AC', filterKey: 'ac', icon: '❄️' },
+                    ].map(f => {
+                        const isActive = filters[f.filterKey] === 'true';
+                        return (
+                            <button key={f.filterKey} onClick={() => handleFilterChange(f.filterKey, isActive ? '' : 'true')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-btn text-sm font-medium transition-colors border ${
+                                    isActive 
+                                        ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                                        : 'bg-surface text-muted border-borderSubtle/30 hover:border-borderSubtle/60 hover:text-primary'
+                                }`}>
+                                <span>{f.icon}</span> {f.label}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Advanced Filters */}
                 {showFilters && (
-                    <div className="glass-card" style={{ padding: 24, marginBottom: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
+                    <div className="bg-elevated border border-borderSubtle/20 rounded-card p-6 shadow-sm mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>City</label>
-                            <select value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">City</label>
+                            <select value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors">
                                 <option value="">All Cities</option>
                                 <option value="Mumbai">Mumbai</option>
                                 <option value="Pune">Pune</option>
@@ -153,16 +175,16 @@ export default function PGs() {
                             </select>
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Min Rent (₹)</label>
-                            <input type="number" placeholder="0" value={filters.minRent} onChange={e => handleFilterChange('minRent', e.target.value)} className="input" />
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Min Rent (₹)</label>
+                            <input type="number" placeholder="0" value={filters.minRent} onChange={e => handleFilterChange('minRent', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors placeholder-muted" />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Max Rent (₹)</label>
-                            <input type="number" placeholder="Any" value={filters.maxRent} onChange={e => handleFilterChange('maxRent', e.target.value)} className="input" />
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Max Rent (₹)</label>
+                            <input type="number" placeholder="Any" value={filters.maxRent} onChange={e => handleFilterChange('maxRent', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors placeholder-muted" />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Sharing Type</label>
-                            <select value={filters.sharingType} onChange={e => handleFilterChange('sharingType', e.target.value)} className="input">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Sharing Type</label>
+                            <select value={filters.sharingType} onChange={e => handleFilterChange('sharingType', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors">
                                 <option value="">Any</option>
                                 <option value="single">Single</option>
                                 <option value="double">Double</option>
@@ -173,35 +195,45 @@ export default function PGs() {
                     </div>
                 )}
 
-                {/* Results */}
+                {/* Grid */}
                 {loading ? (
-                    <div className="grid-3">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="glass-card" style={{ height: 420, animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3, 4, 5, 6].map(i => (
+                            <div key={i} className="bg-elevated border border-borderSubtle/20 rounded-card h-[380px] animate-pulse"></div>
                         ))}
                     </div>
                 ) : pgs.length > 0 ? (
                     <>
-                        <div className="grid-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {pgs.map(pg => <PGCard key={pg._id} pg={pg} onSave={handleSave} saved={savedPGs.includes(pg._id)} />)}
                         </div>
+                        {/* Pagination */}
                         {pages > 1 && (
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 48 }}>
-                                {[...Array(pages)].map((_, i) => (
-                                    <button key={i} onClick={() => fetchPGs(i + 1)}
-                                        style={{ background: currentPage === i + 1 ? 'rgba(201, 163, 94,0.3)' : 'rgba(255,255,255,0.05)', border: `1px solid ${currentPage === i + 1 ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, width: 40, height: 40, color: 'white', cursor: 'pointer', fontFamily: 'inherit' }}>
-                                        {i + 1}
-                                    </button>
-                                ))}
+                            <div className="flex justify-center gap-2 mt-12 mb-8">
+                                {[...Array(pages)].map((_, i) => {
+                                    const isCurrent = currentPage === i + 1;
+                                    return (
+                                        <button key={i} onClick={() => fetchPGs(i + 1)}
+                                            className={`w-10 h-10 rounded-btn border text-sm font-medium transition-colors ${
+                                                isCurrent 
+                                                    ? 'bg-primary border-primary text-white' 
+                                                    : 'bg-elevated border-borderSubtle/20 text-primary hover:bg-surface'
+                                            }`}>
+                                            {i + 1}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </>
                 ) : (
-                    <div className="empty-state">
-                        <Users size={64} color="#6b7298" />
-                        <h3 style={{ color: '#b0b7d3' }}>No PGs found</h3>
-                        <p>Try adjusting your filters.</p>
-                        <button onClick={clearFilters} className="btn btn-primary">Clear Filters</button>
+                    <div className="bg-elevated border border-borderSubtle/20 rounded-card p-12 text-center flex flex-col items-center">
+                        <Users className="w-16 h-16 text-borderSubtle/40 mb-4" />
+                        <h2 className="text-2xl font-bold text-primary mb-2">No PGs Found</h2>
+                        <p className="text-muted mb-6 max-w-md">Try adjusting your filters or search terms to find what you're looking for.</p>
+                        <button onClick={clearFilters} className="px-6 py-2.5 bg-primary text-white rounded-btn font-medium hover:bg-black transition-colors shadow-sm">
+                            Clear All Filters
+                        </button>
                     </div>
                 )}
             </div>

@@ -6,6 +6,7 @@ import api from '../utils/api';
 import { PropertyCard } from '../components/ListingCard';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 const propertyTypes = ['apartment', 'villa', 'studio', 'house', 'plot', 'commercial'];
 const listingTypes = ['sale', 'rent'];
@@ -93,35 +94,35 @@ export default function Properties() {
     const activeFiltersCount = Object.entries(filters).filter(([k, v]) => v && k !== 'sort' && k !== 'search').length;
 
     return (
-        <div style={{ paddingTop: 90, minHeight: '100vh' }}>
-            <div className="container" style={{ paddingTop: 24 }}>
+        <div className="light-page min-h-screen pt-6 pb-20">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 {/* Header */}
-                <div style={{ marginBottom: 32 }}>
-                    <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px,4vw,36px)', fontWeight: 800, color: 'white', marginBottom: 8 }}>
+                <div className="mb-8">
+                    <h1 className="font-serif text-4xl font-bold text-primary mb-2">
                         Explore Properties
                     </h1>
-                    <p style={{ color: '#6b7298' }}>{total} properties found</p>
+                    <p className="text-muted">{total} properties found</p>
                 </div>
 
                 {/* Search + Filter Bar */}
-                <div className="glass-card" style={{ padding: 16, marginBottom: 28, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 16px', minWidth: 200 }}>
-                        <Search size={16} color="#6b7298" />
+                <div className="bg-elevated border border-borderSubtle/20 rounded-card p-4 shadow-sm mb-6 flex flex-wrap gap-4 items-center">
+                    <div className="flex-1 min-w-[240px] flex items-center gap-3 bg-surface border border-borderSubtle/30 rounded-btn px-4 py-2.5 focus-within:border-primary transition-colors">
+                        <Search className="w-4 h-4 text-muted" />
                         <input
                             type="text"
                             placeholder="Search title, location..."
                             value={filters.search}
                             onChange={e => handleFilterChange('search', e.target.value)}
-                            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'white', fontSize: 14, fontFamily: 'inherit' }}
+                            className="bg-transparent border-none outline-none text-sm text-primary placeholder-muted flex-1"
                         />
                     </div>
 
-                    <select value={filters.listingType} onChange={e => handleFilterChange('listingType', e.target.value)} className="input" style={{ width: 'auto' }}>
+                    <select value={filters.listingType} onChange={e => handleFilterChange('listingType', e.target.value)} className="bg-surface border border-borderSubtle/30 rounded-btn px-4 py-2.5 text-sm text-primary outline-none focus:border-primary cursor-pointer transition-colors">
                         <option value="">All Types</option>
                         {listingTypes.map(t => <option key={t} value={t}>{t === 'sale' ? 'For Sale' : 'For Rent'}</option>)}
                     </select>
 
-                    <select value={filters.sort} onChange={e => handleFilterChange('sort', e.target.value)} className="input" style={{ width: 'auto' }}>
+                    <select value={filters.sort} onChange={e => handleFilterChange('sort', e.target.value)} className="bg-surface border border-borderSubtle/30 rounded-btn px-4 py-2.5 text-sm text-primary outline-none focus:border-primary cursor-pointer transition-colors">
                         <option value="-createdAt">Newest First</option>
                         <option value="price">Price: Low to High</option>
                         <option value="-price">Price: High to Low</option>
@@ -129,126 +130,139 @@ export default function Properties() {
                     </select>
 
                     <button onClick={() => setShowFilters(!showFilters)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 8, background: showFilters ? 'rgba(201, 163, 94,0.2)' : 'rgba(255,255,255,0.05)', border: `1px solid ${showFilters ? 'rgba(201, 163, 94,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, padding: '10px 16px', color: showFilters ? 'var(--primary)' : '#b0b7d3', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', transition: 'all 0.2s' }}>
-                        <SlidersHorizontal size={16} />
-                        Filters {activeFiltersCount > 0 && <span style={{ background: 'var(--primary)', color: 'white', borderRadius: '50%', width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{activeFiltersCount}</span>}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-btn text-sm font-medium transition-colors border ${showFilters ? 'bg-primary text-white border-primary' : 'bg-surface text-primary border-borderSubtle/30 hover:border-borderSubtle/60'}`}>
+                        <SlidersHorizontal className="w-4 h-4" />
+                        Filters {activeFiltersCount > 0 && <span className={`rounded-full w-5 h-5 flex items-center justify-center text-xs ${showFilters ? 'bg-white text-primary' : 'bg-primary text-white'}`}>{activeFiltersCount}</span>}
                     </button>
 
                     {activeFiltersCount > 0 && (
-                        <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-                            <X size={14} /> Clear All
+                        <button onClick={clearFilters} className="flex items-center gap-1.5 text-red-500 hover:text-red-600 text-sm font-medium px-2 transition-colors">
+                            <X className="w-4 h-4" /> Clear All
                         </button>
                     )}
                 </div>
 
                 {/* Advanced Filters Panel */}
                 {showFilters && (
-                    <div className="glass-card" style={{ padding: 24, marginBottom: 28, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
+                    <div className="bg-elevated border border-borderSubtle/20 rounded-card p-6 shadow-sm mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Property Type</label>
-                            <select value={filters.type} onChange={e => handleFilterChange('type', e.target.value)} className="input">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Property Type</label>
+                            <select value={filters.type} onChange={e => handleFilterChange('type', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors">
                                 <option value="">All</option>
                                 {propertyTypes.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>City</label>
-                            <select value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="input">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">City</label>
+                            <select value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors">
                                 <option value="">All Cities</option>
                                 {['Bangalore', 'Pune', 'Hyderabad', 'Mumbai', 'Delhi NCR', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Indore', 'Lucknow', 'Chandigarh', 'Kochi', 'Goa'].map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>BHK</label>
-                            <select value={filters.bhk} onChange={e => handleFilterChange('bhk', e.target.value)} className="input">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">BHK</label>
+                            <select value={filters.bhk} onChange={e => handleFilterChange('bhk', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors">
                                 <option value="">Any</option>
                                 {bhkOptions.map(b => <option key={b} value={b}>{b} BHK</option>)}
                             </select>
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Min Price (₹)</label>
-                            <input type="number" placeholder="0" value={filters.minPrice} onChange={e => handleFilterChange('minPrice', e.target.value)} className="input" />
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Min Price (₹)</label>
+                            <input type="number" placeholder="0" value={filters.minPrice} onChange={e => handleFilterChange('minPrice', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors placeholder-muted" />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Max Price (₹)</label>
-                            <input type="number" placeholder="Any" value={filters.maxPrice} onChange={e => handleFilterChange('maxPrice', e.target.value)} className="input" />
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Max Price (₹)</label>
+                            <input type="number" placeholder="Any" value={filters.maxPrice} onChange={e => handleFilterChange('maxPrice', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors placeholder-muted" />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#6b7298', textTransform: 'uppercase', letterSpacing: 1 }}>Furnishing</label>
-                            <select value={filters.furnishing} onChange={e => handleFilterChange('furnishing', e.target.value)} className="input">
+                            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Furnishing</label>
+                            <select value={filters.furnishing} onChange={e => handleFilterChange('furnishing', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors">
                                 <option value="">Any</option>
                                 {furnishingOptions.map(f => <option key={f} value={f}>{f.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())}</option>)}
                             </select>
                         </div>
+                        
                         {/* Indian-specific quick filters */}
-                        <div className="indian-filters-wrap" style={{ gridColumn: '1 / -1', display: 'flex', gap: 10, flexWrap: 'wrap', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div className="col-span-full flex flex-wrap gap-3 pt-4 mt-2 border-t border-borderSubtle/15">
                             {[
-                                { key: 'bachelorFriendly', label: '👨‍🎓 Bachelor Friendly', color: '#60a5fa' },
-                                { key: 'zeroBrokerage', label: '🏷️ Zero Brokerage', color: 'var(--primary)' },
-                                { key: 'petFriendly', label: '🐾 Pet Friendly', color: '#fbbf24' },
-                                { key: 'verified', label: '✅ Verified Only', color: '#22c55e' },
-                                { key: 'lowDeposit', label: '💰 Low Deposit', color: '#a855f7' },
-                            ].map(f => (
-                                <button key={f.key} onClick={() => handleFilterChange(f.key, filters[f.key] === 'true' ? '' : 'true')}
-                                    style={{
-                                        padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500,
-                                        border: `1px solid ${filters[f.key] === 'true' ? f.color : 'rgba(255,255,255,0.1)'}`,
-                                        background: filters[f.key] === 'true' ? `${f.color}15` : 'transparent',
-                                        color: filters[f.key] === 'true' ? f.color : '#b0b7d3',
-                                        cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit'
-                                    }}>
-                                    {f.label}
-                                </button>
-                            ))}
+                                { key: 'bachelorFriendly', label: '👨‍🎓 Bachelor Friendly', colorClass: 'text-blue-700 bg-blue-50 border-blue-200' },
+                                { key: 'zeroBrokerage', label: '🏷️ Zero Brokerage', colorClass: 'text-green-700 bg-green-50 border-green-200' },
+                                { key: 'petFriendly', label: '🐾 Pet Friendly', colorClass: 'text-yellow-700 bg-yellow-50 border-yellow-200' },
+                                { key: 'verified', label: '✅ Verified Only', colorClass: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+                                { key: 'lowDeposit', label: '💰 Low Deposit', colorClass: 'text-purple-700 bg-purple-50 border-purple-200' },
+                            ].map(f => {
+                                const isActive = filters[f.key] === 'true';
+                                return (
+                                    <button key={f.key} onClick={() => handleFilterChange(f.key, isActive ? '' : 'true')}
+                                        className={`px-4 py-2 rounded-btn text-sm font-medium transition-colors border ${
+                                            isActive 
+                                                ? f.colorClass 
+                                                : 'bg-surface text-muted border-borderSubtle/30 hover:border-borderSubtle/60 hover:text-primary'
+                                        }`}>
+                                        {f.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
 
-                {/* Results */}
+                {/* Grid */}
                 {loading ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="glass-card" style={{ height: 400, background: 'rgba(201, 163, 94,0.05)', animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3, 4, 5, 6].map(i => (
+                            <div key={i} className="bg-elevated border border-borderSubtle/20 rounded-card h-[380px] animate-pulse"></div>
                         ))}
                     </div>
                 ) : properties.length > 0 ? (
                     <>
-                        <div className="grid-3">
-                            {properties.map(prop => (
-                                <PropertyCard key={prop._id} property={prop} onSave={handleSave} saved={savedProperties.includes(prop._id)} />
+                        <motion.div 
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ staggerChildren: 0.1 }}
+                        >
+                            {properties.map(p => (
+                                <motion.div key={p._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                                    <PropertyCard property={p} onSave={handleSave} saved={savedProperties.includes(p._id)} />
+                                </motion.div>
                             ))}
-                        </div>
+                        </motion.div>
 
                         {/* Pagination */}
                         {pages > 1 && (
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 48 }}>
-                                <button onClick={() => fetchProperties(currentPage - 1)} disabled={currentPage === 1}
-                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 16px', color: currentPage === 1 ? '#6b7298' : 'white', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}>
-                                    <ChevronLeft size={16} /> Prev
+                            <div className="flex justify-center items-center gap-2 mt-12 mb-8">
+                                <button
+                                    onClick={() => fetchProperties(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="p-2 bg-elevated border border-borderSubtle/20 rounded-btn text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface transition-colors"
+                                >
+                                    <ChevronLeft size={20} />
                                 </button>
-                                {[...Array(pages)].map((_, i) => (
-                                    <button key={i} onClick={() => fetchProperties(i + 1)}
-                                        style={{ background: currentPage === i + 1 ? 'rgba(201, 163, 94,0.3)' : 'rgba(255,255,255,0.05)', border: `1px solid ${currentPage === i + 1 ? 'rgba(201, 163, 94,0.6)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, width: 40, height: 40, color: currentPage === i + 1 ? 'var(--primary)' : 'white', cursor: 'pointer', fontFamily: 'inherit', fontWeight: currentPage === i + 1 ? 700 : 400 }}>
-                                        {i + 1}
-                                    </button>
-                                ))}
-                                <button onClick={() => fetchProperties(currentPage + 1)} disabled={currentPage === pages}
-                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 16px', color: currentPage === pages ? '#6b7298' : 'white', cursor: currentPage === pages ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}>
-                                    Next <ChevronRight size={16} />
+                                <span className="text-sm font-medium text-muted px-4">
+                                    Page <strong className="text-primary">{currentPage}</strong> of {pages}
+                                </span>
+                                <button
+                                    onClick={() => fetchProperties(currentPage + 1)}
+                                    disabled={currentPage === pages}
+                                    className="p-2 bg-elevated border border-borderSubtle/20 rounded-btn text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface transition-colors"
+                                >
+                                    <ChevronRight size={20} />
                                 </button>
                             </div>
                         )}
                     </>
                 ) : (
-                    <div className="empty-state">
-                        <Building2 size={64} color="#6b7298" />
-                        <h3 style={{ color: '#b0b7d3' }}>No properties found</h3>
-                        <p style={{ color: '#6b7298' }}>Try adjusting your filters or search query.</p>
-                        <button onClick={clearFilters} className="btn btn-primary">Clear Filters</button>
+                    <div className="bg-elevated border border-borderSubtle/20 rounded-card p-12 text-center flex flex-col items-center">
+                        <Building2 className="w-16 h-16 text-borderSubtle/40 mb-4" />
+                        <h2 className="text-2xl font-bold text-primary mb-2">No Properties Found</h2>
+                        <p className="text-muted mb-6 max-w-md">Try adjusting your filters or search terms to find what you're looking for.</p>
+                        <button onClick={clearFilters} className="px-6 py-2.5 bg-primary text-white rounded-btn font-medium hover:bg-black transition-colors shadow-sm">
+                            Clear All Filters
+                        </button>
                     </div>
                 )}
             </div>
         </div>
     );
 }
-
