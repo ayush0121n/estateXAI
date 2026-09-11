@@ -8,21 +8,25 @@ import toast from 'react-hot-toast';
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#3b82f6'];
 
 export default function AdminDashboardTab() {
-    const [subTab, setSubTab] = useState('analytics'); // 'analytics' | 'users' | 'moderation' | 'config'
+    const [subTab, setSubTab] = useState('analytics'); // 'analytics' | 'users' | 'listings' | 'moderation' | 'config'
     const [analytics, setAnalytics] = useState(null);
     const [users, setUsers] = useState([]);
     const [pendingProps, setPendingProps] = useState([]);
+    const [allProperties, setAllProperties] = useState([]);
+    const [editingPropId, setEditingPropId] = useState(null);
+    const [editFutureDevText, setEditFutureDevText] = useState('');
     const [config, setConfig] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const loadAdminData = async () => {
         setLoading(true);
         try {
-            const [aRes, mRes, cRes, uRes] = await Promise.all([
+            const [aRes, mRes, cRes, uRes, pRes] = await Promise.all([
                 api.get('/admin/analytics').catch(() => ({ data: { analytics: null } })),
                 api.get('/admin/moderation?status=pending').catch(() => ({ data: { properties: [] } })),
                 api.get('/admin/config').catch(() => ({ data: { config: null } })),
-                api.get('/admin/users').catch(() => ({ data: { users: [] } }))
+                api.get('/admin/users').catch(() => ({ data: { users: [] } })),
+                api.get('/properties?limit=50').catch(() => ({ data: { properties: [] } }))
             ]);
             
             // Mock data if backend analytics fail (for demo/resilience)
@@ -39,6 +43,7 @@ export default function AdminDashboardTab() {
                 maintenanceMode: false
             });
             setUsers(uRes.data.users || []);
+            setAllProperties(pRes.data.properties || []);
         } catch (err) {
             console.error('Failed to load admin data:', err);
             toast.error('Error loading admin dashboard data');
@@ -93,6 +98,17 @@ export default function AdminDashboardTab() {
         }
     };
 
+    const handleUpdateProperty = async (id, updates) => {
+        try {
+            await api.put(`/properties/${id}`, updates);
+            setAllProperties(prev => prev.map(p => p._id === id ? { ...p, ...updates } : p));
+            setEditingPropId(null);
+            toast.success('Property updated successfully');
+        } catch (err) {
+            toast.error('Failed to update property');
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-20">
@@ -105,6 +121,7 @@ export default function AdminDashboardTab() {
     const tabs = [
         { id: 'analytics', label: 'Analytics & Growth', icon: <TrendingUp size={16} /> },
         { id: 'users', label: `Users & Access (${users.length})`, icon: <Users size={16} /> },
+        { id: 'listings', label: 'Manage Listings', icon: <Building2 size={16} /> },
         { id: 'moderation', label: `Moderation Queue`, icon: <ShieldAlert size={16} />, badge: pendingProps.length },
         { id: 'config', label: 'System Config', icon: <Sliders size={16} /> },
     ];
@@ -273,6 +290,81 @@ export default function AdminDashboardTab() {
                                                     </td>
                                                 </tr>
                                             ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* ─── LISTINGS TAB ─── */}
+                    {subTab === 'listings' && (
+                        <motion.div key="listings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                            <div className="bg-elevated border border-borderSubtle/20 rounded-2xl shadow-sm overflow-hidden">
+                                <div className="px-6 py-4 border-b border-borderSubtle/20 flex justify-between items-center bg-surface">
+                                    <h4 className="font-bold text-primary">Manage Active Listings</h4>
+                                    <div className="text-sm text-muted">Inline Admin Editing</div>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-surface/50 text-muted uppercase text-[11px] font-bold tracking-wider">
+                                            <tr>
+                                                <th className="px-6 py-4">Property</th>
+                                                <th className="px-6 py-4">Future Development</th>
+                                                <th className="px-6 py-4 text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-borderSubtle/10">
+                                            {allProperties.map(p => (
+                                                <tr key={p._id} className="hover:bg-surface/30 transition-colors">
+                                                    <td className="px-6 py-4 align-top">
+                                                        <div className="font-bold text-primary line-clamp-1">{p.title}</div>
+                                                        <div className="text-xs text-muted">{p.location?.city} • ₹{p.price?.toLocaleString('en-IN')}</div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        {editingPropId === p._id ? (
+                                                            <textarea
+                                                                className="w-full bg-surface border border-borderSubtle/50 rounded-md p-2 text-xs text-primary focus:border-primary focus:outline-none resize-y"
+                                                                value={editFutureDevText}
+                                                                onChange={e => setEditFutureDevText(e.target.value)}
+                                                                rows={3}
+                                                                placeholder="Add future development info for this area..."
+                                                            />
+                                                        ) : (
+                                                            <div className="text-xs text-muted line-clamp-3 max-w-sm whitespace-pre-wrap">
+                                                                {p.futureDevelopment || <span className="italic opacity-50">Not specified</span>}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right align-top">
+                                                        {editingPropId === p._id ? (
+                                                            <div className="flex justify-end gap-2">
+                                                                <button onClick={() => handleUpdateProperty(p._id, { futureDevelopment: editFutureDevText })} className="p-1.5 bg-emerald-100 text-emerald-600 rounded hover:bg-emerald-200 transition-colors" title="Save">
+                                                                    <Check size={16} />
+                                                                </button>
+                                                                <button onClick={() => setEditingPropId(null)} className="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors" title="Cancel">
+                                                                    <X size={16} />
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button 
+                                                                onClick={() => { setEditingPropId(p._id); setEditFutureDevText(p.futureDevelopment || ''); }}
+                                                                className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                                                title="Inline Edit"
+                                                            >
+                                                                <Edit2 size={16} />
+                                                            </button>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {allProperties.length === 0 && (
+                                                <tr>
+                                                    <td colSpan="3" className="px-6 py-8 text-center text-muted">
+                                                        No properties found.
+                                                    </td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
