@@ -1,12 +1,19 @@
 /* eslint-disable */
 import { useEffect, useRef, useMemo } from 'react';
 import { MapPin, School, Hospital, Bus, ShoppingBag, Leaf } from 'lucide-react';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Using Leaflet (react-leaflet) for the interactive map — fully free, no API key needed
 // Install: npm install react-leaflet leaflet
 
-let leafletLoaded = false;
+// Fix default icon issue with Webpack/Vite
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 const POI_ICON_MAP = {
     school: <School size={14} />,
@@ -61,68 +68,57 @@ export default function PropertyMap({ property }) {
     useEffect(() => {
         if (!mapRef.current || mapInstance.current) return;
 
-        // Dynamically import Leaflet to avoid SSR issues
-        import('leaflet').then(L => {
-            // Fix default icon issue with Webpack
-            delete L.Icon.Default.prototype._getIconUrl;
-            L.Icon.Default.mergeOptions({
-                iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-            });
+        const map = L.map(mapRef.current).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
+        mapInstance.current = map;
 
-            const map = L.map(mapRef.current).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
-            mapInstance.current = map;
-
-            // Fix container sizing issues when rendered in tabs or dynamic layout
-            setTimeout(() => {
-                if (mapInstance.current) {
-                    mapInstance.current.invalidateSize();
-                }
-            }, 250);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Main property marker (or area marker)
-            const mainIcon = L.divIcon({
-                className: '',
-                html: `<div style="background:var(--primary);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;">${isExactLocation ? '' : '<span style="transform:rotate(45deg);font-size:12px">approx</span>'}</div>`,
-                iconSize: [36, 36],
-                iconAnchor: [18, 36],
-            });
-            
-            // Add a circle if approximate
-            if (!isExactLocation) {
-                L.circle([effectiveLat, effectiveLng], {
-                    color: 'var(--primary)',
-                    fillColor: 'var(--primary)',
-                    fillOpacity: 0.2,
-                    radius: 3000
-                }).addTo(map);
+        // Fix container sizing issues when rendered in tabs or dynamic layout
+        setTimeout(() => {
+            if (mapInstance.current) {
+                mapInstance.current.invalidateSize();
             }
+        }, 250);
 
-            L.marker([effectiveLat, effectiveLng], { icon: mainIcon })
-                .addTo(map)
-                .bindPopup(`<b>${property.title}</b><br/>${isExactLocation ? property.location.address : `Approximate location in ${property.location.city}`}`, { maxWidth: 200 })
-                .openPopup();
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-            // POI markers
-            pois.forEach(poi => {
-                const color = POI_COLOR_MAP[poi.type] || 'var(--primary)';
-                const poiIcon = L.divIcon({
-                    className: '',
-                    html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;"></div>`,
-                    iconSize: [22, 22],
-                    iconAnchor: [11, 11],
-                });
-                if (poi.lat && poi.lng) {
-                    L.marker([poi.lat, poi.lng], { icon: poiIcon })
-                        .addTo(map)
-                        .bindPopup(`<b>${poi.name}</b><br/>${poi.type} · ${poi.distanceKm} km away`);
-                }
+        // Main property marker (or area marker)
+        const mainIcon = L.divIcon({
+            className: '',
+            html: `<div style="background:var(--primary);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;">${isExactLocation ? '' : '<span style="transform:rotate(45deg);font-size:12px">approx</span>'}</div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 36],
+        });
+        
+        // Add a circle if approximate
+        if (!isExactLocation) {
+            L.circle([effectiveLat, effectiveLng], {
+                color: 'var(--primary)',
+                fillColor: 'var(--primary)',
+                fillOpacity: 0.2,
+                radius: 3000
+            }).addTo(map);
+        }
+
+        L.marker([effectiveLat, effectiveLng], { icon: mainIcon })
+            .addTo(map)
+            .bindPopup(`<b>${property?.title || 'Property Location'}</b><br/>${isExactLocation ? property?.location?.address || 'Address' : `Approximate location`}`, { maxWidth: 200 })
+            .openPopup();
+
+        // POI markers
+        pois.forEach(poi => {
+            const color = POI_COLOR_MAP[poi.type] || 'var(--primary)';
+            const poiIcon = L.divIcon({
+                className: '',
+                html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;"></div>`,
+                iconSize: [22, 22],
+                iconAnchor: [11, 11],
             });
+            if (poi.lat && poi.lng) {
+                L.marker([poi.lat, poi.lng], { icon: poiIcon })
+                    .addTo(map)
+                    .bindPopup(`<b>${poi.name}</b><br/>${poi.type} · ${poi.distanceKm} km away`);
+            }
         });
 
         return () => {

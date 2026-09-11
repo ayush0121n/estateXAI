@@ -6,7 +6,7 @@ import api from '../utils/api';
 import { Building2, Users, MessageSquare, TrendingUp, Plus, Star, Eye, MapPin, Zap, ShieldCheck, Heart, FileText, Activity, Check, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdminDashboardTab from '../components/AdminDashboardTab';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { fadeIn, staggerContainer, staggerItem } from '../utils/animations';
 
 export default function Dashboard() {
