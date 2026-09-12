@@ -172,12 +172,9 @@ export default function PGs() {
                             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">City</label>
                             <select value={filters.city} onChange={e => handleFilterChange('city', e.target.value)} className="w-full bg-surface border border-borderSubtle/30 rounded-btn px-3 py-2 text-sm text-primary outline-none focus:border-primary transition-colors">
                                 <option value="">All Cities</option>
-                                <option value="Mumbai">Mumbai</option>
-                                <option value="Pune">Pune</option>
-                                <option value="Bangalore">Bangalore</option>
-                                <option value="Delhi NCR">Delhi NCR</option>
-                                <option value="Hyderabad">Hyderabad</option>
-                                <option value="Chennai">Chennai</option>
+                                {['Bangalore', 'Pune', 'Hyderabad', 'Mumbai', 'Delhi NCR', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Indore', 'Lucknow', 'Chandigarh', 'Kochi', 'Goa'].map(c => (
+                                    <option key={c} value={c}>{c}</option>
+                                ))}
                             </select>
                         </div>
                         <div>

@@ -16,7 +16,8 @@ router.get('/', async (req, res) => {
         if (type) query.type = type;
         if (listingType) query.listingType = listingType;
         if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
-            query['location.city'] = { $regex: city, $options: 'i' };
+            const cleanCity = city.replace(/ncr/i, '').trim();
+            query['location.city'] = { $regex: cleanCity || city, $options: 'i' };
         }
         if (bhk) query.bhk = Number(bhk);
         if (furnishing) query.furnishing = furnishing;

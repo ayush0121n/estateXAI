@@ -81,7 +81,8 @@ router.get('/', async (req, res) => {
 
         if (type === 'all' || type === 'property') {
             if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
-                propQuery['location.city'] = { $regex: city, $options: 'i' };
+                const cleanCity = city.replace(/ncr/i, '').trim();
+                propQuery['location.city'] = { $regex: cleanCity || city, $options: 'i' };
             }
             if (bhk) propQuery.bhk = Number(bhk);
             if (listingType) propQuery.listingType = listingType;
@@ -114,7 +115,8 @@ router.get('/', async (req, res) => {
                 ];
             }
             if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
-                pgQuery['location.city'] = { $regex: city, $options: 'i' };
+                const cleanCity = city.replace(/ncr/i, '').trim();
+                pgQuery['location.city'] = { $regex: cleanCity || city, $options: 'i' };
             }
             if (minPrice || maxPrice) {
                 pgQuery.rentPerMonth = {};

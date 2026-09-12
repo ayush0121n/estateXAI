@@ -22,6 +22,10 @@ const CITIES = [
   { name: 'Ahmedabad', emoji: '🏗️' },
   { name: 'Jaipur', emoji: '🏰' },
   { name: 'Indore', emoji: '🍜' },
+  { name: 'Lucknow', emoji: '🍢' },
+  { name: 'Chandigarh', emoji: '🌳' },
+  { name: 'Kochi', emoji: '⛵' },
+  { name: 'Goa', emoji: '🏖️' },
 ];
 
 const FEATURES = [

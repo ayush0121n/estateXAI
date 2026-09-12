@@ -14,7 +14,8 @@ router.get('/', async (req, res) => {
 
         if (genderType) query.genderType = genderType;
         if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
-            query['location.city'] = { $regex: city, $options: 'i' };
+            const cleanCity = city.replace(/ncr/i, '').trim();
+            query['location.city'] = { $regex: cleanCity || city, $options: 'i' };
         }
         if (sharingType) query.sharingType = { $in: sharingType.split(',') };
         if (institution) query['location.nearbyInstitutions'] = { $regex: institution, $options: 'i' };
