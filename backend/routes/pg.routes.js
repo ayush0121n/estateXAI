@@ -180,7 +180,10 @@ router.delete('/:id', protect, async (req, res) => {
 // @GET /api/pgs/owner/listings
 router.get('/owner/listings', protect, async (req, res) => {
     try {
-        const pgs = await PG.find({ owner: req.user._id }).sort('-createdAt');
+        let pgs = await PG.find({ owner: req.user._id }).sort('-createdAt');
+        if (pgs.length === 0 && req.user.role === 'admin') {
+            pgs = await PG.find().sort('-createdAt').limit(25);
+        }
         res.json({ success: true, pgs });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

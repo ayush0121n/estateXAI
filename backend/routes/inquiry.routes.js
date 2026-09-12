@@ -49,11 +49,19 @@ router.get('/my', protect, async (req, res) => {
 // @GET /api/inquiries/received - Owner's received inquiries
 router.get('/received', protect, async (req, res) => {
     try {
-        const inquiries = await Inquiry.find({ owner: req.user._id })
+        let inquiries = await Inquiry.find({ owner: req.user._id })
             .populate('user', 'name email phone')
             .populate('property', 'title location price')
             .populate('pg', 'name location rentPerMonth')
             .sort('-createdAt');
+        if (inquiries.length === 0 && req.user.role === 'admin') {
+            inquiries = await Inquiry.find()
+                .populate('user', 'name email phone')
+                .populate('property', 'title location price')
+                .populate('pg', 'name location rentPerMonth')
+                .sort('-createdAt')
+                .limit(25);
+        }
         res.json({ success: true, inquiries });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

@@ -256,7 +256,10 @@ router.delete('/:id', protect, async (req, res) => {
 // @GET /api/properties/owner/listings - Owner's listings
 router.get('/owner/listings', protect, async (req, res) => {
     try {
-        const properties = await Property.find({ owner: req.user._id }).sort('-createdAt');
+        let properties = await Property.find({ owner: req.user._id }).sort('-createdAt');
+        if (properties.length === 0 && req.user.role === 'admin') {
+            properties = await Property.find().sort('-createdAt').limit(25);
+        }
         res.json({ success: true, properties });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
