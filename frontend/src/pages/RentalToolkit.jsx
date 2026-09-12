@@ -18,56 +18,293 @@ function AgreementGenerator() {
     };
 
     const downloadAgreement = () => {
-        const content = `RENTAL / LEASE AGREEMENT
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+        const margin = 15;
+        const contentW = pageW - margin * 2;
+        let y = 12;
 
-This Rental Agreement is made on ${form.startDate || new Date().toLocaleDateString('en-IN')}
+        const GOLD = [201, 163, 94];
+        const DARK = [18, 24, 32];
+        const MUTED = [90, 90, 90];
+        const CREAM = [245, 241, 235];
+        const BORDER = [224, 217, 208];
 
-BETWEEN
+        const rentNum = Number(form.rent) || 0;
+        const depNum = Number(form.deposit) || 0;
+        const dateStr = form.startDate
+            ? new Date(form.startDate).toLocaleDateString('en-IN')
+            : new Date().toLocaleDateString('en-IN');
 
-Landlord: ${form.landlordName}
-(Hereinafter referred to as "OWNER/LANDLORD")
+        // —— Brand Seal helper ——
+        const drawSeal = (cx, cy, r = 12, label = 'AUTHENTIC') => {
+            doc.setDrawColor(...GOLD);
+            doc.setLineWidth(1.2);
+            doc.circle(cx, cy, r);
+            doc.setLineWidth(0.4);
+            doc.circle(cx, cy, r - 2);
+            doc.setDrawColor(223, 194, 136);
+            doc.setLineWidth(0.25);
+            doc.circle(cx, cy, r - 3.2);
+            doc.setFillColor(253, 249, 242);
+            doc.circle(cx, cy, r - 3.6, 'F');
+            // diamond
+            doc.setFillColor(...GOLD);
+            doc.setDrawColor(163, 130, 70);
+            const s = 2.8;
+            doc.triangle(cx, cy + s, cx + s * 0.4, cy + s * 0.3, cx + s, cy, 'F');
+            doc.triangle(cx, cy + s, cx - s * 0.4, cy + s * 0.3, cx - s, cy, 'F');
+            doc.triangle(cx, cy - s, cx + s * 0.4, cy - s * 0.3, cx + s, cy, 'F');
+            doc.triangle(cx, cy - s, cx - s * 0.4, cy - s * 0.3, cx - s, cy, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(4.5);
+            doc.setTextColor(163, 130, 70);
+            doc.text('EstateXAI', cx, cy - r + 4.5, { align: 'center' });
+            doc.setFontSize(3.8);
+            doc.text(label, cx, cy + r - 3.5, { align: 'center' });
+            doc.setFontSize(3.5);
+            doc.setTextColor(...MUTED);
+            doc.text('2026', cx, cy + 3.5, { align: 'center' });
+        };
 
-AND
+        // Security top strip
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6);
+        doc.setTextColor(...MUTED);
+        doc.text('SECURE DOCUMENT  •  EstateXAI Digital Rental Toolkit', margin, 8);
+        doc.text('DO NOT TAMPER', pageW - margin, 8, { align: 'right' });
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(0.3);
+        doc.line(margin, 9.5, pageW - margin, 9.5);
 
-Tenant: ${form.tenantName}
-(Hereinafter referred to as "TENANT")
+        // Header
+        y = 16;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(...GOLD);
+        doc.text('EstateXAI', pageW / 2, y, { align: 'center' });
+        y += 4.5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...MUTED);
+        doc.text('DIGITAL RENTAL TOOLKIT  •  OFFICIAL DOCUMENT', pageW / 2, y, { align: 'center' });
+        y += 3.5;
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(1.1);
+        doc.line(margin, y, pageW - margin, y);
+        y += 7;
 
-PROPERTY ADDRESS:
-${form.address}, ${form.city}, ${form.state}
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(15);
+        doc.setTextColor(...DARK);
+        doc.text('RENTAL / LEASE AGREEMENT', pageW / 2, y, { align: 'center' });
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(...MUTED);
+        doc.text(`Executed on ${dateStr}  |  Jurisdiction: ${form.state}, India`, pageW / 2, y, { align: 'center' });
+        y += 3.5;
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.35);
+        doc.line(margin, y, pageW - margin, y);
+        y += 7;
 
-TERMS AND CONDITIONS:
+        // 1. Parties
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(...GOLD);
+        doc.text('1. PARTIES TO THE AGREEMENT', margin, y);
+        y += 5;
 
-1. RENT: The monthly rent shall be Rs. ${Number(form.rent).toLocaleString('en-IN')} (Rupees ${numberToWords(Number(form.rent))} only), payable on or before the 5th of every month.
+        const boxH = 20;
+        doc.setFillColor(...CREAM);
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(margin, y, contentW / 2 - 2, boxH, 1.5, 1.5, 'FD');
+        doc.roundedRect(margin + contentW / 2 + 2, y, contentW / 2 - 2, boxH, 1.5, 1.5, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...DARK);
+        doc.text('LANDLORD / OWNER', margin + 3, y + 4.5);
+        doc.text('TENANT', margin + contentW / 2 + 5, y + 4.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.text(form.landlordName || '—', margin + 3, y + 10);
+        doc.text(form.tenantName || '—', margin + contentW / 2 + 5, y + 10);
+        doc.setFontSize(7);
+        doc.setTextColor(...MUTED);
+        doc.text('(Hereinafter "Landlord")', margin + 3, y + 15);
+        doc.text('(Hereinafter "Tenant")', margin + contentW / 2 + 5, y + 15);
+        y += boxH + 7;
 
-2. SECURITY DEPOSIT: The Tenant has paid a security deposit of Rs. ${Number(form.deposit || 0).toLocaleString('en-IN')} (Rupees ${numberToWords(Number(form.deposit || 0))} only) which shall be refunded at the time of vacating the premises, after deducting any dues or damages.
+        // 2. Property
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(...GOLD);
+        doc.text('2. PROPERTY DETAILS', margin, y);
+        y += 4.5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...DARK);
+        const addr = `${form.address}${form.city ? ', ' + form.city : ''}, ${form.state}, India`;
+        const addrLines = doc.splitTextToSize(`Address: ${addr}`, contentW);
+        doc.text(addrLines, margin, y);
+        y += addrLines.length * 4 + 2;
+        const propLines = doc.splitTextToSize(
+            'The Landlord lets and the Tenant takes on rent the above residential premises ("Property") on the terms below.',
+            contentW
+        );
+        doc.text(propLines, margin, y);
+        y += propLines.length * 4 + 5;
 
-3. DURATION: This agreement is valid for a period of ${form.duration} months from ${form.startDate || 'the date of signing'}.
+        // 3. Key terms table
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(...GOLD);
+        doc.text('3. KEY COMMERCIAL TERMS', margin, y);
+        y += 4.5;
 
-4. MAINTENANCE: The Tenant shall maintain the premises in good condition and shall be responsible for minor repairs.
+        const terms = [
+            ['Monthly Rent', `Rs. ${rentNum.toLocaleString('en-IN')} (Rupees ${numberToWords(rentNum)} only)`],
+            ['Security Deposit', `Rs. ${depNum.toLocaleString('en-IN')} (Rupees ${numberToWords(depNum)} only)`],
+            ['Duration', `${form.duration} months from ${dateStr}`],
+            ['Rent Due Date', 'On or before the 5th of every month'],
+            ['Governing Law', `Laws of ${form.state}, India`],
+        ];
 
-5. SUBLETTING: The Tenant shall not sublet the premises or any part thereof without the written consent of the Landlord.
+        doc.setFillColor(...GOLD);
+        doc.rect(margin, y, contentW, 6.5, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.text('Particulars', margin + 2.5, y + 4.3);
+        doc.text('Details', margin + 48, y + 4.3);
+        y += 6.5;
 
-6. UTILITIES: Electricity, water, and other utility charges shall be borne by the Tenant as per actual consumption.
+        terms.forEach((row, i) => {
+            if (i % 2 === 0) {
+                doc.setFillColor(...CREAM);
+                doc.rect(margin, y, contentW, 6.5, 'F');
+            }
+            doc.setDrawColor(...BORDER);
+            doc.setLineWidth(0.15);
+            doc.rect(margin, y, contentW, 6.5);
+            doc.setTextColor(...DARK);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7.5);
+            doc.text(row[0], margin + 2.5, y + 4.3);
+            doc.text(row[1], margin + 48, y + 4.3);
+            y += 6.5;
+        });
+        y += 5;
 
-${form.includeNotice ? `7. NOTICE PERIOD: Either party may terminate this agreement by giving one month's written notice.` : ''}
+        // 4. Clauses
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(...GOLD);
+        doc.text('4. TERMS AND CONDITIONS', margin, y);
+        y += 5;
 
-8. GOVERNING LAW: This agreement shall be governed by the laws of ${form.state}, India.
+        const clauses = [
+            ['4.1 Rent Payment', `Tenant shall pay monthly rent of Rs. ${rentNum.toLocaleString('en-IN')} on or before the 5th of each month via UPI, bank transfer, cheque or mutually agreed mode.`],
+            ['4.2 Security Deposit', `Refundable deposit of Rs. ${depNum.toLocaleString('en-IN')} returned within 30 days of vacating after deducting dues/damages beyond normal wear & tear.`],
+            ['4.3 Duration & Renewal', `Valid for ${form.duration} months from ${dateStr}. Renewal only by mutual written consent.`],
+            ['4.4 Maintenance', 'Tenant maintains premises in good condition and handles minor repairs. Structural/major repairs are Landlord\'s responsibility.'],
+            ['4.5 Utilities', 'Electricity, water, gas, internet and other utilities are borne by the Tenant as per actual consumption.'],
+            ['4.6 Subletting', 'No subletting or parting with possession without prior written consent of the Landlord.'],
+            ['4.7 Use', 'Property for residential use only. No structural alterations without written consent.'],
+        ];
+        if (form.includeNotice) {
+            clauses.push(['4.8 Notice Period', 'Either party may terminate by giving one (1) month\'s prior written notice.']);
+        }
+        clauses.push(
+            ['4.9 Governing Law', `Governed by the laws of ${form.state}, India. Courts at ${form.city || form.state} have exclusive jurisdiction.`],
+            ['4.10 Entire Agreement', 'This document constitutes the entire agreement and supersedes all prior discussions.']
+        );
 
+        doc.setFontSize(8);
+        clauses.forEach(([title, body]) => {
+            if (y > 255) { doc.addPage(); y = 16; }
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...DARK);
+            doc.text(title, margin, y);
+            y += 3.5;
+            doc.setFont('helvetica', 'normal');
+            const lines = doc.splitTextToSize(body, contentW);
+            doc.text(lines, margin, y);
+            y += lines.length * 3.5 + 2.8;
+        });
 
-LANDLORD: ________________________          TENANT: ________________________
-Name: ${form.landlordName}                  Name: ${form.tenantName}
-Date:                                       Date:
+        // 5. Signatures
+        if (y > 220) { doc.addPage(); y = 16; }
+        y += 3;
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(0.7);
+        doc.line(margin, y, pageW - margin, y);
+        y += 6;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(...GOLD);
+        doc.text('5. SIGNATURES', margin, y);
+        y += 4.5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(...DARK);
+        doc.text('IN WITNESS WHEREOF, the parties have executed this Agreement on the date first written above.', margin, y);
+        y += 12;
 
+        const col1 = margin + 8;
+        const col2 = pageW / 2 + 8;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.text('LANDLORD', col1, y);
+        doc.text('TENANT', col2, y);
+        y += 14;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.text('___________________________', col1, y);
+        doc.text('___________________________', col2, y);
+        y += 3.5;
+        doc.text('Signature', col1, y);
+        doc.text('Signature', col2, y);
+        y += 5;
+        doc.text(`Name: ${form.landlordName || ''}`, col1, y);
+        doc.text(`Name: ${form.tenantName || ''}`, col2, y);
+        y += 4.5;
+        doc.text('Date: _______________', col1, y);
+        doc.text('Date: _______________', col2, y);
+        y += 10;
 
-WITNESS 1: ________________________         WITNESS 2: ________________________
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.text('WITNESSES', pageW / 2, y, { align: 'center' });
+        y += 8;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.text('1. ___________________________', col1, y);
+        doc.text('2. ___________________________', col2, y);
+        y += 3.5;
+        doc.text('Name & Signature', col1, y);
+        doc.text('Name & Signature', col2, y);
+        y += 4.5;
+        doc.text('Date: _______________', col1, y);
+        doc.text('Date: _______________', col2, y);
 
-Generated via EstateXAi Digital Rental Toolkit
-`;
-        const doc = new jsPDF();
-        doc.setFontSize(12);
-        const lines = doc.splitTextToSize(content, 170);
-        doc.text(lines, 20, 20);
-        doc.save(`Rental_Agreement_${form.tenantName.replace(/\s+/g, '_')}.pdf`);
+        // Brand seal
+        drawSeal(pageW - margin - 14, 28, 13, 'AUTHENTIC');
+
+        // Footer
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.3);
+        doc.line(margin, 287, pageW - margin, 287);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(...MUTED);
+        doc.text('Generated via EstateXAI Digital Rental Toolkit  •  estate-xai.vercel.app/rental-toolkit', pageW / 2, 291, { align: 'center' });
+        doc.setFontSize(6);
+        doc.text('Template for guidance only. Consult a legal professional & register as per state laws. Brand seal = authenticity.', pageW / 2, 295, { align: 'center' });
+
+        doc.save(`Rental_Agreement_${(form.tenantName || 'Tenant').replace(/\s+/g, '_')}.pdf`);
     };
 
     return (
@@ -162,34 +399,212 @@ function ReceiptGenerator() {
 
     const downloadReceipt = () => {
         if (!form.landlordName || !form.tenantName || !form.rent) return;
+
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+        const pageH = doc.internal.pageSize.getHeight();
+        const margin = 18;
+
+        const GOLD = [201, 163, 94];
+        const DARK = [18, 24, 32];
+        const MUTED = [90, 90, 90];
+        const CREAM = [245, 241, 235];
+        const CREAM_L = [247, 244, 237];
+        const BORDER = [224, 217, 208];
+
+        const rentNum = Number(form.rent) || 0;
         const [year, month] = form.month.split('-');
         const monthName = new Date(year, month - 1).toLocaleString('en-IN', { month: 'long', year: 'numeric' });
-        const content = `RENT RECEIPT
+        const receiptNo = `RR-${Date.now().toString(36).toUpperCase()}`;
+        const today = new Date().toLocaleDateString('en-IN');
 
-Receipt No: RR-${Date.now().toString(36).toUpperCase()}
-Date: ${new Date().toLocaleDateString('en-IN')}
+        // Seal helper (same as agreement)
+        const drawSeal = (cx, cy, r = 14, label = 'PAID') => {
+            doc.setDrawColor(...GOLD);
+            doc.setLineWidth(1.3);
+            doc.circle(cx, cy, r);
+            doc.setLineWidth(0.45);
+            doc.circle(cx, cy, r - 2.2);
+            doc.setDrawColor(223, 194, 136);
+            doc.setLineWidth(0.25);
+            doc.circle(cx, cy, r - 3.5);
+            doc.setFillColor(253, 249, 242);
+            doc.circle(cx, cy, r - 4, 'F');
+            doc.setFillColor(...GOLD);
+            const s = 3;
+            doc.triangle(cx, cy + s, cx + s * 0.4, cy + s * 0.3, cx + s, cy, 'F');
+            doc.triangle(cx, cy + s, cx - s * 0.4, cy + s * 0.3, cx - s, cy, 'F');
+            doc.triangle(cx, cy - s, cx + s * 0.4, cy - s * 0.3, cx + s, cy, 'F');
+            doc.triangle(cx, cy - s, cx - s * 0.4, cy - s * 0.3, cx - s, cy, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(5);
+            doc.setTextColor(163, 130, 70);
+            doc.text('EstateXAI', cx, cy - r + 5, { align: 'center' });
+            doc.setFontSize(4.2);
+            doc.text(label, cx, cy + r - 4, { align: 'center' });
+            doc.setFontSize(3.8);
+            doc.setTextColor(...MUTED);
+            doc.text('2026', cx, cy + 4, { align: 'center' });
+        };
 
-Received from: ${form.tenantName}
-Amount: Rs. ${Number(form.rent).toLocaleString('en-IN')} (Rupees ${numberToWords(Number(form.rent))} only)
-For the month of: ${monthName}
-Payment Mode: ${form.paymentMode}
+        // Soft cream background panel
+        doc.setFillColor(...CREAM);
+        doc.rect(0, 0, pageW, pageH, 'F');
 
-Property Address: ${form.address}
+        // Double gold border
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(1.6);
+        doc.roundedRect(10, 10, pageW - 20, pageH - 20, 3, 3, 'S');
+        doc.setDrawColor(223, 194, 136);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(12, 12, pageW - 24, pageH - 24, 2.5, 2.5, 'S');
 
-Received by: ${form.landlordName} (Landlord/Owner)
+        // Dark header bar
+        doc.setFillColor(26, 26, 30);
+        doc.roundedRect(margin, 18, pageW - margin * 2, 20, 2, 2, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(...GOLD);
+        doc.text('EstateXAI', pageW / 2, 27, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(212, 212, 216);
+        doc.text('DIGITAL RENTAL TOOLKIT  •  RENT RECEIPT', pageW / 2, 33.5, { align: 'center' });
 
-Signature: ________________________
+        // Title
+        let y = 48;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(17);
+        doc.setTextColor(...DARK);
+        doc.text('RENT RECEIPT', pageW / 2, y, { align: 'center' });
+        y += 4;
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(1);
+        doc.line(65, y, pageW - 65, y);
+        y += 10;
 
-Generated via EstateXAi Digital Rental Toolkit`;
-
-        const doc = new jsPDF();
-        doc.setFontSize(14);
-        const lines = doc.splitTextToSize(content, 170);
-        doc.text(lines, 20, 30);
-        
+        // Meta box
+        doc.setFillColor(...CREAM_L);
+        doc.setDrawColor(...GOLD);
         doc.setLineWidth(0.5);
-        doc.rect(15, 20, 180, 120);
-        
+        doc.roundedRect(margin, y, pageW - margin * 2, 16, 1.5, 1.5, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...DARK);
+        doc.text('Receipt No:', margin + 4, y + 6);
+        doc.setFont('helvetica', 'normal');
+        doc.text(receiptNo, margin + 28, y + 6);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Date:', 115, y + 6);
+        doc.setFont('helvetica', 'normal');
+        doc.text(today, 128, y + 6);
+        doc.setFont('helvetica', 'bold');
+        doc.text('For the month of:', margin + 4, y + 12);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...GOLD);
+        doc.text(monthName, margin + 42, y + 12);
+        y += 24;
+
+        // Amount box
+        doc.setFillColor(...GOLD);
+        doc.roundedRect(margin, y, pageW - margin * 2, 22, 2.5, 2.5, 'F');
+        doc.setTextColor(...DARK);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.text('AMOUNT RECEIVED', pageW / 2, y + 6, { align: 'center' });
+        doc.setFontSize(15);
+        doc.text(`Rs. ${rentNum.toLocaleString('en-IN')}`, pageW / 2, y + 13.5, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.text(`(Rupees ${numberToWords(rentNum)} only)`, pageW / 2, y + 18.5, { align: 'center' });
+        y += 30;
+
+        // Details
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(...GOLD);
+        doc.text('PAYMENT DETAILS', margin + 2, y);
+        y += 2;
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.3);
+        doc.line(margin + 2, y, pageW - margin - 2, y);
+        y += 7;
+
+        const details = [
+            ['Received From (Tenant)', form.tenantName],
+            ['Received By (Landlord)', form.landlordName],
+            ['Property Address', form.address || '—'],
+            ['Payment Mode', form.paymentMode],
+            ['Period Covered', monthName],
+        ];
+
+        details.forEach(([label, value]) => {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7.5);
+            doc.setTextColor(...MUTED);
+            doc.text(label, margin + 4, y);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...DARK);
+            const vLines = doc.splitTextToSize(String(value), pageW - margin * 2 - 10);
+            doc.text(vLines, margin + 4, y + 4);
+            y += 4 + vLines.length * 4 + 4;
+        });
+
+        y += 2;
+        // Declaration
+        doc.setFillColor(...CREAM_L);
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(margin, y, pageW - margin * 2, 22, 1.5, 1.5, 'FD');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...DARK);
+        const decl = `This acknowledges that the Landlord has received Rs. ${rentNum.toLocaleString('en-IN')} (Rupees ${numberToWords(rentNum)} only) from the Tenant towards rent for ${monthName} for the property above. Valid for tax purposes under Section 10(13A).`;
+        const declLines = doc.splitTextToSize(decl, pageW - margin * 2 - 8);
+        doc.text(declLines, margin + 4, y + 5);
+        y += 30;
+
+        // Signatures
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...DARK);
+        doc.text('Landlord / Owner Signature', margin + 4, y);
+        doc.text('Tenant Acknowledgement', 115, y);
+        y += 16;
+        doc.setDrawColor(...DARK);
+        doc.setLineWidth(0.4);
+        doc.line(margin + 4, y, margin + 55, y);
+        doc.line(115, y, 170, y);
+        y += 4.5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...MUTED);
+        doc.text(form.landlordName, margin + 4, y);
+        doc.text(form.tenantName, 115, y);
+        y += 4;
+        doc.text('Date: _______________', margin + 4, y);
+        doc.text('Date: _______________', 115, y);
+
+        // Brand seal
+        drawSeal(pageW - margin - 16, 42, 14, 'PAID');
+
+        // Footer
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(0.4);
+        doc.line(margin, 22, pageW - margin, 22);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(...MUTED);
+        doc.text('Generated via EstateXAI Digital Rental Toolkit  •  estate-xai.vercel.app/rental-toolkit', pageW / 2, 17, { align: 'center' });
+        doc.setFontSize(6);
+        doc.text('Official receipt with brand seal. Keep for tax records (Section 10(13A)).', pageW / 2, 13, { align: 'center' });
+
+        // Top security
+        doc.setFontSize(6);
+        doc.text('SECURE DOCUMENT  •  DO NOT TAMPER', margin, pageH - 12);
+        doc.text(`ID: ${receiptNo}`, pageW - margin, pageH - 12, { align: 'right' });
+
         doc.save(`Rent_Receipt_${monthName.replace(/\s+/g, '_')}.pdf`);
     };
 
