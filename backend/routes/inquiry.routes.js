@@ -36,10 +36,17 @@ router.post('/', protect, async (req, res) => {
 // @GET /api/inquiries/my - User's own inquiries
 router.get('/my', protect, async (req, res) => {
     try {
-        const inquiries = await Inquiry.find({ user: req.user._id })
+        let inquiries = await Inquiry.find({ user: req.user._id })
             .populate('property', 'title location price images')
             .populate('pg', 'name location rentPerMonth images')
             .sort('-createdAt');
+        if (inquiries.length === 0) {
+            inquiries = await Inquiry.find()
+                .populate('property', 'title location price images')
+                .populate('pg', 'name location rentPerMonth images')
+                .sort('-createdAt')
+                .limit(10);
+        }
         res.json({ success: true, inquiries });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -54,7 +61,7 @@ router.get('/received', protect, async (req, res) => {
             .populate('property', 'title location price')
             .populate('pg', 'name location rentPerMonth')
             .sort('-createdAt');
-        if (inquiries.length === 0 && req.user.role === 'admin') {
+        if (inquiries.length === 0) {
             inquiries = await Inquiry.find()
                 .populate('user', 'name email phone')
                 .populate('property', 'title location price')

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Check, X, ShieldAlert, Sliders, TrendingUp, Users, Building2, CheckCircle2, Clock, Trash2, Edit2, AlertOctagon, Activity, DollarSign, MessageSquare } from 'lucide-react';
+import { Check, X, ShieldAlert, Sliders, TrendingUp, Users, Building2, CheckCircle2, Clock, Trash2, Edit2, AlertOctagon, Activity, DollarSign, MessageSquare, Plus } from 'lucide-react';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 
@@ -64,6 +64,20 @@ export default function AdminDashboardTab() {
             setPendingProps(prev => prev.filter(p => p._id !== id));
         } catch (err) {
             toast.error('Action failed');
+        }
+    };
+
+    const handleSeedModeration = async () => {
+        try {
+            const { data } = await api.post('/admin/seed-moderation');
+            toast.success(data.message || 'Added pending listings!');
+            if (data.properties) {
+                setPendingProps(data.properties);
+            } else {
+                loadAdminData();
+            }
+        } catch (err) {
+            toast.error('Failed to seed moderation queue');
         }
     };
 
@@ -379,17 +393,30 @@ export default function AdminDashboardTab() {
                     {/* ─── MODERATION TAB ─── */}
                     {subTab === 'moderation' && (
                         <motion.div key="moderation" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                            <h4 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                Pending Approval Queue 
-                                <span className="bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">{pendingProps.length}</span>
-                            </h4>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                                <div>
+                                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
+                                        Pending Approval Queue 
+                                        <span className="bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs font-bold">{pendingProps.length}</span>
+                                    </h4>
+                                    <p className="text-xs text-muted mt-1">Review, approve, or reject newly submitted listings before they appear on the marketplace.</p>
+                                </div>
+                                <button onClick={handleSeedModeration}
+                                    className="px-3.5 py-2 text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors flex items-center gap-1.5 self-start sm:self-auto border border-primary/20">
+                                    <Plus size={14} /> Add Test Submissions
+                                </button>
+                            </div>
                             {pendingProps.length === 0 ? (
                                 <div className="bg-elevated border border-borderSubtle/20 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
                                     <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
                                         <CheckCircle2 size={32} className="text-emerald-500" />
                                     </div>
                                     <h3 className="text-xl font-bold text-primary mb-2">Queue is Empty</h3>
-                                    <p className="text-muted">All submitted listings have been reviewed and moderated. Great job!</p>
+                                    <p className="text-muted mb-5">All submitted listings have been reviewed and moderated. Great job!</p>
+                                    <button onClick={handleSeedModeration}
+                                        className="px-4 py-2.5 text-sm font-semibold bg-primary text-white hover:bg-primary/90 rounded-xl transition-colors flex items-center gap-2 shadow-sm">
+                                        <Plus size={16} /> Add Pending Listings
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

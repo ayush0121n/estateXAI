@@ -126,6 +126,113 @@ router.post('/seed', async (req, res) => {
     }
 });
 
+// @POST /api/admin/seed-moderation - Ensure moderation queue is populated with pending listings
+router.post('/seed-moderation', async (req, res) => {
+    try {
+        const ownerUser = await User.findOne({ role: 'owner' }) || await User.findOne({ role: 'admin' });
+        if (!ownerUser) return res.status(400).json({ success: false, message: 'No user found' });
+
+        const pendingListings = [
+            {
+                title: '3BHK Penthouse with Skyline View in Kothrud',
+                description: 'Newly listed modern penthouse in Kothrud, Pune. Top floor with private terrace garden, Italian marble flooring, and smart home automation.',
+                type: 'apartment',
+                listingType: 'sale',
+                price: 14500000,
+                area: 2100,
+                bhk: 3,
+                bathrooms: 3,
+                location: { address: 'Ideal Colony, Paud Road, Kothrud', city: 'Pune', state: 'Maharashtra', pincode: '411038', coordinates: { lat: 18.5074, lng: 73.8077 } },
+                amenities: ['parking', 'gym', 'pool', 'elevator', 'security', 'clubhouse', 'power_backup'],
+                furnishing: 'fully-furnished',
+                bachelorFriendly: true,
+                zeroBrokerage: true,
+                petFriendly: true,
+                verified: false,
+                status: 'pending',
+                walkabilityScore: 88,
+                connectivityScore: 85,
+                owner: ownerUser._id,
+                images: ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80']
+            },
+            {
+                title: '2BHK Spacious Sunlit Flat near Manyata Tech Park',
+                description: 'Brand new 2BHK rental apartment in Nagavara, Bangalore. Just 5 minutes from Manyata Tech Park gate 2. Modular kitchen, covered car parking.',
+                type: 'apartment',
+                listingType: 'rent',
+                price: 28000,
+                deposit: 84000,
+                area: 1150,
+                bhk: 2,
+                bathrooms: 2,
+                location: { address: 'Outer Ring Road, Near Manyata Tech Park', city: 'Bangalore', state: 'Karnataka', pincode: '560045', coordinates: { lat: 13.0458, lng: 77.6200 } },
+                amenities: ['parking', 'security', 'wifi', 'elevator', 'power_backup'],
+                furnishing: 'semi-furnished',
+                bachelorFriendly: true,
+                zeroBrokerage: false,
+                petFriendly: false,
+                verified: false,
+                status: 'pending',
+                walkabilityScore: 92,
+                connectivityScore: 89,
+                owner: ownerUser._id,
+                images: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80']
+            },
+            {
+                title: 'Luxury 4BHK Sea View Villa in Candolim',
+                description: 'Exclusive private Portuguese villa in Candolim, Goa with private plunge pool, lawn, and direct beach access.',
+                type: 'villa',
+                listingType: 'sale',
+                price: 32500000,
+                area: 3400,
+                bhk: 4,
+                bathrooms: 4,
+                location: { address: 'Camotim Vaddo, Candolim Beach Road', city: 'Goa', state: 'Goa', pincode: '403515', coordinates: { lat: 15.5175, lng: 73.7634 } },
+                amenities: ['parking', 'pool', 'garden', 'security', 'power_backup'],
+                furnishing: 'fully-furnished',
+                bachelorFriendly: true,
+                zeroBrokerage: true,
+                petFriendly: true,
+                verified: false,
+                status: 'pending',
+                walkabilityScore: 84,
+                connectivityScore: 78,
+                owner: ownerUser._id,
+                images: ['https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&q=80']
+            },
+            {
+                title: '1BHK Studio Apartment near Cyber City',
+                description: 'Furnished compact studio flat in DLF Phase 2, Gurgaon (Delhi NCR). 3 minutes walking to Cyber City Rapid Metro.',
+                type: 'studio',
+                listingType: 'rent',
+                price: 24000,
+                deposit: 48000,
+                area: 550,
+                bhk: 1,
+                bathrooms: 1,
+                location: { address: 'DLF Phase 2, Near Sikanderpur Metro', city: 'Delhi NCR', state: 'Haryana', pincode: '122002', coordinates: { lat: 28.4817, lng: 77.0878 } },
+                amenities: ['parking', 'security', 'wifi', 'power_backup', 'elevator'],
+                furnishing: 'fully-furnished',
+                bachelorFriendly: true,
+                zeroBrokerage: true,
+                petFriendly: true,
+                verified: false,
+                status: 'pending',
+                walkabilityScore: 94,
+                connectivityScore: 96,
+                owner: ownerUser._id,
+                images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80']
+            }
+        ];
+
+        const inserted = await Property.insertMany(pendingListings);
+        const properties = await Property.find({ status: 'pending' }).populate('owner', 'name email phone').sort('-createdAt');
+        res.json({ success: true, message: `Added ${inserted.length} pending moderation listings.`, properties, count: properties.length });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // ─── Analytics ────────────────────────────────────────────────────────────────
 // @GET /api/admin/analytics - Advanced analytics for charts
 router.get('/analytics', async (req, res) => {

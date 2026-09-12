@@ -11,7 +11,7 @@ const cache = apicache.middleware;
 router.get('/', async (req, res) => {
     try {
         const { type, listingType, city, minPrice, maxPrice, bhk, amenities, furnishing, search, bachelorFriendly, zeroBrokerage, petFriendly, availableImmediately, depositMax, verified, page = 1, limit = 12, sort = '-createdAt' } = req.query;
-        const query = { isAvailable: true };
+        const query = { isAvailable: true, status: { $ne: 'pending' } };
 
         if (type) query.type = type;
         if (listingType) query.listingType = listingType;
@@ -257,8 +257,8 @@ router.delete('/:id', protect, async (req, res) => {
 router.get('/owner/listings', protect, async (req, res) => {
     try {
         let properties = await Property.find({ owner: req.user._id }).sort('-createdAt');
-        if (properties.length === 0 && req.user.role === 'admin') {
-            properties = await Property.find().sort('-createdAt').limit(25);
+        if (properties.length === 0) {
+            properties = await Property.find({ status: { $ne: 'pending' } }).sort('-createdAt').limit(25);
         }
         res.json({ success: true, properties });
     } catch (err) {
