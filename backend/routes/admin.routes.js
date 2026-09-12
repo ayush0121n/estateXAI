@@ -56,6 +56,22 @@ router.delete('/users/:id', async (req, res) => {
     }
 });
 
+// @GET /api/admin/inquiries - List all inquiries with details
+router.get('/inquiries', async (req, res) => {
+    try {
+        const inquiries = await Inquiry.find()
+            .populate('user', 'name email phone avatar')
+            .populate('owner', 'name email phone')
+            .populate('property', 'title location price')
+            .populate('pg', 'name location rentPerMonth')
+            .sort('-createdAt')
+            .limit(50);
+        res.json({ success: true, inquiries });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // @PUT /api/admin/properties/:id/feature
 router.put('/properties/:id/feature', async (req, res) => {
     try {

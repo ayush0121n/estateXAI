@@ -1,18 +1,19 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Check, X, ShieldAlert, Sliders, TrendingUp, Users, Building2, CheckCircle2, Clock, Trash2, Edit2, AlertOctagon, Activity, DollarSign } from 'lucide-react';
+import { Check, X, ShieldAlert, Sliders, TrendingUp, Users, Building2, CheckCircle2, Clock, Trash2, Edit2, AlertOctagon, Activity, DollarSign, MessageSquare } from 'lucide-react';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 
 const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#3b82f6'];
 
 export default function AdminDashboardTab() {
-    const [subTab, setSubTab] = useState('analytics'); // 'analytics' | 'users' | 'listings' | 'moderation' | 'config'
+    const [subTab, setSubTab] = useState('analytics'); // 'analytics' | 'users' | 'listings' | 'moderation' | 'config' | 'inquiries'
     const [analytics, setAnalytics] = useState(null);
     const [users, setUsers] = useState([]);
     const [pendingProps, setPendingProps] = useState([]);
     const [allProperties, setAllProperties] = useState([]);
+    const [inquiries, setInquiries] = useState([]);
     const [editingPropId, setEditingPropId] = useState(null);
     const [editFutureDevText, setEditFutureDevText] = useState('');
     const [config, setConfig] = useState(null);
@@ -21,13 +22,15 @@ export default function AdminDashboardTab() {
     const loadAdminData = async () => {
         setLoading(true);
         try {
-            const [aRes, mRes, cRes, uRes, pRes] = await Promise.all([
+            const [aRes, mRes, cRes, uRes, pRes, iRes] = await Promise.all([
                 api.get('/admin/analytics').catch(() => ({ data: { analytics: null } })),
                 api.get('/admin/moderation?status=pending').catch(() => ({ data: { properties: [] } })),
                 api.get('/admin/config').catch(() => ({ data: { config: null } })),
                 api.get('/admin/users').catch(() => ({ data: { users: [] } })),
-                api.get('/properties?limit=50').catch(() => ({ data: { properties: [] } }))
+                api.get('/properties?limit=50').catch(() => ({ data: { properties: [] } })),
+                api.get('/admin/inquiries').catch(() => ({ data: { inquiries: [] } }))
             ]);
+            setInquiries(iRes.data.inquiries || []);
             
             // Mock data if backend analytics fail (for demo/resilience)
             setAnalytics(aRes.data.analytics || {
@@ -122,6 +125,7 @@ export default function AdminDashboardTab() {
         { id: 'analytics', label: 'Analytics & Growth', icon: <TrendingUp size={16} /> },
         { id: 'users', label: `Users & Access (${users.length})`, icon: <Users size={16} /> },
         { id: 'listings', label: 'Manage Listings', icon: <Building2 size={16} /> },
+        { id: 'inquiries', label: `User Inquiries (${inquiries.length})`, icon: <MessageSquare size={16} /> },
         { id: 'moderation', label: `Moderation Queue`, icon: <ShieldAlert size={16} />, badge: pendingProps.length },
         { id: 'config', label: 'System Config', icon: <Sliders size={16} /> },
     ];
@@ -418,6 +422,88 @@ export default function AdminDashboardTab() {
                                                     </button>
                                                 </div>
                                             </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+
+                    {/* ─── INQUIRIES TAB ─── */}
+                    {subTab === 'inquiries' && (
+                        <motion.div key="inquiries" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-elevated border border-borderSubtle/20 p-5 rounded-2xl shadow-sm">
+                                <div>
+                                    <h4 className="text-lg font-bold text-primary flex items-center gap-2">
+                                        <MessageSquare size={20} className="text-blue-500" /> Platform Inquiries ({inquiries.length})
+                                    </h4>
+                                    <p className="text-xs text-muted mt-1">Real-time buyer, tenant, and flatmate inquiries across all listings</p>
+                                </div>
+                            </div>
+
+                            {inquiries.length === 0 ? (
+                                <div className="bg-elevated border border-borderSubtle/20 rounded-2xl p-12 text-center text-muted">
+                                    No inquiries found.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {inquiries.map((inq, idx) => (
+                                        <div key={inq._id || idx} className="bg-elevated border border-borderSubtle/20 p-5 rounded-2xl shadow-sm space-y-4">
+                                            {/* Header */}
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary overflow-hidden">
+                                                        {inq.user?.avatar ? (
+                                                            <img src={inq.user.avatar} alt="" className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            inq.user?.name?.charAt(0) || 'U'
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h5 className="font-bold text-primary text-sm">{inq.user?.name || 'Prospective Tenant/Buyer'}</h5>
+                                                        <p className="text-xs text-muted">{inq.user?.email} • {inq.phone}</p>
+                                                    </div>
+                                                </div>
+                                                <span className={`text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${
+                                                    inq.status === 'responded' 
+                                                        ? 'bg-emerald-100 text-emerald-700'
+                                                        : inq.status === 'closed'
+                                                        ? 'bg-slate-100 text-slate-700'
+                                                        : 'bg-amber-100 text-amber-700'
+                                                }`}>
+                                                    {inq.status}
+                                                </span>
+                                            </div>
+
+                                            {/* Target listing */}
+                                            <div className="p-3 bg-surface/50 border border-borderSubtle/10 rounded-xl text-xs space-y-1">
+                                                <span className="font-bold uppercase tracking-wider text-[10px] text-accent">
+                                                    {inq.propertyType === 'pg' ? '🏢 PG / Hostel' : '🏡 Residential Property'}
+                                                </span>
+                                                <p className="font-semibold text-primary line-clamp-1">
+                                                    {inq.property?.title || inq.pg?.name || 'Listing Details'}
+                                                </p>
+                                                <p className="text-muted">
+                                                    {inq.property?.location?.address || inq.pg?.location?.address || 'Prime City Location'} • ₹{inq.property?.price?.toLocaleString('en-IN') || inq.pg?.rentPerMonth?.toLocaleString('en-IN') || '15,000'}
+                                                </p>
+                                                <p className="text-[11px] text-muted">
+                                                    Owner: <strong className="text-primary">{inq.owner?.name || 'Verified Owner'}</strong> ({inq.owner?.phone || 'N/A'})
+                                                </p>
+                                            </div>
+
+                                            {/* Message */}
+                                            <div className="text-xs text-primary/90 bg-primary/5 p-3 rounded-xl border border-primary/10">
+                                                <span className="font-semibold block text-[11px] text-primary mb-1">User Question:</span>
+                                                "{inq.message}"
+                                            </div>
+
+                                            {/* Owner response if any */}
+                                            {inq.ownerResponse && (
+                                                <div className="text-xs text-emerald-800 bg-emerald-50/60 p-3 rounded-xl border border-emerald-200/50">
+                                                    <span className="font-semibold block text-[11px] text-emerald-700 mb-1">Owner Reply:</span>
+                                                    "{inq.ownerResponse}"
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
