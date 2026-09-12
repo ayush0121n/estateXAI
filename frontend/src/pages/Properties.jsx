@@ -24,11 +24,17 @@ export default function Properties() {
     const [currentPage, setCurrentPage] = useState(1);
     const [showFilters, setShowFilters] = useState(false);
 
+    const getInitialCity = () => {
+        const qCity = searchParams.get('city');
+        if (qCity && qCity !== 'All Cities' && qCity.toLowerCase() !== 'all') return qCity;
+        return '';
+    };
+
     const [filters, setFilters] = useState({
         search: searchParams.get('search') || '',
         type: searchParams.get('type') || '',
         listingType: searchParams.get('listingType') || '',
-        city: searchParams.get('city') || localStorage.getItem('userCity') || '',
+        city: getInitialCity(),
         bhk: searchParams.get('bhk') || '',
         minPrice: '',
         maxPrice: '',

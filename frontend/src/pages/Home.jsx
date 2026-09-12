@@ -54,14 +54,19 @@ const FEATURES = [
 export default function Home() {
   const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState(() => {
-    return localStorage.getItem('userCity') || 'All Cities';
+    const saved = localStorage.getItem('userCity');
+    return (saved && saved !== 'All Cities' && saved !== 'all') ? saved : 'All Cities';
   });
   const [properties, setProperties] = useState([]);
   const [pgs, setPgs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('userCity', selectedCity);
+    if (selectedCity && selectedCity !== 'All Cities') {
+      localStorage.setItem('userCity', selectedCity);
+    } else {
+      localStorage.removeItem('userCity');
+    }
   }, [selectedCity]);
 
   useEffect(() => {

@@ -13,7 +13,9 @@ router.get('/', async (req, res) => {
         const query = { isAvailable: true };
 
         if (genderType) query.genderType = genderType;
-        if (city) query['location.city'] = { $regex: city, $options: 'i' };
+        if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
+            query['location.city'] = { $regex: city, $options: 'i' };
+        }
         if (sharingType) query.sharingType = { $in: sharingType.split(',') };
         if (institution) query['location.nearbyInstitutions'] = { $regex: institution, $options: 'i' };
         if (wifi === 'true') query['amenities.wifi'] = true;

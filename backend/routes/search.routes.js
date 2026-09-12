@@ -80,8 +80,9 @@ router.get('/', async (req, res) => {
         } : {};
 
         if (type === 'all' || type === 'property') {
-            const propQuery = { isAvailable: true, status: { $ne: 'draft' }, ...textQuery };
-            if (city) propQuery['location.city'] = { $regex: city, $options: 'i' };
+            if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
+                propQuery['location.city'] = { $regex: city, $options: 'i' };
+            }
             if (bhk) propQuery.bhk = Number(bhk);
             if (listingType) propQuery.listingType = listingType;
             if (minPrice || maxPrice) {
@@ -112,7 +113,9 @@ router.get('/', async (req, res) => {
                     { 'location.city': { $regex: q, $options: 'i' } }
                 ];
             }
-            if (city) pgQuery['location.city'] = { $regex: city, $options: 'i' };
+            if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
+                pgQuery['location.city'] = { $regex: city, $options: 'i' };
+            }
             if (minPrice || maxPrice) {
                 pgQuery.rentPerMonth = {};
                 if (minPrice) pgQuery.rentPerMonth.$gte = Number(minPrice);

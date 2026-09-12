@@ -18,10 +18,16 @@ export default function PGs() {
     const [currentPage, setCurrentPage] = useState(1);
     const [showFilters, setShowFilters] = useState(false);
 
+    const getInitialCity = () => {
+        const qCity = searchParams.get('city');
+        if (qCity && qCity !== 'All Cities' && qCity.toLowerCase() !== 'all') return qCity;
+        return '';
+    };
+
     const [filters, setFilters] = useState({
         search: searchParams.get('search') || '',
         genderType: searchParams.get('genderType') || '',
-        city: searchParams.get('city') || localStorage.getItem('userCity') || '',
+        city: getInitialCity(),
         minRent: '',
         maxRent: '',
         wifi: '',
