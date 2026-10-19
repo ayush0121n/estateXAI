@@ -6,19 +6,81 @@
 [![Test Suite](https://img.shields.io/badge/Tests-34%2F34%20Passing-brightgreen)](https://github.com/ayush0121n/estateXAI)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Live Demo URL:** [https://estate-xai.vercel.app/](https://estate-xai.vercel.app/)  
-**Backend API URL:** [https://estatexai.onrender.com](https://estatexai.onrender.com)  
-**API Documentation (Swagger):** [https://estatexai.onrender.com/api/docs](https://estatexai.onrender.com/api/docs)
+**Live Web Application:** [https://estate-xai.vercel.app/](https://estate-xai.vercel.app/)  
+**Live Backend API:** [https://estatexai.onrender.com](https://estatexai.onrender.com)  
+**Interactive API Documentation (Swagger):** [https://estatexai.onrender.com/api/docs](https://estatexai.onrender.com/api/docs)
 
-EstateXAI is a full-stack, enterprise-grade real estate ecosystem built with the MERN stack + Python Scikit-Learn microservice. It bridges buyers, tenants, flatmates, and property owners with cutting-edge artificial intelligence: a hybrid recommendation engine, automated price prediction regressor, an interactive 8-domain real-world AI Assistant chatbot, dynamic auto-geocoding, and a complete digital rental toolkit.
+EstateXAI is an enterprise-grade full-stack real estate and co-living platform built on the MERN stack and Python Scikit-Learn microservice. Designed to solve real-world rental and buying challenges, EstateXAI features a hybrid recommendation engine, an AI price prediction regressor (with dual-engine fallback), an interactive 8-domain problem-solving AI Chatbot, automated geocoding with CartoDB Voyager location intelligence, and a digital rental toolkit.
+
+---
+
+## 📸 Platform Highlights & Screenshots
+
+| AI Chatbot & Price Estimation | Location Intelligence & CartoDB Map |
+|---|---|
+| ![AI Price Prediction](backend/scripts/report_diagrams/screenshots/ai_prediction.png) | ![Location Intelligence](backend/scripts/report_diagrams/screenshots/property_detail.png) |
+
+| Digital Rental Toolkit (PDF Export) | Roommate Compatibility Matcher |
+|---|---|
+| ![Rental Toolkit](backend/scripts/report_diagrams/screenshots/rental_toolkit.png) | ![Roommate Matcher](backend/scripts/report_diagrams/screenshots/roommates_page.png) |
+
+---
+
+## 🌟 Flagship Features
+
+### 1. 🤖 EstateXAI Assistant — Problem-Solving AI Chatbot
+An omni-present AI assistant accessible across the entire application via a floating widget and home showcase:
+- **Price Fairness & Negotiation:** Evaluates user offers against local historical trends with actionable negotiation leverage.
+- **Hidden Cost Calculator:** Computes stamp duty, registration fees, GST, security deposits, and brokerage.
+- **Lease & Legal Clarity:** Explains standard 11-month lease clauses, lock-in terms, and tenant rights.
+- **Commute & Location Scorer:** Measures transit times to major IT corridors (Hinjawadi, Magarpatta, Kharadi, Cyber City).
+- **Roommate Conflict Solver:** Actionable dispute mediation for chores, late utility bills, and guest policies.
+- **Deposit Recovery Strategies:** Provides legal notice templates and step-by-step procedures for recovering withheld deposits.
+- **Natural Language Discovery:** Search properties and PGs by conversational criteria (budget, location, sharing).
+- **Maintenance & Dispute Resolution:** Immediate clarity on landlord vs. tenant repair obligations.
+
+### 2. 🗺️ Location Intelligence & CartoDB Voyager Maps
+- **Reliable CartoDB Voyager Tiles:** High-performance, CDN-cached vector raster tiles that never fail or show empty gray boxes.
+- **Silent Geocoding:** Auto-converts text addresses into exact Latitude/Longitude coordinates upon property creation via Nominatim.
+- **Nearby POIs & Scores:** Dynamic Walkability Score (0-100) and Connectivity Score computed from schools, transit, hospitals, and parks.
+- **Street View & Maps Integration:** Direct deep links to Google Street View and Google Maps navigation.
+
+### 3. 📑 Digital Rental Toolkit & Lifecycle Suite
+- **Interactive Lease Agreement Generator:** Generates legally structured 11-month residential lease agreements populated with tenant/landlord specifics.
+- **HRA Rent Receipts:** Generates monthly/quarterly rent receipts complete with revenue stamp formatting, transaction IDs, and landlord PAN fields.
+- **Client-Side PDF Export:** Instant high-resolution print and download powered by `jsPDF`.
+
+### 4. 📈 Real Estate Price Prediction & CMA
+- **Model:** Random Forest Regressor ($n=200$, $\text{max\_depth}=20$) with **82.92% $R^2$ accuracy**.
+- **Comparative Market Analysis (CMA):** Interactive Recharts graph comparing listing prices against predicted fair value and 80% confidence intervals.
+- **Dual-Engine Resilience:** Automatic fallback to embedded pure-JS inference (`jsPricePredictor.js`) if the Python microservice is sleeping.
+
+### 5. 🎯 Hybrid Recommendation Engine
+- **Content-Based Filtering:** Vector cosine similarity across BHK, price, amenities, and property type.
+- **Collaborative Filtering:** Item-based similarity leveraging real-time user interaction graph (views, bookmarks, inquiries).
+- **Formula:** Weighted scoring ($0.6 \times \text{Content} + 0.4 \times \text{Collaborative}$) with cold-start fallback.
+
+### 6. 🤝 Roommate Compatibility Matcher
+- **Lifestyle Alignment:** Matches users by schedule, dietary habits, smoking/drinking, cleanliness, and WFH habits.
+- **Direct Connect:** Instant encrypted contact via WhatsApp and email.
+
+---
+
+## 🔑 Demo Credentials
+
+| Role | Email | Password | Permissions & Capabilities |
+|------|-------|----------|----------------------------|
+| **Admin** | `admin@estatexai.com` | `Admin@123` | Listing moderation (approve/reject), system config, user management, analytics |
+| **Owner** | `owner@estatexai.com` | `Owner@123` | Create listings, image uploads, lead inquiry tracking, property performance |
+| **Tenant** | `tenant@estatexai.com` | `Tenant@123` | Roommate questionnaire, saved favorites, property comparisons, rental toolkit |
 
 ---
 
 ## 🚀 Getting Started Locally
 
 ### Prerequisites
-- Node.js v18+ (tested on Node v20/v22)
-- Python 3.10+ (for FastAPI ML microservice)
+- Node.js v18+ (Node v20 or v22 recommended)
+- Python 3.10+ (for optional Python ML service)
 - MongoDB Atlas cluster or local MongoDB instance
 
 ### 1. Clone the Repository
@@ -31,25 +93,24 @@ cd estateXAI
 ```bash
 cd backend
 npm install
-# Ensure .env contains MONGO_URI, JWT_SECRET, PORT=5000
+# Configure .env with MONGO_URI, JWT_SECRET, PORT=5000
 npm run dev
 # Server runs on http://localhost:5000
 ```
 
-### 3. ML Microservice Setup (Optional / Standalone)
-> **Note:** The backend contains a high-accuracy, pure-JavaScript Random Forest inference fallback (`utils/jsPricePredictor.js`) with an R² of 0.83 so the platform operates fully even when the Python microservice is offline!
+### 3. Database Seeding (Sample Properties, PGs, Users, Reviews)
+```bash
+cd backend
+node scripts/seed.js
+```
+
+### 4. ML Microservice (Optional)
+> The backend automatically falls back to its built-in JavaScript Random Forest engine with 82.9% accuracy when Python microservice is not active!
 ```bash
 cd backend/ml_service
 pip install -r requirements.txt
 python train_model.py
 uvicorn app:app --port 8001 --reload
-# Microservice runs on http://localhost:8001
-```
-
-### 4. Seed Database (Demo Properties, PGs, Reviews, Users)
-```bash
-cd backend
-node scripts/seed.js
 ```
 
 ### 5. Frontend Setup
@@ -62,55 +123,7 @@ npm run dev
 
 ---
 
-## 🔑 Demo Credentials
-
-| Role | Email | Password | Permissions & Capabilities |
-|------|-------|----------|----------------------------|
-| **Admin** | `admin@estatexai.com` | `Admin@123` | Full platform moderation, approving/rejecting listings, live platform analytics, feature flags |
-| **Owner** | `owner@estatexai.com` | `Owner@123` | Listing creation, image uploads, lead inquiry tracking, property performance |
-| **Tenant** | `tenant@estatexai.com` | `Tenant@123` | Roommate matching questionnaire, favorites, saved comparisons, rental toolkit |
-
----
-
-## 🌟 Flagship Features
-
-### 1. 🤖 EstateXAI Assistant — Problem-Solving AI Chatbot
-A real-time intelligent assistant accessible across the entire application via a floating widget and dedicated showcase:
-- **Price Fairness & Offer Advice:** Analyzes user bids against historical local data and gives negotiation leverage strategies.
-- **Hidden Cost Estimation:** Computes stamp duty, registration fees, GST, maintenance deposits, and brokerage.
-- **Lease & Legal Clarity:** Explains standard lease clauses, security deposit refund terms, lock-in periods, and tenant rights.
-- **Location & Commute Scoring:** Evaluates connectivity to IT corridors (Hinjawadi, Magarpatta, Kharadi, Cyber City) with commute modes.
-- **Roommate Conflict Solver:** Actionable mediation frameworks for chore schedules, late utility payments, and guest policies.
-- **Deposit Recovery Strategies:** Formatted legal notice templates and step-by-step procedures for claiming withheld deposits.
-- **Smart Property Recommendations:** Natural-language search parsing budgets, cities, BHKs, and sharing preferences.
-- **Maintenance & Dispute Resolution:** Guidance on landlord vs. tenant repair obligations.
-
-### 2. 📑 Digital Rental Toolkit & Lifecycle Suite
-- **Interactive Agreement Generator:** Generates legally structured 11-month residential lease agreements dynamically populated with tenant/landlord details.
-- **Multi-Period Rent Receipts:** Automated rent receipt generation complete with revenue stamp formatting, transaction IDs, and PAN fields for HRA tax exemptions.
-- **Client-Side PDF Export:** Instant high-resolution print and download powered by `jsPDF`.
-
-### 3. 🎯 Hybrid Recommendation Engine
-- **Content-Based Filtering:** Vector similarity calculations measuring cosine distance across BHK, pricing, zone metrics, furnishing, and amenities.
-- **Collaborative Filtering:** Real-time user interaction graph tracking clicks, bookmarks, detail views, and inquiries.
-- **Hybrid Scoring Formula:** Weighted synthesis ($0.6 \times \text{Content} + 0.4 \times \text{Collaborative}$) with intelligent cold-start fallback.
-
-### 4. 📈 Real Estate Price Prediction & CMA
-- **Model:** Random Forest Regressor ($n=200$, $\text{max\_depth}=20$) achieving **82.92% $R^2$ accuracy**.
-- **Interactive Dashboard:** Recharts Comparative Market Analysis (CMA) graph displaying predicted price, 80% confidence interval, and comparable nearby properties.
-- **Resilient Dual-Engine:** Automatic fallback to embedded JS inference engine if Python microservice is sleeping.
-
-### 5. 🗺️ Location Intelligence & Auto-Geocoding
-- **Silent Nominatim Geocoding:** Automatically translates textual listing addresses into high-precision Latitude/Longitude coordinates upon creation.
-- **Interactive Leaflet Maps:** Custom map pins, radius filters, POI density indicators, Walkability Score, and direct Google Street View deep links.
-
-### 6. 🤝 Roommate Compatibility Matcher
-- **Lifestyle Alignment:** Matches users by daily schedule, food habits, smoking/drinking preferences, cleanliness, and work-from-home styles.
-- **Direct WhatsApp & Email Connect:** Instant encrypted outreach to compatible flatmates.
-
----
-
-## ⚙️ REST API Architecture & Endpoints
+## ⚙️ REST API Endpoints
 
 ### Authentication & Profiles
 | Method | Endpoint | Description | Access |
@@ -147,9 +160,9 @@ A real-time intelligent assistant accessible across the entire application via a
 
 ---
 
-## 🧪 Automated Testing & Quality Assurance
+## 🧪 Automated Testing & QA
 
-EstateXAI includes an extensive end-to-end integration test suite powered by Jest and Supertest with an isolated in-memory/test MongoDB instance.
+EstateXAI maintains a comprehensive integration test suite with Jest and Supertest against an isolated in-memory MongoDB instance:
 
 ```bash
 cd backend
@@ -157,24 +170,21 @@ npm test
 ```
 
 ```
-PASS tests/api.test.js (10.428 s)
-  Authentication Endpoints
-    ✓ POST /api/auth/register should create a user and return token (321 ms)
-    ✓ POST /api/auth/login should authenticate valid user (189 ms)
-    ✓ POST /api/auth/login should reject invalid credentials (142 ms)
-  Property Endpoints
-    ✓ GET /api/properties should return listing array (85 ms)
-    ✓ POST /api/properties should create listing when authenticated (212 ms)
-    ✓ GET /api/properties/:id should return single listing (98 ms)
-  AI Chatbot Endpoints
-    ✓ POST /api/chat should provide fairness, legal, and negotiation guidance (115 ms)
-  Price Prediction Endpoints
-    ✓ POST /api/predict-price should return predicted price and confidence interval (145 ms)
-  ...
-  Test Suites: 1 passed, 1 total
-  Tests:       34 passed, 34 total
-  Snapshots:   0 total
-  Time:        10.65 s
+PASS tests/api.test.js
+  Health & Core Endpoints (3 tests)
+  Auth Routes (5 tests)
+  Property Endpoints (5 tests)
+  PG Endpoints (4 tests)
+  Price Prediction Route (4 tests)
+  Search Endpoints (2 tests)
+  Chat (EstateXAI Assistant) Route (7 tests)
+  Commute Routes (2 tests)
+  Neighborhood Routes (2 tests)
+
+Test Suites: 1 passed, 1 total
+Tests:       34 passed, 34 total
+Snapshots:   0 total
+Time:        9.4 s
 ```
 
 ---
@@ -185,10 +195,10 @@ PASS tests/api.test.js (10.428 s)
 |---|---|---|
 | **Frontend Framework** | React 18 + Vite | Blazing fast client bundle with hot module replacement |
 | **Routing & Navigation** | React Router DOM v7 | Dynamic nested routes, protected role layouts |
-| **UI & Styling** | Vanilla CSS + Glassmorphism | Bespoke design system with responsive cards and dark mode |
+| **UI & Styling** | Vanilla CSS + Glassmorphism | Custom design tokens, dark theme, responsive layouts |
 | **Animation** | Framer Motion | Fluid micro-interactions, modal popups, floating widgets |
 | **Data Visualization** | Recharts | Comparative Market Analysis (CMA) and admin dashboards |
-| **Mapping Engine** | Leaflet + OpenStreetMap | Interactive geospatial discovery with POI pins |
+| **Mapping Engine** | Leaflet + CartoDB Voyager | Reliable geospatial discovery with zero tile failure |
 | **PDF Generation** | jsPDF | Client-side dynamic export for leases and rent receipts |
 | **Backend Framework** | Node.js + Express 4 | High-performance asynchronous REST API |
 | **Database & ODM** | MongoDB Atlas + Mongoose 9 | Scalable document data store with compound indexing |
@@ -196,13 +206,13 @@ PASS tests/api.test.js (10.428 s)
 | **Documentation** | Swagger UI + swagger-jsdoc | OpenAPI 3.0 interactive API documentation |
 | **ML Microservice** | Python 3.10+ / FastAPI | Scikit-Learn Random Forest Regressor with 82.9% R² score |
 | **Testing** | Jest + Supertest | 34 automated unit and integration tests |
-| **Deployments** | Vercel (Front) & Render (Back)| High-availability automated CI/CD continuous deployment |
+| **Deployments** | Vercel (Front) & Render (Back)| Automated continuous deployment |
 
 ---
 
 ## 📄 Comprehensive Project Reports
 
-The repository includes the complete, university-formatted project documentation generated automatically with all system architecture diagrams, database schemas, screenshots, and evaluation tables:
+The complete, university-formatted project documentation is included directly in the repository:
 - **Microsoft Word Document:** [`estateXAI_Project_Report.docx`](./estateXAI_Project_Report.docx) (12 MB)
 - **Adobe PDF Document:** [`estateXAI_Project_Report.pdf`](./estateXAI_Project_Report.pdf) (3.1 MB)
 
