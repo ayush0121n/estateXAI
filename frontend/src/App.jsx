@@ -21,6 +21,7 @@ import AIPredictor from './pages/AIPredictor';
 import Roommates from './pages/Roommates';
 import RentalToolkit from './pages/RentalToolkit';
 import NotFound from './pages/NotFound';
+import ChatBot from './components/ChatBot';
 
 function App() {
   return (
@@ -70,6 +71,7 @@ function App() {
               </Routes>
             </main>
             <Footer />
+            <ChatBot />
           </div>
         </NotificationProvider>
       </AuthProvider>

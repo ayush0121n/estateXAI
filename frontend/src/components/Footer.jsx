@@ -33,9 +33,11 @@ export default function Footer() {
                             {[
                                 { label: 'Buy Property', to: '/properties?listingType=sale' },
                                 { label: 'Rent Property', to: '/properties?listingType=rent' },
-                                { label: 'PG for Boys', to: '/pgs?genderType=male' },
-                                { label: 'PG for Girls', to: '/pgs?genderType=female' },
-                                { label: 'Co-living Spaces', to: '/pgs?type=coliving' }
+                                { label: 'PGs & Hostels', to: '/pgs' },
+                                { label: 'Find Flatmates', to: '/roommates' },
+                                { label: 'AI Price Predictor', to: '/ai-prediction' },
+                                { label: 'Rental Agreement Toolkit', to: '/rental-toolkit' },
+                                { label: 'Compare Properties', to: '/compare' },
                             ].map(link => (
                                 <Link key={link.to} to={link.to} className="text-[#6b7298] text-sm hover:text-accent transition-colors flex items-center gap-1 group">
                                     <span className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300">→</span>

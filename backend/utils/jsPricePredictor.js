@@ -116,7 +116,8 @@ function predictProperty(reqData) {
 
     predictedPrice = Math.round(predictedPrice / 100) * 100;
     const stdDev = predictedPrice * 0.12;
-    const confidenceLow  = Math.max(100000, Math.round((predictedPrice - 1.28 * stdDev) / 100) * 100);
+    const minLow = listingType === 'sale' ? 100000 : 2000;
+    const confidenceLow  = Math.max(minLow, Math.round((predictedPrice - 1.28 * stdDev) / 100) * 100);
     const confidenceHigh = Math.round((predictedPrice + 1.28 * stdDev) / 100) * 100;
 
     const fmtSale = (val) => {

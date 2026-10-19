@@ -80,6 +80,7 @@ router.get('/', async (req, res) => {
         } : {};
 
         if (type === 'all' || type === 'property') {
+            const propQuery = { isAvailable: true, ...textQuery };
             if (city && city.toLowerCase() !== 'all' && city.toLowerCase() !== 'all cities') {
                 const cleanCity = city.replace(/ncr/i, '').trim();
                 propQuery['location.city'] = { $regex: cleanCity || city, $options: 'i' };

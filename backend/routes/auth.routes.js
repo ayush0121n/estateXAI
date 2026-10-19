@@ -30,6 +30,9 @@ router.post('/register', [
             user: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, institution: user.institution }
         });
     } catch (err) {
+        if (err.code === 11000) {
+            return res.status(400).json({ success: false, message: 'Email already registered.' });
+        }
         res.status(500).json({ success: false, message: err.message });
     }
 });

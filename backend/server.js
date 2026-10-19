@@ -119,12 +119,14 @@ app.use('/api/user', require('./routes/user.routes'));
 app.use('/api/search', apiLimiter, require('./routes/search.routes'));
 app.use('/api/commute', apiLimiter, require('./routes/commute.routes'));
 app.use('/api/neighborhood', require('./routes/neighborhood.routes'));
+app.use('/api/chat', require('./routes/chat.routes'));
 
 // Root and Health check endpoints (supports Render health checks on /, /health, and /api/health)
 app.get(['/', '/health', '/api/health'], (req, res) => {
   res.status(200).json({
     status: 'ok',
     service: 'EstateXAi API',
+    message: 'EstateXAi API is running',
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString()
   });

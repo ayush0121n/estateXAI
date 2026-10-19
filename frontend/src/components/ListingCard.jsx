@@ -17,7 +17,14 @@ const getDepositInfo = (deposit, rent) => {
 };
 
 export function PropertyCard({ property, onSave, saved }) {
-    const img = property.images?.[0] || `https://source.unsplash.com/600x400/?apartment,building&sig=${property._id}`;
+    // Reliable fallbacks — source.unsplash.com is deprecated/rate-limited
+    const FALLBACK_IMAGES = [
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80',
+        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80',
+        'https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=600&q=80',
+    ];
+    const imgIndex = property._id ? property._id.charCodeAt(property._id.length - 1) % FALLBACK_IMAGES.length : 0;
+    const img = property.images?.[0] || FALLBACK_IMAGES[imgIndex];
     const depositInfo = property.listingType === 'rent' ? getDepositInfo(property.deposit, property.price) : null;
     const isAvailableNow = property.availableFrom && new Date(property.availableFrom) <= new Date();
 
@@ -31,7 +38,7 @@ export function PropertyCard({ property, onSave, saved }) {
             <Link to={`/properties/${property._id}`} className="block flex-1 flex flex-col">
                 {/* Image */}
                 <div className="relative h-56 overflow-hidden">
-                    <img src={img} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    <img src={img} alt={property.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                         onError={e => { e.target.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80'; }}
                     />
                     {/* Top badges */}
@@ -118,7 +125,12 @@ export function PropertyCard({ property, onSave, saved }) {
 }
 
 export function PGCard({ pg, onSave, saved }) {
-    const img = pg.images?.[0] || `https://source.unsplash.com/600x400/?hostel,room&sig=${pg._id}`;
+    const PG_FALLBACKS = [
+        'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80',
+        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80',
+    ];
+    const pgImgIdx = pg._id ? pg._id.charCodeAt(pg._id.length - 1) % PG_FALLBACKS.length : 0;
+    const img = pg.images?.[0] || PG_FALLBACKS[pgImgIdx];
     const qualityScores = [pg.foodQuality, pg.cleanlinessRating, pg.safetyRating, pg.waterSupply, pg.powerBackup, pg.hygieneRating].filter(Boolean);
     const avgQuality = qualityScores.length > 0 ? (qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length) : null;
 
@@ -132,7 +144,7 @@ export function PGCard({ pg, onSave, saved }) {
             <Link to={`/pgs/${pg._id}`} className="block flex-1 flex flex-col">
                 {/* Image */}
                 <div className="relative h-56 overflow-hidden">
-                    <img src={img} alt={pg.name} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    <img src={img} alt={pg.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                         onError={e => { e.target.src = 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80'; }}
                     />
                     <div className="absolute top-3 left-3 flex gap-2 flex-wrap">

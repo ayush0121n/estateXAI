@@ -23,6 +23,7 @@ const path = require('path');
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 const OUTPUT_PATH = path.join(__dirname, '..', '..', 'EstateXAi_Project_Report.docx');
+const OUTPUT_PATH_LOWER = path.join(__dirname, '..', '..', 'estateXAI_Project_Report.docx');
 const PNG_DIR = path.join(__dirname, 'report_diagrams', 'png');
 const SCREENSHOTS_DIR = path.join(__dirname, 'report_diagrams', 'screenshots');
 const AUTHOR = 'Ayush Narkhede';
@@ -690,10 +691,29 @@ async function generateReport() {
 
                     heading('5.5 Auto-Geocoding & Location Intelligence', HeadingLevel.HEADING_2),
                     para('When an owner submits a new property or PG listing, the backend silently intercepts the address field and calls the OpenStreetMap Nominatim API to generate exact latitude/longitude coordinates. These coordinates enable:'),
-                    bulletPoint('Interactive Leaflet map placement with custom markers'),
+                    bulletPoint('Interactive Leaflet map placement with custom markers and dynamic ResizeObserver container invalidation'),
                     bulletPoint('Distance-based commute scoring from any listing to the user\'s workplace'),
                     bulletPoint('Walkability Index and Connectivity Score calculated from nearby POI density'),
                     bulletPoint('Neighborhood analysis showing nearby schools, hospitals, transport hubs, and shopping centers'),
+                    bulletPoint('Google Maps and Google Street View panoramic direct external links for real-world inspection'),
+
+                    heading('5.6 EstateXAI Assistant — Real-World Problem Solving AI Chatbot', HeadingLevel.HEADING_2),
+                    para('EstateXAI Assistant (/api/chat) is an intelligent, domain-specialized real estate chatbot integrated globally into the web application. Designed to bridge the information gap for tenants, buyers, and property owners, the assistant employs a zero-dependency intent classification and tool execution engine built on Node 18+ native fetch with optional LLM reasoning:'),
+                    bulletPoint('Property Price Fairness & Counter-Offer Strategy: Benchmarks asking prices against the synthetic Gradient Boosting model to assess whether a property is underpriced, fairly priced, or overpriced, and provides actionable opening counter-offers and walk-away price ceilings.'),
+                    bulletPoint('Commute vs. Rent Economic Tradeoff Calculator: Calculates whether paying higher rent closer to an employment hub saves net capital by factoring monthly fuel/fare expenses and monetized personal time (assuming 22 working days/month).'),
+                    bulletPoint('Hidden Costs & True Budget Estimator: Uncovers total true monthly living costs beyond contractual rent, itemizing society maintenance, opportunity cost of lost security deposit interest (calculated at 7% p.a.), amortized brokerage, and utility averages.'),
+                    bulletPoint('Rental Contract Red Flag & Legal Clause Checker: Analyzes lease agreements for predator clauses, such as automatic 1-month painting deductions, asymmetric notice requirements, and unreasonable lock-in penalties.'),
+                    bulletPoint('Neighborhood Safety & Lifestyle Intelligence: Provides community-sourced safety ratings, water supply reliability (municipal vs. private tanker reliance), and power stability profiles across major Indian tech hubs.'),
+                    bulletPoint('Flatmate Compatibility Quiz: Uses a 5-pillar lifestyle questionnaire (sleep cycles, dietary habits, cleanliness standards, guest rules, and WFH rhythm) to determine roommate compatibility.'),
+                    bulletPoint('Investment ROI & Rental Yield Calculator: Analyzes gross/net rental yields, annual expenses, and capital break-even timeframes for prospective investors.'),
+                    bulletPoint('Smart Natural Language Listing Discovery: Allows users to query properties and PGs in conversational English and Hindi, retrieving real-time database listings.'),
+
+                    heading('5.7 Digital Rental Toolkit & Lifecycle Document Suite', HeadingLevel.HEADING_2),
+                    para('The Digital Rental Toolkit (/rental-toolkit) provides automated, legally compliant documentation for tenants and property owners in Indian jurisdictions. Key capabilities include:'),
+                    bulletPoint('Custom Rental Agreement Generator: Generates comprehensive 11-month tenancy agreements with customizable security deposits, maintenance obligations, and notice clauses, exporting cleanly to PDF via jsPDF.'),
+                    bulletPoint('Rent Receipt Generator: Instantly creates rent receipts with landlord PAN, tenant details, and revenue stamp placeholders for seamless HRA tax exemption claims.'),
+                    bulletPoint('Pre-Move-in & Post-Move-out Digital Checklists: Standardizes joint property inspection documentation to prevent security deposit forfeiture disputes.'),
+                    bulletPoint('Notice to Vacate & Police Verification Templates: Provides state-compliant documentation formats ready for digital export.'),
 
                     pageBreak(),
 
@@ -828,38 +848,54 @@ async function generateReport() {
                     screenshotParagraph('home_features.png', 560, 315),
                     figureCaption('Home Page — Platform Features & CTA'),
 
+                    para('The "Solve Real-World Rental & Property Dilemmas" section provides interactive prompt cards allowing users to immediately trigger AI advisory on price fairness, commute tradeoffs, hidden costs, and rental contract clauses.'),
+                    screenshotParagraph('home_assistant_showcase.png', 560, 315),
+                    figureCaption('Home Page — Real-World AI Dilemmas Interactive Showcase'),
+
+                    // ── AI Assistant Chatbot ─────────────────────────────────
+                    heading('9.2 EstateXAI Assistant — AI Chatbot Interface', HeadingLevel.HEADING_2),
+                    para('The floating EstateXAI Assistant widget features role-aware quick-action chips, a markdown-capable renderer with responsive tabular outputs, conversation memory, and real-time calculation tools for fair prices and commute tradeoffs.'),
+                    screenshotParagraph('chatbot_active.png', 560, 315),
+                    figureCaption('EstateXAI Assistant — Active Chat Dialog with Price Fairness & Counter-Offer Analysis'),
+
                     // ── Properties Page ──────────────────────────────────────
-                    heading('9.2 Properties Listing Page', HeadingLevel.HEADING_2),
+                    heading('9.3 Properties Listing Page', HeadingLevel.HEADING_2),
                     para('The Properties page provides a comprehensive multi-filter search interface with filters for city, property type, BHK, price range, and listing type. Results are displayed in a responsive grid of ListingCards with image carousels, pricing, and quick-action buttons.'),
                     screenshotParagraph('properties_page.png', 560, 315),
                     figureCaption('Properties Page — Multi-Filter Search & Grid View'),
 
                     // ── Property Details & Location Intelligence ──────────────
-                    heading('9.3 Property Details & Location Intelligence', HeadingLevel.HEADING_2),
+                    heading('9.4 Property Details & Location Intelligence', HeadingLevel.HEADING_2),
                     para('The Property Details page presents high-resolution imagery, full specifications, and the AI Location Intelligence suite. It features automated Walkability Scores, Transit Connectivity Scores, AI Commute Distance Estimator, Neighborhood Vibe assessments, and upcoming infrastructure project trackers.'),
                     screenshotParagraph('property_detail.png', 560, 315),
                     figureCaption('Property Details — Location Intelligence & Walkability/Connectivity Analysis'),
 
                     // ── PGs Page ─────────────────────────────────────────────
-                    heading('9.4 PGs & Hostels Page', HeadingLevel.HEADING_2),
+                    heading('9.5 PGs & Hostels Page', HeadingLevel.HEADING_2),
                     para('The PG/Hostel listing page offers gender-type filtering, amenity selection, sharing type, and price range filters. Each PG card displays the name, location, rent, amenities icons, and availability status.'),
                     screenshotParagraph('pgs_page.png', 560, 315),
                     figureCaption('PGs & Hostels Page — Filtered Listings'),
 
                     // ── AI Prediction Page ───────────────────────────────────
-                    heading('9.5 AI Price Prediction', HeadingLevel.HEADING_2),
+                    heading('9.6 AI Price Prediction', HeadingLevel.HEADING_2),
                     para('The AI Price Prediction page provides an interactive form where users input property characteristics (location, BHK, area, furnishing, etc.) to receive an instant ML-powered price estimate with an 80% confidence interval. Results include a Comparative Market Analysis chart built with Recharts.'),
                     screenshotParagraph('ai_prediction.png', 560, 315),
                     figureCaption('AI Price Prediction — Input Form & Results'),
 
                     // ── Roommates Page ───────────────────────────────────────
-                    heading('9.6 Smart Roommate Matching', HeadingLevel.HEADING_2),
+                    heading('9.7 Smart Roommate Matching', HeadingLevel.HEADING_2),
                     para('The Roommate Matching page allows users to fill out a lifestyle questionnaire (diet, smoking, sleep schedule, profession, budget) and instantly browse AI-matched compatible roommates with compatibility scores.'),
                     screenshotParagraph('roommates_page.png', 560, 315),
                     figureCaption('Roommate Matching — Lifestyle Questionnaire & Matches'),
 
+                    // ── Digital Rental Toolkit ───────────────────────────────
+                    heading('9.8 Digital Rental Toolkit & Lifecycle Documents', HeadingLevel.HEADING_2),
+                    para('The Digital Rental Toolkit allows tenants and landlords to generate legally vetted 11-month rental agreements, monthly rent receipts for HRA claims, move-in checklists, and notice letters with one-click print and PDF export functionality.'),
+                    screenshotParagraph('rental_toolkit.png', 560, 315),
+                    figureCaption('Digital Rental Toolkit — Document Form & Dynamic PDF Generator'),
+
                     // ── Compare Page ─────────────────────────────────────────
-                    heading('9.7 Property Comparison', HeadingLevel.HEADING_2),
+                    heading('9.9 Property Comparison', HeadingLevel.HEADING_2),
                     para('The Compare page enables side-by-side comparison of up to 3 saved properties, displaying key attributes (price, area, BHK, amenities, location) in a structured comparison table.'),
                     screenshotParagraph('compare_page.png', 560, 315),
                     figureCaption('Property Comparison — Side-by-Side View'),
@@ -917,10 +953,12 @@ async function generateReport() {
     // ─── Generate the .docx ──────────────────────────────────────────────────
     const buffer = await Packer.toBuffer(doc);
     fs.writeFileSync(OUTPUT_PATH, buffer);
+    fs.writeFileSync(OUTPUT_PATH_LOWER, buffer);
 
     const sizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
     console.log(`\n✓ Report generated successfully!`);
-    console.log(`  Path: ${OUTPUT_PATH}`);
+    console.log(`  Path 1: ${OUTPUT_PATH}`);
+    console.log(`  Path 2: ${OUTPUT_PATH_LOWER}`);
     console.log(`  Size: ${sizeMB} MB`);
     console.log(`\nNote: Open the .docx in Microsoft Word and update the Table of Contents`);
     console.log(`      (right-click on TOC → "Update Field" → "Update Entire Table")`);

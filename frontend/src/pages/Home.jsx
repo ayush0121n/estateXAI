@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import {
   Building2, Users, TrendingUp, MapPin, ArrowRight,
   Star, Shield, Zap, Heart, FileText, BadgeCheck,
-  Banknote, Search, Sparkles
+  Banknote, Search, Sparkles, MessageCircle, Scale, Car, ShieldAlert, DollarSign
 } from 'lucide-react';
 import api from '../utils/api';
 import { PropertyCard, PGCard, SkeletonCard } from '../components/ListingCard';
@@ -98,6 +98,10 @@ export default function Home() {
     if (query) params.set('search', query);
     if (selectedCity && selectedCity !== 'All Cities') params.set('city', selectedCity);
     navigate(`/properties?${params.toString()}`);
+  };
+
+  const handleAskAssistant = (query) => {
+    window.dispatchEvent(new CustomEvent('open-estatexai-chat', { detail: { query } }));
   };
 
   return (
@@ -277,6 +281,95 @@ export default function Home() {
           </div>
           <div className="hidden md:flex items-center justify-center w-48 h-48 rounded-full bg-white/5 border border-white/10">
             <TrendingUp className="w-16 h-16 text-accent" />
+          </div>
+        </div>
+      </section>
+
+      {/* Real-World AI Assistant Interactive Showcase */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+        <div className="bg-gradient-to-br from-[#121318] via-[#1a1b24] to-[#0f1016] border border-accent/25 rounded-card p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 mb-10">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-wider mb-3">
+                <Sparkles className="w-3.5 h-3.5" /> 24/7 AI Real Estate Co-Pilot
+              </div>
+              <h2 className="font-serif text-3xl md:text-4xl text-white font-medium mb-3">
+                Solve Real-World Rental & Property Dilemmas
+              </h2>
+              <p className="text-white/70 text-sm max-w-2xl leading-relaxed">
+                Click any real-world challenge below to get immediate data-driven advice from our AI Assistant — from price fairness to rental contract traps.
+              </p>
+            </div>
+            <button
+              onClick={() => handleAskAssistant('Hello! What can you help me with?')}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-accent to-[#dfc288] text-primary text-sm font-semibold px-6 py-3.5 rounded-btn hover:brightness-110 shadow-lg shadow-accent/20 transition-all hover:scale-105"
+            >
+              <MessageCircle className="w-4 h-4 text-black" />
+              Open EstateXAI Assistant
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                icon: Scale,
+                badge: 'Price Fairness',
+                title: 'Is this rent fair or overpriced?',
+                query: 'Is ₹25,000 fair for a 2BHK in Baner, Pune?',
+                tip: 'Get benchmark valuation + opening counter-offer'
+              },
+              {
+                icon: Car,
+                badge: 'Commute Tradeoff',
+                title: 'Closer to office vs. cheaper rent?',
+                query: 'Is it worth paying ₹5,000 more rent to save 10km daily commute?',
+                tip: 'Calculates net savings + 35 hrs/mo personal time saved'
+              },
+              {
+                icon: DollarSign,
+                badge: 'Hidden Costs',
+                title: 'True monthly cost beyond rent?',
+                query: 'Calculate true monthly living costs and hidden expenses for ₹25,000 rent',
+                tip: 'Maintenance + deposit interest lost + brokerage'
+              },
+              {
+                icon: ShieldAlert,
+                badge: 'Contract Check',
+                title: 'Rental agreement red flags?',
+                query: 'What are the biggest red flags and painting deduction traps in rent agreements?',
+                tip: 'Uncovers 1-month painting traps & unfair lock-ins'
+              }
+            ].map((card, idx) => (
+              <motion.button
+                key={idx}
+                onClick={() => handleAskAssistant(card.query)}
+                whileHover={{ y: -4, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-accent/40 rounded-xl p-5 text-left transition-all group flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-accent/15 border border-accent/25 flex items-center justify-center text-accent">
+                      <card.icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-[11px] font-semibold tracking-wide text-accent bg-accent/10 px-2 py-0.5 rounded-md">
+                      {card.badge}
+                    </span>
+                  </div>
+                  <h4 className="text-white text-sm font-semibold mb-2 group-hover:text-accent transition-colors">
+                    {card.title}
+                  </h4>
+                  <p className="text-white/60 text-xs italic mb-4">
+                    "{card.query}"
+                  </p>
+                </div>
+                <div className="text-[11px] text-[#22d3a5] font-medium flex items-center gap-1 border-t border-white/5 pt-3">
+                  <span>💡</span> {card.tip}
+                </div>
+              </motion.button>
+            ))}
           </div>
         </div>
       </section>

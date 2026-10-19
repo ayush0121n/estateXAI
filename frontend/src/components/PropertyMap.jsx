@@ -1,13 +1,10 @@
 /* eslint-disable */
 import { useEffect, useRef, useMemo } from 'react';
-import { MapPin, School, Hospital, Bus, ShoppingBag, Leaf } from 'lucide-react';
+import { MapPin, School, Hospital, Bus, ShoppingBag, Leaf, ExternalLink } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Using Leaflet (react-leaflet) for the interactive map — fully free, no API key needed
-// Install: npm install react-leaflet leaflet
-
-// Fix default icon issue with Webpack/Vite
+// Fix default Leaflet icon paths broken by Vite/Webpack bundling
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -39,8 +36,7 @@ function calculateWalkabilityScore(pois) {
     const medium = pois.filter(p => p.distanceKm > 0.5 && p.distanceKm <= 1.5).length;
     const far = pois.filter(p => p.distanceKm > 1.5).length;
     const typeBonus = new Set(pois.map(p => p.type)).size * 5;
-    const score = Math.min(100, close * 15 + medium * 7 + far * 2 + typeBonus);
-    return Math.round(score);
+    return Math.min(100, Math.round(close * 15 + medium * 7 + far * 2 + typeBonus));
 }
 
 export default function PropertyMap({ property }) {
@@ -54,74 +50,105 @@ export default function PropertyMap({ property }) {
         'Delhi NCR': { lat: 28.7041, lng: 77.1025 },
         'Hyderabad': { lat: 17.3850, lng: 78.4867 },
         'Chennai': { lat: 13.0827, lng: 80.2707 },
+        'Kolkata': { lat: 22.5726, lng: 88.3639 },
     };
 
-    const fallback = CITY_COORDS[property?.location?.city] || { lat: 20.5937, lng: 78.9629 }; // Default India
+    const fallback = CITY_COORDS[property?.location?.city] || { lat: 20.5937, lng: 78.9629 };
     const effectiveLat = property?.location?.coordinates?.lat || fallback.lat;
     const effectiveLng = property?.location?.coordinates?.lng || fallback.lng;
     const isExactLocation = !!(property?.location?.coordinates?.lat && property?.location?.coordinates?.lng);
     const pois = property?.nearbyPOIs || [];
-    
-    const walkabilityScore = useMemo(() => property?.walkabilityScore || calculateWalkabilityScore(pois), [property, pois]);
+
+    const walkabilityScore = useMemo(
+        () => property?.walkabilityScore || calculateWalkabilityScore(pois),
+        [property, pois]
+    );
     const connectivityScore = property?.connectivityScore || Math.round(walkabilityScore * 0.85);
 
-    useEffect(() => {
-        if (!mapRef.current || mapInstance.current) return;
+    // Google Maps / Street View links
+    const googleMapsUrl = `https://www.google.com/maps?q=${effectiveLat},${effectiveLng}`;
+    const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${effectiveLat},${effectiveLng}`;
 
-        const map = L.map(mapRef.current).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        // Destroy previous instance to avoid "Map container already initialized" error
+        if (mapInstance.current) {
+            mapInstance.current.remove();
+            mapInstance.current = null;
+        }
+
+        const map = L.map(mapRef.current, {
+            zoomControl: true,
+            scrollWheelZoom: false, // prevent accidental scroll-zoom
+        }).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
+
         mapInstance.current = map;
 
-        // Fix container sizing issues when rendered in tabs or dynamic layout
-        setTimeout(() => {
-            if (mapInstance.current) {
-                mapInstance.current.invalidateSize();
-            }
-        }, 250);
+        // Use ResizeObserver to invalidate map size whenever the container becomes visible
+        // (fixes maps inside hidden tabs or collapsing sections)
+        const ro = new ResizeObserver(() => {
+            if (mapInstance.current) mapInstance.current.invalidateSize();
+        });
+        ro.observe(mapRef.current);
+
+        // Also invalidate after short delay for first render
+        setTimeout(() => mapInstance.current?.invalidateSize(), 300);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
         }).addTo(map);
 
-        // Main property marker (or area marker)
-        const mainIcon = L.divIcon({
-            className: '',
-            html: `<div style="background:var(--primary);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;">${isExactLocation ? '' : '<span style="transform:rotate(45deg);font-size:12px">approx</span>'}</div>`,
-            iconSize: [36, 36],
-            iconAnchor: [18, 36],
-        });
-        
-        // Add a circle if approximate
+        // Approximate area circle
         if (!isExactLocation) {
             L.circle([effectiveLat, effectiveLng], {
                 color: 'var(--primary)',
                 fillColor: 'var(--primary)',
-                fillOpacity: 0.2,
-                radius: 3000
+                fillOpacity: 0.12,
+                radius: 2500,
+                weight: 1.5,
+                dashArray: '6 4',
             }).addTo(map);
         }
 
+        // Main property marker
+        const mainIcon = L.divIcon({
+            className: '',
+            html: `<div style="background:var(--primary,#c9a35e);width:38px;height:38px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;">
+                     <div style="transform:rotate(45deg);width:10px;height:10px;background:#fff;border-radius:50%;"></div>
+                   </div>`,
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38],
+        });
+
         L.marker([effectiveLat, effectiveLng], { icon: mainIcon })
             .addTo(map)
-            .bindPopup(`<b>${property?.title || 'Property Location'}</b><br/>${isExactLocation ? property?.location?.address || 'Address' : `Approximate location`}`, { maxWidth: 200 })
+            .bindPopup(
+                `<b style="color:#121820;">${property?.title || 'Property Location'}</b><br/>
+                 <span style="color:#6b6b6b;font-size:12px;">${isExactLocation ? (property?.location?.address || '') : 'Approximate area shown'}</span>`,
+                { maxWidth: 220 }
+            )
             .openPopup();
 
         // POI markers
         pois.forEach(poi => {
-            const color = POI_COLOR_MAP[poi.type] || 'var(--primary)';
+            if (!poi.lat || !poi.lng) return;
+            const color = POI_COLOR_MAP[poi.type] || '#c9a35e';
             const poiIcon = L.divIcon({
                 className: '',
-                html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;"></div>`,
+                html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
                 iconSize: [22, 22],
                 iconAnchor: [11, 11],
             });
-            if (poi.lat && poi.lng) {
-                L.marker([poi.lat, poi.lng], { icon: poiIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>${poi.name}</b><br/>${poi.type} · ${poi.distanceKm} km away`);
-            }
+            L.marker([poi.lat, poi.lng], { icon: poiIcon })
+                .addTo(map)
+                .bindPopup(`<b>${poi.name}</b><br/><span style="font-size:12px;color:#6b6b6b;">${poi.type} · ${poi.distanceKm} km</span>`);
         });
 
         return () => {
+            ro.disconnect();
             if (mapInstance.current) {
                 mapInstance.current.remove();
                 mapInstance.current = null;
@@ -137,25 +164,55 @@ export default function PropertyMap({ property }) {
                 <MapPin size={18} color="var(--primary)" /> Location Intelligence
             </h3>
 
-            {/* Map */}
-            <div style={{ position: 'relative' }}>
-                <div ref={mapRef} style={{ height: 320, width: '100%', minHeight: 320, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(201, 163, 94,0.2)', marginBottom: 16 }} />
+            {/* Map container */}
+            <div style={{ position: 'relative', marginBottom: 16 }}>
+                <div
+                    ref={mapRef}
+                    style={{
+                        height: 340, width: '100%', borderRadius: 16,
+                        overflow: 'hidden', border: '1px solid rgba(201,163,94,0.2)',
+                        zIndex: 1,
+                    }}
+                />
                 {!isExactLocation && (
-                    <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 400, background: 'rgba(0,0,0,0.7)', color: 'white', padding: '4px 10px', borderRadius: 20, fontSize: 12, backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        Approximate Location
+                    <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 400, background: 'rgba(0,0,0,0.72)', color: '#fff', padding: '4px 12px', borderRadius: 20, fontSize: 12, backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        📍 Approximate Location
                     </div>
                 )}
+                {/* Street View & Maps buttons */}
+                <div style={{ position: 'absolute', bottom: 12, right: 12, zIndex: 400, display: 'flex', gap: 8 }}>
+                    <a
+                        href={streetViewUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="View Street View"
+                        style={{ background: 'rgba(0,0,0,0.75)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5, backdropFilter: 'blur(4px)', cursor: 'pointer', textDecoration: 'none' }}
+                    >
+                        🚶 Street View
+                    </a>
+                    <a
+                        href={googleMapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Open in Google Maps"
+                        style={{ background: 'rgba(0,0,0,0.75)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '6px 10px', fontSize: 12, display: 'flex', alignItems: 'center', gap: 5, backdropFilter: 'blur(4px)', cursor: 'pointer', textDecoration: 'none' }}
+                    >
+                        <ExternalLink size={13} /> Maps
+                    </a>
+                </div>
             </div>
 
-            {/* Scores */}
+            {/* Walkability & Connectivity Scores */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
                 {[
                     { label: 'Walkability Score', score: walkabilityScore, icon: '🚶' },
                     { label: 'Connectivity Score', score: connectivityScore, icon: '🔗' },
                 ].map(({ label, score, icon }) => (
-                    <div key={label} style={{ background: 'rgba(201, 163, 94,0.07)', border: '1px solid rgba(201, 163, 94,0.2)', borderRadius: 12, padding: '14px 16px' }}>
+                    <div key={label} style={{ background: 'rgba(201,163,94,0.07)', border: '1px solid rgba(201,163,94,0.2)', borderRadius: 12, padding: '14px 16px' }}>
                         <div style={{ fontSize: 11, color: '#aaa', marginBottom: 6 }}>{icon} {label}</div>
-                        <div style={{ fontSize: 26, fontWeight: 800, color: scoreColor(score) }}>{score}<span style={{ fontSize: 14, color: '#aaa', fontWeight: 400 }}>/100</span></div>
+                        <div style={{ fontSize: 26, fontWeight: 800, color: scoreColor(score) }}>
+                            {score}<span style={{ fontSize: 14, color: '#aaa', fontWeight: 400 }}>/100</span>
+                        </div>
                         <div style={{ marginTop: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 6, height: 6, overflow: 'hidden' }}>
                             <div style={{ width: `${score}%`, height: '100%', background: scoreColor(score), borderRadius: 6, transition: 'width 0.8s ease' }} />
                         </div>
@@ -176,14 +233,14 @@ export default function PropertyMap({ property }) {
                                 <span style={{ color: POI_COLOR_MAP[poi.type] || 'var(--primary)' }}>{POI_ICON_MAP[poi.type]}</span>
                                 <span style={{ flex: 1, fontSize: 13 }}>{poi.name}</span>
                                 <span style={{ fontSize: 12, color: '#888' }}>{poi.distanceKm} km</span>
-                                <span style={{ fontSize: 11, color: POI_COLOR_MAP[poi.type] || 'var(--primary)', background: 'rgba(201, 163, 94,0.1)', padding: '2px 8px', borderRadius: 12, textTransform: 'capitalize' }}>{poi.type}</span>
+                                <span style={{ fontSize: 11, color: POI_COLOR_MAP[poi.type] || 'var(--primary)', background: 'rgba(201,163,94,0.1)', padding: '2px 8px', borderRadius: 12, textTransform: 'capitalize' }}>{poi.type}</span>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Future Development — Static/Admin-editable field */}
+            {/* Future Development */}
             <div style={{ background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 12, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span>🏗️</span>
@@ -191,10 +248,9 @@ export default function PropertyMap({ property }) {
                     <span style={{ marginLeft: 'auto', fontSize: 10, color: '#888', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: 8 }}>Admin-editable</span>
                 </div>
                 <p style={{ margin: 0, fontSize: 13, color: '#bbb', lineHeight: 1.6 }}>
-                    {property?.futureDevelopment || 'No upcoming development information available for this area. Owners and admins can add nearby infrastructure projects via the dashboard.'}
+                    {property?.futureDevelopment || 'No upcoming development info available. Owners and admins can add nearby infrastructure projects via the dashboard.'}
                 </p>
             </div>
         </div>
     );
 }
-
