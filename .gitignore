@@ -9,3 +9,12 @@ uploads/
 backend/ml_service/model.pkl
 backend/ml_service/__pycache__/
 *.pkl
+
+# AI / Agent tooling
+.agent/
+.agents/
+.gemini/
+.gsd/
+GSD-STYLE.md
+PROJECT_RULES.md
+skills-lock.json

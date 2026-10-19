@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { useEffect, useRef, useMemo } from 'react';
-import { MapPin, School, Hospital, Bus, ShoppingBag, Leaf, ExternalLink } from 'lucide-react';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { MapPin, School, Hospital, Bus, ShoppingBag, Leaf, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -42,6 +42,8 @@ function calculateWalkabilityScore(pois) {
 export default function PropertyMap({ property }) {
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [tileError, setTileError] = useState(false);
 
     const CITY_COORDS = {
         'Pune': { lat: 18.5204, lng: 73.8567 },
@@ -72,39 +74,75 @@ export default function PropertyMap({ property }) {
     useEffect(() => {
         if (!mapRef.current) return;
 
-        // Destroy previous instance to avoid "Map container already initialized" error
+        setIsLoading(true);
+        setTileError(false);
+
+        // Clean up previous instance cleanly
         if (mapInstance.current) {
-            mapInstance.current.remove();
+            try {
+                mapInstance.current.off();
+                mapInstance.current.remove();
+            } catch (err) {
+                console.warn('Error removing previous map instance:', err);
+            }
             mapInstance.current = null;
         }
 
-        const map = L.map(mapRef.current, {
-            zoomControl: true,
-            scrollWheelZoom: false, // prevent accidental scroll-zoom
-        }).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
+        let map;
+        try {
+            map = L.map(mapRef.current, {
+                zoomControl: true,
+                scrollWheelZoom: false, // prevent accidental zoom while scrolling page
+                attributionControl: true,
+            }).setView([effectiveLat, effectiveLng], isExactLocation ? 15 : 11);
 
-        mapInstance.current = map;
+            mapInstance.current = map;
+        } catch (err) {
+            console.error('Failed to initialize Leaflet map:', err);
+            setIsLoading(false);
+            return;
+        }
 
-        // Use ResizeObserver to invalidate map size whenever the container becomes visible
-        // (fixes maps inside hidden tabs or collapsing sections)
-        const ro = new ResizeObserver(() => {
-            if (mapInstance.current) mapInstance.current.invalidateSize();
+        // Reliable CartoDB Voyager tiles with proper OpenStreetMap & CARTO attribution
+        const tileLayer = L.tileLayer(
+            'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+            {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20,
+            }
+        );
+
+        let tilesLoadedCount = 0;
+        tileLayer.on('tileload', () => {
+            tilesLoadedCount++;
+            if (tilesLoadedCount >= 1) {
+                setIsLoading(false);
+            }
         });
-        ro.observe(mapRef.current);
 
-        // Also invalidate after short delay for first render
-        setTimeout(() => mapInstance.current?.invalidateSize(), 300);
+        tileLayer.on('load', () => {
+            setIsLoading(false);
+        });
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-        }).addTo(map);
+        tileLayer.on('tileerror', (e) => {
+            console.warn('Map tile failed to load:', e);
+            // Fallback timeout will reveal error if no tiles succeed
+            setTimeout(() => {
+                if (tilesLoadedCount === 0) {
+                    setTileError(true);
+                    setIsLoading(false);
+                }
+            }, 3000);
+        });
+
+        tileLayer.addTo(map);
 
         // Approximate area circle
         if (!isExactLocation) {
             L.circle([effectiveLat, effectiveLng], {
-                color: 'var(--primary)',
-                fillColor: 'var(--primary)',
+                color: 'var(--primary, #c9a35e)',
+                fillColor: 'var(--primary, #c9a35e)',
                 fillOpacity: 0.12,
                 radius: 2500,
                 weight: 1.5,
@@ -114,8 +152,8 @@ export default function PropertyMap({ property }) {
 
         // Main property marker
         const mainIcon = L.divIcon({
-            className: '',
-            html: `<div style="background:var(--primary,#c9a35e);width:38px;height:38px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;">
+            className: 'custom-property-pin',
+            html: `<div style="background:var(--primary,#c9a35e);width:38px;height:38px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;">
                      <div style="transform:rotate(45deg);width:10px;height:10px;background:#fff;border-radius:50%;"></div>
                    </div>`,
             iconSize: [38, 38],
@@ -126,9 +164,11 @@ export default function PropertyMap({ property }) {
         L.marker([effectiveLat, effectiveLng], { icon: mainIcon })
             .addTo(map)
             .bindPopup(
-                `<b style="color:#121820;">${property?.title || 'Property Location'}</b><br/>
-                 <span style="color:#6b6b6b;font-size:12px;">${isExactLocation ? (property?.location?.address || '') : 'Approximate area shown'}</span>`,
-                { maxWidth: 220 }
+                `<div style="font-family:inherit;padding:2px 4px;">
+                   <b style="color:#121820;font-size:14px;">${property?.title || 'Property Location'}</b><br/>
+                   <span style="color:#555;font-size:12px;margin-top:2px;display:block;">${isExactLocation ? (property?.location?.address || '') : 'Approximate area shown'}</span>
+                 </div>`,
+                { maxWidth: 240 }
             )
             .openPopup();
 
@@ -137,20 +177,60 @@ export default function PropertyMap({ property }) {
             if (!poi.lat || !poi.lng) return;
             const color = POI_COLOR_MAP[poi.type] || '#c9a35e';
             const poiIcon = L.divIcon({
-                className: '',
+                className: 'custom-poi-pin',
                 html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
                 iconSize: [22, 22],
                 iconAnchor: [11, 11],
             });
             L.marker([poi.lat, poi.lng], { icon: poiIcon })
                 .addTo(map)
-                .bindPopup(`<b>${poi.name}</b><br/><span style="font-size:12px;color:#6b6b6b;">${poi.type} · ${poi.distanceKm} km</span>`);
+                .bindPopup(`<div style="font-family:inherit;"><b>${poi.name}</b><br/><span style="font-size:12px;color:#6b6b6b;">${poi.type} · ${poi.distanceKm} km</span></div>`);
         });
 
-        return () => {
-            ro.disconnect();
+        // Trigger multiple invalidateSize calls to eliminate gray tile artifacting on initial render / layout shift
+        const invalidate = () => {
             if (mapInstance.current) {
-                mapInstance.current.remove();
+                mapInstance.current.invalidateSize();
+            }
+        };
+
+        const t1 = setTimeout(invalidate, 100);
+        const t2 = setTimeout(invalidate, 300);
+        const t3 = setTimeout(invalidate, 700);
+        const t4 = setTimeout(invalidate, 1500);
+
+        // Fallback to remove loader after 2.5s maximum even on slow connections
+        const fallbackLoader = setTimeout(() => {
+            setIsLoading(false);
+        }, 2500);
+
+        // Window resize listener
+        window.addEventListener('resize', invalidate);
+
+        // ResizeObserver for dynamic container visibility
+        let ro = null;
+        if (typeof ResizeObserver !== 'undefined' && mapRef.current) {
+            ro = new ResizeObserver(() => {
+                invalidate();
+            });
+            ro.observe(mapRef.current);
+        }
+
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+            clearTimeout(t3);
+            clearTimeout(t4);
+            clearTimeout(fallbackLoader);
+            window.removeEventListener('resize', invalidate);
+            if (ro) ro.disconnect();
+            if (mapInstance.current) {
+                try {
+                    mapInstance.current.off();
+                    mapInstance.current.remove();
+                } catch (e) {
+                    // ignore
+                }
                 mapInstance.current = null;
             }
         };
@@ -164,29 +244,117 @@ export default function PropertyMap({ property }) {
                 <MapPin size={18} color="var(--primary)" /> Location Intelligence
             </h3>
 
-            {/* Map container */}
+            {/* Map container with overlays */}
             <div style={{ position: 'relative', marginBottom: 16 }}>
                 <div
                     ref={mapRef}
                     style={{
-                        height: 340, width: '100%', borderRadius: 16,
-                        overflow: 'hidden', border: '1px solid rgba(201,163,94,0.2)',
+                        height: 340,
+                        width: '100%',
+                        borderRadius: 16,
+                        overflow: 'hidden',
+                        border: '1px solid rgba(201,163,94,0.25)',
                         zIndex: 1,
+                        background: '#1a1f26', // dark modern placeholder while tiles load
                     }}
                 />
+
+                {/* Loading Map Overlay */}
+                {isLoading && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 500,
+                            background: 'rgba(18, 24, 32, 0.75)',
+                            backdropFilter: 'blur(4px)',
+                            borderRadius: 16,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 10,
+                            color: '#fff',
+                            fontSize: 13,
+                            fontWeight: 500,
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        <Loader2 size={24} color="var(--primary, #c9a35e)" className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
+                        <span>Loading interactive map...</span>
+                    </div>
+                )}
+
+                {/* Tile Error Alert Overlay */}
+                {tileError && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 12,
+                            right: 12,
+                            zIndex: 510,
+                            background: 'rgba(239, 68, 68, 0.9)',
+                            color: '#fff',
+                            padding: '6px 12px',
+                            borderRadius: 8,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                        }}
+                    >
+                        <AlertCircle size={14} /> Map tiles slow or unavailable. Check network.
+                    </div>
+                )}
+
+                {/* Approximate area badge */}
                 {!isExactLocation && (
-                    <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 400, background: 'rgba(0,0,0,0.72)', color: '#fff', padding: '4px 12px', borderRadius: 20, fontSize: 12, backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 12,
+                            left: 12,
+                            zIndex: 400,
+                            background: 'rgba(0,0,0,0.72)',
+                            color: '#fff',
+                            padding: '4px 12px',
+                            borderRadius: 20,
+                            fontSize: 12,
+                            backdropFilter: 'blur(6px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                        }}
+                    >
                         📍 Approximate Location
                     </div>
                 )}
-                {/* Street View & Maps buttons */}
+
+                {/* Street View & Maps external deep links */}
                 <div style={{ position: 'absolute', bottom: 12, right: 12, zIndex: 400, display: 'flex', gap: 8 }}>
                     <a
                         href={streetViewUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        title="View Street View"
-                        style={{ background: 'rgba(0,0,0,0.75)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5, backdropFilter: 'blur(4px)', cursor: 'pointer', textDecoration: 'none' }}
+                        title="View Google Street View"
+                        style={{
+                            background: 'rgba(0,0,0,0.75)',
+                            color: '#fff',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                            borderRadius: 8,
+                            padding: '6px 12px',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            backdropFilter: 'blur(4px)',
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                        }}
                     >
                         🚶 Street View
                     </a>
@@ -195,7 +363,20 @@ export default function PropertyMap({ property }) {
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Open in Google Maps"
-                        style={{ background: 'rgba(0,0,0,0.75)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '6px 10px', fontSize: 12, display: 'flex', alignItems: 'center', gap: 5, backdropFilter: 'blur(4px)', cursor: 'pointer', textDecoration: 'none' }}
+                        style={{
+                            background: 'rgba(0,0,0,0.75)',
+                            color: '#fff',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                            borderRadius: 8,
+                            padding: '6px 10px',
+                            fontSize: 12,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            backdropFilter: 'blur(4px)',
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                        }}
                     >
                         <ExternalLink size={13} /> Maps
                     </a>
