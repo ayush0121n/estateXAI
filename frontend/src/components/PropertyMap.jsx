@@ -114,6 +114,8 @@ export default function PropertyMap({ property }) {
         );
 
         let tilesLoadedCount = 0;
+        let fallbackTried = false;
+
         tileLayer.on('tileload', () => {
             tilesLoadedCount++;
             if (tilesLoadedCount >= 1) {
@@ -127,13 +129,31 @@ export default function PropertyMap({ property }) {
 
         tileLayer.on('tileerror', (e) => {
             console.warn('Map tile failed to load:', e);
+            if (!fallbackTried) {
+                fallbackTried = true;
+                const fallbackTileLayer = L.tileLayer(
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+                    { attribution: 'Tiles &copy; Esri', maxZoom: 19 }
+                );
+                fallbackTileLayer.on('tileload', () => {
+                    tilesLoadedCount++;
+                    setIsLoading(false);
+                    setTileError(false);
+                });
+                fallbackTileLayer.on('load', () => {
+                    setIsLoading(false);
+                    setTileError(false);
+                });
+                fallbackTileLayer.addTo(map);
+            }
+
             // Fallback timeout will reveal error if no tiles succeed
             setTimeout(() => {
                 if (tilesLoadedCount === 0) {
                     setTileError(true);
                     setIsLoading(false);
                 }
-            }, 3000);
+            }, 3500);
         });
 
         tileLayer.addTo(map);
