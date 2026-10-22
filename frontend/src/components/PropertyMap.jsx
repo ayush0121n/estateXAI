@@ -39,6 +39,8 @@ function calculateWalkabilityScore(pois) {
     return Math.min(100, Math.round(close * 15 + medium * 7 + far * 2 + typeBonus));
 }
 
+const CARTO_API_KEY = import.meta.env.VITE_CARTO_API_KEY || 'cb1_4rho_1_afaafdf324caa87ee4b09c2a';
+
 export default function PropertyMap({ property }) {
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
@@ -103,9 +105,9 @@ export default function PropertyMap({ property }) {
             return;
         }
 
-        // Reliable CartoDB Voyager tiles with proper OpenStreetMap & CARTO attribution
+        // Reliable CartoDB Voyager tiles with user API key & proper attribution
         const tileLayer = L.tileLayer(
-            'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+            `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${CARTO_API_KEY}`,
             {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
                 subdomains: 'abcd',
